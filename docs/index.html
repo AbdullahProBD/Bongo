@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bongo · বঙ্গ: Native Bangla Keyboard for macOS & Linux</title>
+    <meta name="description" content="Bongo (বঙ্গ) is a modern, clean native Bengali phonetic keyboard built for Apple Silicon macOS and modern Linux. Fast, lightweight, zero-telemetry private on-device typing.">
+    <meta name="keywords" content="Bongo, getbongo, getbongo.app, bangla keyboard mac, bangla keyboard linux, avro keyboard mac, avro linux, apple silicon bangla, ibus bengali, arm64 bangla ime, mehedi shakeel">
+    <meta name="author" content="Mehedi Shakeel">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#f5f5f7">
+    <link rel="canonical" href="https://getbongo.app/">
+    
+    <link rel="alternate" hreflang="en" href="https://getbongo.app/">
+    <link rel="alternate" hreflang="bn" href="https://getbongo.app/">
+    <link rel="alternate" hreflang="x-default" href="https://getbongo.app/">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Bongo (বঙ্গ)">
+    <meta property="og:url" content="https://getbongo.app/">
+    <meta property="og:title" content="Bongo · বঙ্গ: Native Bangla Keyboard for macOS & Linux">
+    <meta property="og:description" content="Native Apple Silicon & Linux Bengali input method. Fast, lightweight, on-device privacy, zero telemetry, modern UI. Free and open source.">
+    <meta property="og:image" content="https://getbongo.app/assets/og-image.png">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:locale:alternate" content="bn_BD">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Bongo · বঙ্গ: Native Bangla Keyboard for macOS & Linux">
+    <meta name="twitter:description" content="Native Apple Silicon & Linux Bengali input method. Fast, lightweight, on-device privacy, modern UI.">
+    <meta name="twitter:image" content="https://getbongo.app/assets/og-image.png">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/bongo-logo.png?v=2">
+    <link rel="apple-touch-icon" href="assets/bongo-logo.png?v=2">
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": ["SoftwareApplication", "WebApplication"],
+          "@id": "https://getbongo.app/#software",
+          "name": "Bongo",
+          "alternateName": "বঙ্গ",
+          "applicationCategory": "UtilitiesApplication",
+          "operatingSystem": "macOS 13.0 or later (Apple Silicon & Intel), Linux (amd64 & arm64)",
+          "softwareVersion": "1.0",
+          "description": "Bongo is a free, native, lightweight Bengali phonetic keyboard input method editor built for macOS and Linux.",
+          "url": "https://getbongo.app/",
+          "downloadUrl": "https://github.com/mehedishakeel/Bongo/releases/latest",
+          "image": "https://getbongo.app/assets/og-image.png",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD",
+            "availability": "https://schema.org/InStock"
+          },
+          "author": {
+            "@type": "Person",
+            "name": "Mehedi Shakeel",
+            "url": "https://github.com/mehedishakeel"
+          }
+        }
+      ]
+    }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+Bengali:wght@400;500;600;700&family=Noto+Serif+Bengali:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=5.5">
+</head>
+<body>
+    <a href="#playground" class="skip-link">Skip to playground</a>
+
+    <!-- Minimal Translucent macOS Navbar -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="#" class="nav-brand" aria-label="Bongo Home">
+                <img src="assets/bongo-logo.png?v=2" alt="Bongo Logo" class="brand-icon" width="28" height="28">
+                <span class="brand-name">Bongo <span class="brand-bn">বঙ্গ</span></span>
+            </a>
+
+            <div class="nav-links" id="navLinks">
+                <a href="#playground" data-i18n="nav.playground">Try Live</a>
+                <a href="#features" data-i18n="nav.features">Features</a>
+                <a href="#screenshots" data-i18n="nav.screenshots">Interface</a>
+                <a href="#install" data-i18n="nav.install">Install</a>
+                <a href="#cheatsheet" data-i18n="nav.cheatsheet">Cheatsheet</a>
+                <a href="#faq" data-i18n="nav.faq">FAQ</a>
+
+                <div class="nav-mobile-actions">
+                    <button class="btn-lang-mobile" id="mobileLangToggle" aria-label="বাংলা সংস্করণে পরিবর্তন করুন">
+                        <span id="mobileLangText">বাংলা সংস্করণ (Bangla)</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="nav-actions">
+                <button class="lang-toggle" id="langToggle" aria-label="বাংলা সংস্করণে পরিবর্তন করুন" title="বাংলা সংস্করণে পড়ুন">
+                    <span class="lang-text" id="langText">বাংলা</span>
+                </button>
+
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark/light mode">
+                    <svg class="theme-icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <svg class="theme-icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+
+                <a href="https://github.com/mehedishakeel/Bongo" target="_blank" rel="noopener noreferrer" class="btn-subtle-icon" title="View Source on GitHub" aria-label="View Source on GitHub">
+                    <svg height="17" viewBox="0 0 16 16" width="17" fill="currentColor">
+                        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
+                    </svg>
+                </a>
+
+                <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                    <span class="bar bar-1"></span>
+                    <span class="bar bar-2"></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main id="mainContent">
+        <!-- Modern Clean Apple Hero Section -->
+        <header class="hero">
+            <div class="hero-container">
+                <div class="hero-header-block">
+                    <h1 class="hero-headline" data-i18n="hero.title">
+                        A New Era of Bangla Avro Typing
+                    </h1>
+                    <p class="hero-subline" data-i18n="hero.subtitle">
+                        Fast, lightweight, and private. Type naturally in Bengali across macOS, Linux, and Windows using familiar Avro phonetic rules.
+                    </p>
+                    <div class="download-hub" id="download-hub">
+                        <!-- OS Segmented Switcher -->
+                        <div class="download-hub-tabs" role="tablist">
+                            <button class="dl-tab-btn active" data-hub-os="mac" role="tab" aria-selected="true">
+                                <svg class="dl-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.37c.63-.77 1.06-1.85.94-2.92-1 .04-2.18.66-2.84 1.43-.58.67-1.1 1.76-.96 2.81 1.11.09 2.23-.55 2.86-1.32z"/>
+                                </svg>
+                                <span data-i18n="dl.tab_mac">macOS</span>
+                            </button>
+                            <button class="dl-tab-btn" data-hub-os="linux" role="tab" aria-selected="false">
+                                <svg class="dl-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12.003 0c-3.142 0-5.69 2.55-5.69 5.694 0 .973.245 1.892.684 2.695C5.07 9.873 3.86 12.05 3.86 14.5c0 2.213 1.01 4.2 2.59 5.535-.29.83-.75 1.74-1.29 2.5-.32.45-.19 1.08.28 1.37.21.13.45.19.7.19.28 0 .56-.09.79-.27 1.33-1.04 2.37-2.36 3.01-3.79.67.14 1.36.22 2.06.22s1.39-.08 2.06-.22c.64 1.43 1.68 2.75 3.01 3.79.23.18.51.27.79.27.25 0 .49-.06.7-.19.47-.29.6-.92.28-1.37-.54-.76-1-1.67-1.29-2.5 1.58-1.335 2.59-3.322 2.59-5.535 0-2.45-1.21-4.627-3.134-6.111.439-.803.684-1.722.684-2.695C17.693 2.55 15.145 0 12.003 0zm-1.8 4.2c.44 0 .8.36.8.8s-.36.8-.8.8-.8-.36-.8-.8.36-.8.8-.8zm3.6 0c.44 0 .8.36.8.8s-.36.8-.8.8-.8-.36-.8-.8.36-.8.8-.8z"/>
+                                </svg>
+                                <span data-i18n="dl.tab_linux">Linux</span>
+                            </button>
+                            <button class="dl-tab-btn" data-hub-os="windows" role="tab" aria-selected="false">
+                                <svg class="dl-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.551H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.051-1.699"/>
+                                </svg>
+                                <span data-i18n="dl.tab_windows">Windows</span>
+                            </button>
+                        </div>
+
+                        <!-- macOS Download Panel -->
+                        <div class="dl-panel active" id="dl-panel-mac">
+                            <div class="dl-cards-grid">
+                                <!-- Card 1: Apple Silicon -->
+                                <div class="dl-card dl-card-highlight">
+                                    <div class="dl-card-header">
+                                        <div class="dl-card-icon-box">
+                                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+                                                <rect x="9" y="9" width="6" height="6"></rect>
+                                                <line x1="9" y1="1" x2="9" y2="4"></line>
+                                                <line x1="15" y1="1" x2="15" y2="4"></line>
+                                                <line x1="9" y1="20" x2="9" y2="23"></line>
+                                                <line x1="15" y1="20" x2="15" y2="23"></line>
+                                                <line x1="20" y1="9" x2="23" y2="9"></line>
+                                                <line x1="20" y1="14" x2="23" y2="14"></line>
+                                                <line x1="1" y1="9" x2="4" y2="9"></line>
+                                                <line x1="1" y1="14" x2="4" y2="14"></line>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h4 class="dl-card-title" data-i18n="dl.mac_arm_title">Apple Silicon</h4>
+                                            <p class="dl-card-subtitle" data-i18n="dl.mac_arm_subtitle">M1, M2, M3, M4, M5 & future chips</p>
+                                        </div>
+                                    </div>
+                                    <div class="dl-card-meta">
+                                        <span><code>arm64</code> DMG</span>
+                                        <span>macOS 13+</span>
+                                        <span>~4.9 MB</span>
+                                    </div>
+                                    <a href="https://github.com/mehedishakeel/Bongo/releases/latest/download/Bongo-1.0-macos-arm64.dmg" class="btn-dl-card btn-dl-primary download-mac-arm64">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="7 10 12 15 17 10"></polyline>
+                                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                                        </svg>
+                                        <span data-i18n="dl.mac_arm_btn">Download DMG (Apple Silicon)</span>
+                                    </a>
+                                </div>
+
+                                <!-- Card 2: Intel Mac -->
+                                <div class="dl-card">
+                                    <div class="dl-card-header">
+                                        <div class="dl-card-icon-box">
+                                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                                                <line x1="8" y1="21" x2="16" y2="21"></line>
+                                                <line x1="12" y1="17" x2="12" y2="21"></line>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h4 class="dl-card-title" data-i18n="dl.mac_intel_title">Intel Mac</h4>
+                                            <p class="dl-card-subtitle" data-i18n="dl.mac_intel_subtitle">Core i5, i7, i9, Xeon Mac models</p>
+                                        </div>
+                                    </div>
+                                    <div class="dl-card-meta">
+                                        <span><code>x86_64</code> DMG</span>
+                                        <span>macOS 13+</span>
+                                        <span>~5.0 MB</span>
+                                    </div>
+                                    <a href="https://github.com/mehedishakeel/Bongo/releases/latest/download/Bongo-1.0-macos-intel-x86_64.dmg" class="btn-dl-card btn-dl-secondary download-mac-x86">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="7 10 12 15 17 10"></polyline>
+                                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                                        </svg>
+                                        <span data-i18n="dl.mac_intel_btn">Download DMG (Intel x86_64)</span>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- macOS Homebrew Terminal Command Box -->
+                            <div class="dl-terminal-box">
+                                <div class="dl-terminal-header">
+                                    <span class="dl-terminal-dot dot-r"></span>
+                                    <span class="dl-terminal-dot dot-y"></span>
+                                    <span class="dl-terminal-dot dot-g"></span>
+                                    <span class="dl-terminal-title" data-i18n="dl.mac_terminal_title">Or install via Homebrew (One-Line Terminal Command):</span>
+                                </div>
+                                <div class="dl-terminal-body">
+                                    <code>brew install --cask mehedishakeel/bongo/bongo</code>
+                                    <button class="btn-copy-cmd" id="copyMacBrewCmd" aria-label="Copy Homebrew install command">
+                                        <span id="copyMacCmdText">Copy</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="dl-panel-footer">
+                                <span data-i18n="dl.mac_universal_note">Prefer a single installer for all Macs?</span>
+                                <a href="https://github.com/mehedishakeel/Bongo/releases/latest/download/Bongo-1.0-macos-universal.dmg" class="dl-universal-link download-mac-universal">
+                                    <span data-i18n="dl.mac_universal_btn">Download Universal 2 DMG (arm64 + x86_64)</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Linux Download Panel -->
+                        <div class="dl-panel" id="dl-panel-linux" style="display: none;">
+                            <div class="dl-cards-grid">
+                                <!-- Card 1: amd64 / x86_64 -->
+                                <div class="dl-card dl-card-highlight">
+                                    <div class="dl-card-header">
+                                        <div class="dl-card-icon-box">
+                                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                                                <line x1="8" y1="21" x2="16" y2="21"></line>
+                                                <line x1="12" y1="17" x2="12" y2="21"></line>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h4 class="dl-card-title" data-i18n="dl.linux_amd_title">Ubuntu / Debian (x86_64)</h4>
+                                            <p class="dl-card-subtitle" data-i18n="dl.linux_amd_subtitle">Intel & AMD 64-bit Laptops / Desktops</p>
+                                        </div>
+                                    </div>
+                                    <div class="dl-card-meta">
+                                        <span><code>.deb (amd64)</code></span>
+                                        <span>Ubuntu / Debian / Mint</span>
+                                        <span>~1.2 MB</span>
+                                    </div>
+                                    <a href="https://github.com/mehedishakeel/Bongo/releases/latest/download/bongo_1.0.0_amd64.deb" class="btn-dl-card btn-dl-primary download-linux-amd64">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="7 10 12 15 17 10"></polyline>
+                                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                                        </svg>
+                                        <span data-i18n="dl.linux_amd_btn">Download .deb (amd64)</span>
+                                    </a>
+                                </div>
+
+                                <!-- Card 2: arm64 -->
+                                <div class="dl-card">
+                                    <div class="dl-card-header">
+                                        <div class="dl-card-icon-box">
+                                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+                                                <rect x="9" y="9" width="6" height="6"></rect>
+                                                <line x1="9" y1="1" x2="9" y2="4"></line>
+                                                <line x1="15" y1="1" x2="15" y2="4"></line>
+                                                <line x1="9" y1="20" x2="9" y2="23"></line>
+                                                <line x1="15" y1="20" x2="15" y2="23"></line>
+                                                <line x1="20" y1="9" x2="23" y2="9"></line>
+                                                <line x1="20" y1="14" x2="23" y2="14"></line>
+                                                <line x1="1" y1="9" x2="4" y2="9"></line>
+                                                <line x1="1" y1="14" x2="4" y2="14"></line>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h4 class="dl-card-title" data-i18n="dl.linux_arm_title">Ubuntu / Debian (ARM64)</h4>
+                                            <p class="dl-card-subtitle" data-i18n="dl.linux_arm_subtitle">Raspberry Pi, Asahi Linux, ARM VMs</p>
+                                        </div>
+                                    </div>
+                                    <div class="dl-card-meta">
+                                        <span><code>.deb (arm64)</code></span>
+                                        <span>aarch64 / arm64 Linux</span>
+                                        <span>~1.3 MB</span>
+                                    </div>
+                                    <a href="https://github.com/mehedishakeel/Bongo/releases/latest/download/bongo_1.0.0_arm64.deb" class="btn-dl-card btn-dl-secondary download-linux-arm64">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="7 10 12 15 17 10"></polyline>
+                                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                                        </svg>
+                                        <span data-i18n="dl.linux_arm_btn">Download .deb (arm64)</span>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- Linux Terminal Command Box -->
+                            <div class="dl-terminal-box">
+                                <div class="dl-terminal-header">
+                                    <span class="dl-terminal-dot dot-r"></span>
+                                    <span class="dl-terminal-dot dot-y"></span>
+                                    <span class="dl-terminal-dot dot-g"></span>
+                                    <span class="dl-terminal-title" data-i18n="dl.terminal_title">Or install via One-Line Terminal Command (Any Distro):</span>
+                                </div>
+                                <div class="dl-terminal-body">
+                                    <code>curl -sSL https://raw.githubusercontent.com/mehedishakeel/Bongo/main/platforms/linux/scripts/install.sh | bash</code>
+                                    <button class="btn-copy-cmd" id="copyInstallCmd" aria-label="Copy terminal install command">
+                                        <span id="copyCmdText">Copy</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Windows Download Panel -->
+                        <div class="dl-panel" id="dl-panel-windows" style="display: none;">
+                            <div class="dl-cards-grid">
+                                <!-- Card 1: Windows Setup EXE -->
+                                <div class="dl-card dl-card-highlight">
+                                    <div class="dl-card-header">
+                                        <div class="dl-card-icon-box">
+                                            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.551H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.051-1.699"/>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h4 class="dl-card-title" data-i18n="dl.windows_exe_title">Windows Setup (.exe)</h4>
+                                            <p class="dl-card-subtitle" data-i18n="dl.windows_exe_subtitle">Recommended for Windows 10 & 11 PCs</p>
+                                        </div>
+                                    </div>
+                                    <div class="dl-card-meta">
+                                        <span><code>.exe</code> Installer</span>
+                                        <span>Windows 10 / 11</span>
+                                        <span>~12.5 MB</span>
+                                    </div>
+                                    <a href="https://github.com/mehedishakeel/Bongo/releases/latest/download/Bongo-Setup-1.0.0.exe" class="btn-dl-card btn-dl-primary download-windows-exe">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="7 10 12 15 17 10"></polyline>
+                                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                                        </svg>
+                                        <span data-i18n="dl.windows_exe_btn">Download Setup (.exe)</span>
+                                    </a>
+                                </div>
+
+                                <!-- Card 2: Windows MSI Package -->
+                                <div class="dl-card">
+                                    <div class="dl-card-header">
+                                        <div class="dl-card-icon-box">
+                                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                                                <polyline points="2 17 12 22 22 17"></polyline>
+                                                <polyline points="2 12 12 17 22 12"></polyline>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h4 class="dl-card-title" data-i18n="dl.windows_msi_title">Windows MSI Package</h4>
+                                            <p class="dl-card-subtitle" data-i18n="dl.windows_msi_subtitle">Enterprise deployment & silent installation</p>
+                                        </div>
+                                    </div>
+                                    <div class="dl-card-meta">
+                                        <span><code>.msi</code> Package</span>
+                                        <span>Windows 64-bit</span>
+                                        <span>~16.9 MB</span>
+                                    </div>
+                                    <a href="https://github.com/mehedishakeel/Bongo/releases/latest/download/Bongo-1.0.0-x64.msi" class="btn-dl-card btn-dl-secondary download-windows-msi">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="7 10 12 15 17 10"></polyline>
+                                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                                        </svg>
+                                        <span data-i18n="dl.windows_msi_btn">Download Package (.msi)</span>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- Windows PowerShell Terminal Command Box -->
+                            <div class="dl-terminal-box">
+                                <div class="dl-terminal-header">
+                                    <span class="dl-terminal-dot dot-r"></span>
+                                    <span class="dl-terminal-dot dot-y"></span>
+                                    <span class="dl-terminal-dot dot-g"></span>
+                                    <span class="dl-terminal-title" data-i18n="dl.windows_terminal_title">Or install via PowerShell (One-Line Command):</span>
+                                </div>
+                                <div class="dl-terminal-body">
+                                    <code>powershell -c "irm https://raw.githubusercontent.com/mehedishakeel/Bongo/main/platforms/windows/scripts/install.ps1 | iex"</code>
+                                    <button class="btn-copy-cmd" id="copyWinCmd" aria-label="Copy PowerShell install command">
+                                        <span id="copyWinCmdText">Copy</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="dl-panel-footer">
+                                <span data-i18n="dl.windows_tip">Universal Windows Keyboard Switch:</span>
+                                <span class="dl-universal-link" data-i18n="dl.windows_tip_text">Press F12 anywhere across Windows to toggle instantly between Bangla and English</span>
+                            </div>
+                        </div>
+
+                        <!-- Guide link -->
+                        <div class="download-hub-links">
+                            <a href="#install" class="hero-guide-link">
+                                <span data-i18n="hero.cta_secondary">Installation Guide</span> &rarr;
+                            </a>
+                        </div>
+                    </div>
+                    <div class="hero-specs-row">
+                        <div class="hero-spec-chip">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+                                <rect x="9" y="9" width="6" height="6"></rect>
+                                <line x1="9" y1="1" x2="9" y2="4"></line>
+                                <line x1="15" y1="1" x2="15" y2="4"></line>
+                                <line x1="9" y1="20" x2="9" y2="23"></line>
+                                <line x1="15" y1="20" x2="15" y2="23"></line>
+                                <line x1="20" y1="9" x2="23" y2="9"></line>
+                                <line x1="20" y1="14" x2="23" y2="14"></line>
+                                <line x1="1" y1="9" x2="4" y2="9"></line>
+                                <line x1="1" y1="14" x2="4" y2="14"></line>
+                            </svg>
+                            <span>macOS, Linux & Windows</span>
+                        </div>
+                        <div class="hero-spec-chip">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                            </svg>
+                            <span>100% On-Device Privacy</span>
+                        </div>
+                        <div class="hero-spec-chip">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                            <span>&lt; 15 MB RAM</span>
+                        </div>
+                        <div class="hero-spec-chip">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                            </svg>
+                            <span>Open Source (MPL-2.0)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- macOS Interactive Window Playground -->
+                <div class="mac-window-wrapper" id="playground">
+                    <div class="mac-window">
+                        <!-- Window Titlebar -->
+                        <div class="mac-titlebar">
+                            <div class="mac-traffic-lights">
+                                <span class="light red" title="Close"></span>
+                                <span class="light yellow" title="Minimize"></span>
+                                <span class="light green" title="Zoom"></span>
+                            </div>
+                            <div class="mac-window-label" data-i18n="playground.window_title">Notes: Bengali Document</div>
+                            <div class="mac-input-source-pill">
+                                <span class="pill-dot"></span>
+                                <span data-i18n="playground.mode">Bongo · Phonetic</span>
+                            </div>
+                        </div>
+
+                        <!-- Window Content -->
+                        <div class="mac-window-body">
+                            <div class="sample-chips-row">
+                                <span class="sample-chips-label" data-i18n="playground.try_label">Quick tests:</span>
+                                <button class="sample-pill" data-text="ami">ami (আমি)</button>
+                                <button class="sample-pill" data-text="bangla">bangla (বাংলা)</button>
+                                <button class="sample-pill" data-text="dhonnobad">dhonnobad (ধন্যবাদ)</button>
+                                <button class="sample-pill" data-text="kemon achen">kemon achen (কেমন আছেন)</button>
+                                <button class="sample-pill" data-text="shonar bangla">shonar bangla (সোনার বাংলা)</button>
+                            </div>
+
+                            <div class="typing-canvas">
+                                <div class="input-line-wrapper">
+                                    <label for="demoInput" class="visually-hidden">Type phonetic Bengali</label>
+                                    <input type="text" id="demoInput" class="mac-text-input" data-i18n-placeholder="playground.input_placeholder" placeholder="Type here in English (e.g. ami banglay gan gai)..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+                                    <button type="button" class="btn-clear" id="clearInputBtn" title="Clear text" aria-label="Clear input">✕</button>
+                                </div>
+
+                                <!-- Authentic macOS Translucent Candidate HUD -->
+                                <div class="mac-candidate-hud" id="hudSimulator">
+                                    <div class="hud-header">
+                                        <span class="hud-query-text" id="hudQuery">ami</span>
+                                        <span class="hud-script-label">বাংলা</span>
+                                    </div>
+                                    <div class="hud-list" id="hudCandidates">
+                                        <div class="hud-candidate-item selected">
+                                            <span class="hud-num">1</span>
+                                            <span class="hud-word">আমি</span>
+                                        </div>
+                                        <div class="hud-candidate-item">
+                                            <span class="hud-num">2</span>
+                                            <span class="hud-word">আম</span>
+                                        </div>
+                                        <div class="hud-candidate-item">
+                                            <span class="hud-num">3</span>
+                                            <span class="hud-word">আমায়</span>
+                                        </div>
+                                        <div class="hud-candidate-item">
+                                            <span class="hud-num">4</span>
+                                            <span class="hud-word">আমেরিকায়</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Output Preview Bar -->
+                                <div class="mac-output-bar">
+                                    <div class="output-text-area">
+                                        <span class="output-tag" data-i18n="playground.output_label">Output:</span>
+                                        <span class="output-content" id="demoOutput">আমি</span>
+                                    </div>
+                                    <button type="button" class="btn-mac-copy" id="copyOutputBtn" title="Copy Bengali text" data-i18n-title="playground.copy_btn" aria-label="Copy Output">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                        </svg>
+                                        <span class="copy-btn-text" data-i18n="playground.copy_text">Copy</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- 3 Core Pillars (Clean Apple Grid) -->
+        <section class="section" id="features">
+            <div class="section-container">
+                <div class="section-lead">
+                    <span class="section-eyebrow" data-i18n="features.eyebrow">Built for Speed & Privacy</span>
+                    <h2 class="section-headline" data-i18n="features.title">Simple. Native. Uncompromised.</h2>
+                    <p class="section-subtext" data-i18n="features.desc">Built natively with pure Rust for macOS (Apple Silicon & Intel) and modern Linux desktop environments.</p>
+                </div>
+
+                <div class="three-pillars-grid">
+                    <div class="pillar-card">
+                        <div class="pillar-badge">Performance</div>
+                        <h3 class="pillar-title" data-i18n="feature.1_title">Pure Native Architecture</h3>
+                        <p class="pillar-desc" data-i18n="feature.1_desc">Compiled natively for Apple Silicon, Intel Macs, amd64, and arm64 Linux. Zero emulation baggage and minimal memory footprint.</p>
+                        <ul class="pillar-specs">
+                            <li><span>macOS:</span> Apple Silicon & Intel x86_64</li>
+                            <li><span>Linux:</span> amd64 & arm64 (.deb, IBus)</li>
+                            <li><span>Core:</span> Pure Rust engine (riti)</li>
+                        </ul>
+                    </div>
+
+                    <div class="pillar-card highlight">
+                        <div class="pillar-badge">Security</div>
+                        <h3 class="pillar-title" data-i18n="feature.3_title">100% On-Device Privacy</h3>
+                        <p class="pillar-desc" data-i18n="feature.3_desc">Runs entirely within local system frameworks. Your typing and dictionary stay strictly local on your computer with zero network access.</p>
+                        <ul class="pillar-specs">
+                            <li><span>Telemetry:</span> 0 KB transmitted</li>
+                            <li><span>Network:</span> 0 network permissions</li>
+                            <li><span>Permissions:</span> No keylogging access</li>
+                        </ul>
+                    </div>
+
+                    <div class="pillar-card">
+                        <div class="pillar-badge">Typing</div>
+                        <h3 class="pillar-title" data-i18n="feature.2_title">Avro Phonetic Standard</h3>
+                        <p class="pillar-desc" data-i18n="feature.2_desc">Type naturally according to English sounds (<code>ami</code> → <code>আমি</code>). Supported by an offline 150,000+ word lexicon with real-time suggestions.</p>
+                        <ul class="pillar-specs">
+                            <li><span>Dictionary:</span> 150K+ verified words</li>
+                            <li><span>Modes:</span> Phonetic, Smart, Direct</li>
+                            <li><span>Fonts:</span> Custom Bengali typeface</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Visual App Tour (Clean Segmented Inspection) -->
+        <section class="section section-alt" id="screenshots">
+            <div class="section-container">
+                <div class="section-lead">
+                    <span class="section-eyebrow" data-i18n="screenshots.eyebrow">Desktop Interface</span>
+                    <h2 class="section-headline" data-i18n="screenshots.title">Native, Familiar Desktop Design</h2>
+                    <p class="section-subtext" data-i18n="screenshots.desc">Settings, font customization, and floating candidate controls designed to look and feel right at home on modern macOS and Linux.</p>
+                </div>
+
+                <div class="segmented-control-tabs" role="tablist">
+                    <button class="gallery-tab-btn active" data-target="tab-welcome" role="tab" aria-selected="true">
+                        <span data-i18n="tab.welcome">Getting Started</span>
+                    </button>
+                    <button class="gallery-tab-btn" data-target="tab-settings" role="tab" aria-selected="false">
+                        <span data-i18n="tab.settings">Typing Settings</span>
+                    </button>
+                    <button class="gallery-tab-btn" data-target="tab-fonts" role="tab" aria-selected="false">
+                        <span data-i18n="tab.fonts">Font Preview</span>
+                    </button>
+                    <button class="gallery-tab-btn" data-target="tab-hud" role="tab" aria-selected="false">
+                        <span data-i18n="tab.hud">HUD Candidate Bar</span>
+                    </button>
+                </div>
+
+                <div class="tab-showcase-panel">
+                    <div class="gallery-item active" id="tab-welcome" role="tabpanel">
+                        <div class="mac-preview-frame">
+                            <div class="preview-titlebar">
+                                <span class="light red"></span>
+                                <span class="light yellow"></span>
+                                <span class="light green"></span>
+                                <span class="frame-label">Bongo: Getting Started</span>
+                            </div>
+                            <img src="assets/bongo-getting-started.png" alt="Bongo Getting Started Window" class="preview-img" loading="lazy">
+                        </div>
+                        <div class="preview-caption">
+                            <h3 data-i18n="caption.welcome_title">Frictionless Onboarding</h3>
+                            <p data-i18n="caption.welcome_desc">Direct link to macOS Keyboard settings, quick shortcut cheat sheet, and a built-in playground to verify your typing setup instantly.</p>
+                        </div>
+                    </div>
+
+                    <div class="gallery-item" id="tab-settings" role="tabpanel">
+                        <div class="mac-preview-frame">
+                            <div class="preview-titlebar">
+                                <span class="light red"></span>
+                                <span class="light yellow"></span>
+                                <span class="light green"></span>
+                                <span class="frame-label">Bongo: Settings</span>
+                            </div>
+                            <img src="assets/bongo-settings.png" alt="Bongo Settings Window" class="preview-img" loading="lazy">
+                        </div>
+                        <div class="preview-caption">
+                            <h3 data-i18n="caption.settings_title">3 Flexible Typing Modes</h3>
+                            <p data-i18n="caption.settings_desc">Choose between <strong>Phonetic first</strong> (recommended), <strong>Smart suggestions</strong>, or <strong>Phonetic only</strong>. Toggle emoji suggestions and check for updates effortlessly.</p>
+                        </div>
+                    </div>
+
+                    <div class="gallery-item" id="tab-fonts" role="tabpanel">
+                        <div class="mac-preview-frame">
+                            <div class="preview-titlebar">
+                                <span class="light red"></span>
+                                <span class="light yellow"></span>
+                                <span class="light green"></span>
+                                <span class="frame-label">Bongo: Fonts & Typography</span>
+                            </div>
+                            <img src="assets/bongo-fonts.png" alt="Bongo Font Customization and Live Preview" class="preview-img" loading="lazy">
+                        </div>
+                        <div class="preview-caption">
+                            <h3 data-i18n="caption.fonts_title">Customizable Bengali Typography</h3>
+                            <p data-i18n="caption.fonts_desc">Select any Bengali font installed on your Mac (Kohinoor Bangla, Noto Sans Bengali, Ekush, July, etc.) with real-time candidate size adjustment.</p>
+                        </div>
+                    </div>
+
+                    <div class="gallery-item" id="tab-hud" role="tabpanel">
+                        <div class="mac-preview-frame hud-box">
+                            <img src="assets/bongo-hud-candidate.png" alt="Bongo HUD Candidate Bar on macOS" class="preview-hud-img" loading="lazy">
+                        </div>
+                        <div class="preview-caption">
+                            <h3 data-i18n="caption.hud_title">Tactile Candidate HUD</h3>
+                            <p data-i18n="caption.hud_desc">Floating translucent candidate window with fast numbered shortcuts [1], [2], [3], smooth arrow navigation, and high-contrast pill selection.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3-Step Setup Guide -->
+        <section class="section" id="install">
+            <div class="section-container">
+                <div class="section-lead">
+                    <span class="section-eyebrow" data-i18n="install.eyebrow">Setup</span>
+                    <h2 class="section-headline" data-i18n="install.title">Up and running in seconds.</h2>
+                    <p class="section-subtext" data-i18n="install.desc">No command line, no root passwords, no complicated config files.</p>
+                </div>
+
+                <!-- Sleek Segmented OS Controller -->
+                <div class="setup-tabs-wrapper">
+                    <div class="install-os-switcher" role="tablist">
+                        <button class="os-tab-btn active" data-os="mac" role="tab" aria-selected="true">
+                            <svg class="setup-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.37c.63-.77 1.06-1.85.94-2.92-1 .04-2.18.66-2.84 1.43-.58.67-1.1 1.76-.96 2.81 1.11.09 2.23-.55 2.86-1.32z"/>
+                            </svg>
+                            <span data-i18n="install.tab_mac">macOS</span>
+                        </button>
+                        <button class="os-tab-btn" data-os="linux" role="tab" aria-selected="false">
+                            <svg class="setup-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12.003 0c-3.142 0-5.69 2.55-5.69 5.694 0 .973.245 1.892.684 2.695C5.07 9.873 3.86 12.05 3.86 14.5c0 2.213 1.01 4.2 2.59 5.535-.29.83-.75 1.74-1.29 2.5-.32.45-.19 1.08.28 1.37.21.13.45.19.7.19.28 0 .56-.09.79-.27 1.33-1.04 2.37-2.36 3.01-3.79.67.14 1.36.22 2.06.22s1.39-.08 2.06-.22c.64 1.43 1.68 2.75 3.01 3.79.23.18.51.27.79.27.25 0 .49-.06.7-.19.47-.29.6-.92.28-1.37-.54-.76-1-1.67-1.29-2.5 1.58-1.335 2.59-3.322 2.59-5.535 0-2.45-1.21-4.627-3.134-6.111.439-.803.684-1.722.684-2.695C17.693 2.55 15.145 0 12.003 0zm-1.8 4.2c.44 0 .8.36.8.8s-.36.8-.8.8-.8-.36-.8-.8.36-.8.8-.8zm3.6 0c.44 0 .8.36.8.8s-.36.8-.8.8-.8-.36-.8-.8.36-.8.8-.8z"/>
+                            </svg>
+                            <span data-i18n="install.tab_linux">Linux</span>
+                        </button>
+                        <button class="os-tab-btn" data-os="windows" role="tab" aria-selected="false">
+                            <svg class="setup-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.551H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.051-1.699"/>
+                            </svg>
+                            <span data-i18n="install.tab_windows">Windows</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- macOS Steps -->
+                <div class="steps-row" id="steps-mac">
+                    <div class="setup-step-card">
+                        <div class="step-card-header">
+                            <span class="step-badge-num">01</span>
+                            <span class="step-badge-tag">DRAG & DROP</span>
+                        </div>
+                        <div class="step-graphic">
+                            <div class="graphic-chip app-chip">
+                                <img src="assets/bongo-logo.png" alt="Bongo App" class="chip-app-icon" width="20" height="20">
+                                <span class="chip-label">Bongo.app</span>
+                            </div>
+                            <svg class="graphic-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                            <div class="graphic-chip folder-chip">
+                                <svg class="chip-folder-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                                </svg>
+                                <span class="chip-label">Applications</span>
+                            </div>
+                        </div>
+                        <h3 class="step-heading" data-i18n="step.1_title">Download & Drag</h3>
+                        <p class="step-text" data-i18n="step.1_desc">Download <strong>Bongo DMG</strong> (Apple Silicon or Intel), open it, and drag <code>Bongo.app</code> into your <strong>Applications</strong> folder.</p>
+                    </div>
+
+                    <div class="setup-step-card">
+                        <div class="step-card-header">
+                            <span class="step-badge-num">02</span>
+                            <span class="step-badge-tag">ZERO CONFIG</span>
+                        </div>
+                        <div class="step-graphic">
+                            <div class="graphic-status-pill">
+                                <span class="status-pulse-dot"></span>
+                                <span>Auto-Registers Keyboard Service</span>
+                            </div>
+                        </div>
+                        <h3 class="step-heading" data-i18n="step.2_title">Launch Once</h3>
+                        <p class="step-text" data-i18n="step.2_desc">Open <strong>Bongo</strong> from Applications. It registers the input method service with macOS automatically without requiring administrator rights.</p>
+                    </div>
+
+                    <div class="setup-step-card">
+                        <div class="step-card-header">
+                            <span class="step-badge-num">03</span>
+                            <span class="step-badge-tag">INSTANT SWITCH</span>
+                        </div>
+                        <div class="step-graphic">
+                            <div class="graphic-keys-group">
+                                <kbd class="step-keycap">🌐 fn</kbd>
+                                <span class="key-or">or</span>
+                                <kbd class="step-keycap">⌃ Ctrl</kbd>
+                                <span class="key-plus">+</span>
+                                <kbd class="step-keycap">Space</kbd>
+                            </div>
+                        </div>
+                        <h3 class="step-heading" data-i18n="step.3_title">Enable & Switch</h3>
+                        <p class="step-text" data-i18n="step.3_desc">In <strong>System Settings → Keyboard → Input Sources</strong>, click <strong>+</strong> and add <strong>Bongo</strong> (under Bengali). Switch anytime with <kbd>Globe / fn</kbd> or <kbd>Ctrl + Space</kbd>!</p>
+                    </div>
+                </div>
+
+                <!-- Linux Steps -->
+                <div class="steps-row" id="steps-linux" style="display: none;">
+                    <div class="setup-step-card">
+                        <div class="step-card-header">
+                            <span class="step-badge-num">01</span>
+                            <span class="step-badge-tag">INSTALL PACKAGE</span>
+                        </div>
+                        <div class="step-graphic">
+                            <div class="graphic-terminal-pill">
+                                <span class="term-prompt">$</span>
+                                <code>sudo apt install ./bongo.deb</code>
+                            </div>
+                        </div>
+                        <h3 class="step-heading" data-i18n="step.linux_1_title">Download or Install</h3>
+                        <p class="step-text" data-i18n="step.linux_1_desc">Download <strong>bongo_1.0.0_amd64.deb</strong> (for standard PC) or <strong>bongo_1.0.0_arm64.deb</strong> (for ARM64) and install with <code>sudo apt install ./bongo_1.0.0_amd64.deb</code>, or use our one-line terminal installer.</p>
+                    </div>
+
+                    <div class="setup-step-card">
+                        <div class="step-card-header">
+                            <span class="step-badge-num">02</span>
+                            <span class="step-badge-tag">INPUT METHOD</span>
+                        </div>
+                        <div class="step-graphic">
+                            <div class="graphic-status-pill">
+                                <span class="status-pulse-dot"></span>
+                                <span>IBus Framework · Bengali (Bongo)</span>
+                            </div>
+                        </div>
+                        <h3 class="step-heading" data-i18n="step.linux_2_title">Enable Input Source</h3>
+                        <p class="step-text" data-i18n="step.linux_2_desc">In <strong>Settings → Keyboard → Input Sources</strong>, click <strong>+</strong>, search for <strong>Bengali (Bongo)</strong>, and add it.</p>
+                    </div>
+
+                    <div class="setup-step-card">
+                        <div class="step-card-header">
+                            <span class="step-badge-num">03</span>
+                            <span class="step-badge-tag">KEYBOARD HOTKEY</span>
+                        </div>
+                        <div class="step-graphic">
+                            <div class="graphic-keys-group">
+                                <kbd class="step-keycap">⌘ Super</kbd>
+                                <span class="key-plus">+</span>
+                                <kbd class="step-keycap">Space</kbd>
+                            </div>
+                        </div>
+                        <h3 class="step-heading" data-i18n="step.linux_3_title">Switch & Configure</h3>
+                        <p class="step-text" data-i18n="step.linux_3_desc">Press <kbd>Super + Space</kbd> or <kbd>Ctrl + Space</kbd> to type in Bangla. Launch <code>bongo-settings</code> anytime for the layout cheatsheet and font configuration.</p>
+                    </div>
+                </div>
+
+                <!-- Windows Steps -->
+                <div class="steps-row" id="steps-windows" style="display: none;">
+                    <div class="setup-step-card">
+                        <div class="step-card-header">
+                            <span class="step-badge-num">01</span>
+                            <span class="step-badge-tag">RUN INSTALLER</span>
+                        </div>
+                        <div class="step-graphic">
+                            <div class="graphic-chip app-chip">
+                                <img src="assets/bongo-logo.png" alt="Bongo App" class="chip-app-icon" width="20" height="20">
+                                <span class="chip-label">Bongo-Setup.exe</span>
+                            </div>
+                        </div>
+                        <h3 class="step-heading">Download & Run</h3>
+                        <p class="step-text">Download <strong>Bongo-Setup-1.0.0.exe</strong> (or <strong>.msi</strong> for enterprise) and click Install. No external dependencies required.</p>
+                    </div>
+
+                    <div class="setup-step-card">
+                        <div class="step-card-header">
+                            <span class="step-badge-num">02</span>
+                            <span class="step-badge-tag">SYSTEM TRAY</span>
+                        </div>
+                        <div class="step-graphic">
+                            <div class="graphic-status-pill">
+                                <span class="status-pulse-dot"></span>
+                                <span>Taskbar Notification Area · Ready</span>
+                            </div>
+                        </div>
+                        <h3 class="step-heading">Starts in Background</h3>
+                        <p class="step-text">Bongo runs in your taskbar system tray. Right-click the icon anytime to open <strong>Settings</strong>, change candidate fonts, or inspect the phonetic cheatsheet.</p>
+                    </div>
+
+                    <div class="setup-step-card">
+                        <div class="step-card-header">
+                            <span class="step-badge-num">03</span>
+                            <span class="step-badge-tag">INSTANT TOGGLE</span>
+                        </div>
+                        <div class="step-graphic">
+                            <div class="graphic-keys-group">
+                                <kbd class="step-keycap">F12</kbd>
+                            </div>
+                        </div>
+                        <h3 class="step-heading">Press F12 Anywhere</h3>
+                        <p class="step-text">Press <kbd>F12</kbd> in any application (Word, Notepad, Chrome, VS Code) to switch instantly between English and Bangla mode.</p>
+                    </div>
+                </div>
+
+                <!-- Unified Bottom Setup Summary Dock -->
+                <div class="setup-footer-card">
+                    <div class="setup-footer-left">
+                        <div class="setup-tip-header">
+                            <div class="setup-tip-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="2" y1="12" x2="22" y2="12"></line>
+                                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                                </svg>
+                            </div>
+                            <span class="setup-tip-label" data-i18n="install.shortcut_title">Quick Switch Shortcut</span>
+                        </div>
+                        <p class="setup-tip-text" data-i18n="install.shortcut_desc">Tap the <strong>Globe</strong> (<kbd class="mac-kbd">fn</kbd>) key or press <kbd class="mac-kbd">Control + Space</kbd> (or <kbd>Super + Space</kbd> on Linux, or <kbd>F12</kbd> on Windows) to seamlessly switch between English and Bongo without lifting your hands.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Phonetic Reference Cheatsheet -->
+        <section class="section section-alt" id="cheatsheet">
+            <div class="section-container">
+                <div class="section-lead">
+                    <span class="section-eyebrow" data-i18n="cheatsheet.eyebrow">Reference</span>
+                    <h2 class="section-headline" data-i18n="cheatsheet.title">Phonetic Key Map</h2>
+                    <p class="section-subtext" data-i18n="cheatsheet.desc">Search any Bengali sound or character to look up its phonetic keystroke.</p>
+                </div>
+
+                <div class="cheatsheet-card">
+                    <div class="filter-controls">
+                        <div class="search-input-box">
+                            <label for="cheatsheetSearch" class="visually-hidden">Filter characters</label>
+                            <svg class="search-box-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                            <input type="text" id="cheatsheetSearch" class="search-field" placeholder="Search letter or keystroke (e.g. kkh, sh, ক্ষ, ঋ)..." data-i18n-placeholder="cheatsheet.search_placeholder">
+                        </div>
+
+                        <div class="category-pill-group">
+                            <button class="cat-btn active" data-category="all" data-i18n="cat.all">All Characters</button>
+                            <button class="cat-btn" data-category="vowels" data-i18n="cat.vowels">Vowels</button>
+                            <button class="cat-btn" data-category="consonants" data-i18n="cat.consonants">Consonants</button>
+                            <button class="cat-btn" data-category="conjuncts" data-i18n="cat.conjuncts">Conjuncts</button>
+                            <button class="cat-btn" data-category="numbers" data-i18n="cat.numbers">Numbers</button>
+                        </div>
+                    </div>
+
+                    <div class="table-scroll-container">
+                        <table class="mac-table" id="cheatsheetTable">
+                            <thead>
+                                <tr>
+                                    <th data-i18n="th.category">Type</th>
+                                    <th data-i18n="th.bangla">Bangla Glyph</th>
+                                    <th data-i18n="th.keystroke">Keystroke</th>
+                                    <th data-i18n="th.example">Example Word</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr data-cat="vowels"><td>Vowel</td><td class="bn-glyph">অ</td><td class="key-glyph"><kbd>o</kbd></td><td>oneck (অনেক)</td></tr>
+                                <tr data-cat="vowels"><td>Vowel</td><td class="bn-glyph">আ</td><td class="key-glyph"><kbd>a</kbd></td><td>ami (আমি)</td></tr>
+                                <tr data-cat="vowels"><td>Vowel</td><td class="bn-glyph">ই</td><td class="key-glyph"><kbd>i</kbd></td><td>iti (ইতি)</td></tr>
+                                <tr data-cat="vowels"><td>Vowel</td><td class="bn-glyph">ঈ</td><td class="key-glyph"><kbd>I</kbd></td><td>Ishor (ঈশ্বর)</td></tr>
+                                <tr data-cat="vowels"><td>Vowel</td><td class="bn-glyph">উ</td><td class="key-glyph"><kbd>u</kbd></td><td>uth (উঠ)</td></tr>
+                                <tr data-cat="vowels"><td>Vowel</td><td class="bn-glyph">ঊ</td><td class="key-glyph"><kbd>U</kbd></td><td>Ushor (ঊষর)</td></tr>
+                                <tr data-cat="vowels"><td>Vowel</td><td class="bn-glyph">ঋ</td><td class="key-glyph"><kbd>rri</kbd></td><td>rrishi (ঋষি)</td></tr>
+                                <tr data-cat="vowels"><td>Vowel</td><td class="bn-glyph">এ</td><td class="key-glyph"><kbd>e</kbd></td><td>ektara (একতারা)</td></tr>
+                                <tr data-cat="vowels"><td>Vowel</td><td class="bn-glyph">ঐ</td><td class="key-glyph"><kbd>OI</kbd></td><td>OIkyoboddho (ঐক্যবদ্ধ)</td></tr>
+                                <tr data-cat="vowels"><td>Vowel</td><td class="bn-glyph">ও</td><td class="key-glyph"><kbd>O</kbd></td><td>Ol (ওল)</td></tr>
+                                <tr data-cat="vowels"><td>Vowel</td><td class="bn-glyph">ঔ</td><td class="key-glyph"><kbd>OU</kbd></td><td>OUshodh (ঔষধ)</td></tr>
+
+                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">ক</td><td class="key-glyph"><kbd>k</kbd></td><td>kothay (কোথায়)</td></tr>
+                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">খ</td><td class="key-glyph"><kbd>kh</kbd></td><td>khobor (খবর)</td></tr>
+                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">গ</td><td class="key-glyph"><kbd>g</kbd></td><td>gan (গান)</td></tr>
+                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">ঘ</td><td class="key-glyph"><kbd>gh</kbd></td><td>ghor (ঘর)</td></tr>
+                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">ঙ</td><td class="key-glyph"><kbd>Ng</kbd></td><td>roNg (রং)</td></tr>
+                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">চ</td><td class="key-glyph"><kbd>c</kbd> / <kbd>ch</kbd></td><td>chad (চাঁদ)</td></tr>
+                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">ছ</td><td class="key-glyph"><kbd>Ch</kbd></td><td>Chobi (ছবি)</td></tr>
+                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">জ</td><td class="key-glyph"><kbd>j</kbd></td><td>jol (জল)</td></tr>
+                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">ঝ</td><td class="key-glyph"><kbd>jh</kbd></td><td>jhor (ঝড়)</td></tr>
+                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">ঞ</td><td class="key-glyph"><kbd>NG</kbd></td><td>miya (মিঞা)</td></tr>
+                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">ট</td><td class="key-glyph"><kbd>T</kbd></td><td>Taka (টাকা)</td></tr>
+                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">ঠ</td><td class="key-glyph"><kbd>Th</kbd></td><td>Thik (ঠিক)</td></tr>
+                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">ড</td><td class="key-glyph"><kbd>D</kbd></td><td>Daak (ডাক)</td></tr>
+                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">ঢ</td><td class="key-glyph"><kbd>Dh</kbd></td><td>Dhak (ঢাক)</td></tr>
+                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">ণ</td><td class="key-glyph"><kbd>N</kbd></td><td>gun (গুণ)</td></tr>
+                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">ত</td><td class="key-glyph"><kbd>t</kbd></td><td>tumi (তুমি)</td></tr>
+                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">থ</td><td class="key-glyph"><kbd>th</kbd></td><td>thako (থাকো)</td></tr>
+                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">দ</td><td class="key-glyph"><kbd>d</kbd></td><td>din (দিন)</td></tr>
+                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">ধ</td><td class="key-glyph"><kbd>dh</kbd></td><td>dhon (ধন)</td></tr>
+                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">ন</td><td class="key-glyph"><kbd>n</kbd></td><td>naam (নাম)</td></tr>
+                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">প</td><td class="key-glyph"><kbd>p</kbd></td><td>pani (পানি)</td></tr>
+                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">ফ</td><td class="key-glyph"><kbd>f</kbd> / <kbd>ph</kbd></td><td>ful (ফুল)</td></tr>
+                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">ব</td><td class="key-glyph"><kbd>b</kbd></td><td>boi (বই)</td></tr>
+                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">ভ</td><td class="key-glyph"><kbd>bh</kbd> / <kbd>v</kbd></td><td>bhalo (ভালো)</td></tr>
+                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">ম</td><td class="key-glyph"><kbd>m</kbd></td><td>maa (মা)</td></tr>
+                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">য</td><td class="key-glyph"><kbd>z</kbd></td><td>zodi (যদি)</td></tr>
+                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">র</td><td class="key-glyph"><kbd>r</kbd></td><td>raat (রাত)</td></tr>
+                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">ল</td><td class="key-glyph"><kbd>l</kbd></td><td>laal (লাল)</td></tr>
+                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">শ</td><td class="key-glyph"><kbd>S</kbd> / <kbd>sh</kbd></td><td>shanti (শান্তি)</td></tr>
+                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">ষ</td><td class="key-glyph"><kbd>Sh</kbd></td><td>kaShTo (কষ্ট)</td></tr>
+                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">স</td><td class="key-glyph"><kbd>s</kbd></td><td>shob (সব)</td></tr>
+                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">হ</td><td class="key-glyph"><kbd>h</kbd></td><td>haat (হাত)</td></tr>
+                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">ড়</td><td class="key-glyph"><kbd>R</kbd></td><td>boRo (বড়)</td></tr>
+                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">ঢ়</td><td class="key-glyph"><kbd>Rh</kbd></td><td>aaRha (আষাঢ়)</td></tr>
+                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">য়</td><td class="key-glyph"><kbd>y</kbd></td><td>bhay (ভয়)</td></tr>
+                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">ৎ</td><td class="key-glyph"><kbd>`t</kbd></td><td>utshob (উৎসব)</td></tr>
+                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">ং</td><td class="key-glyph"><kbd>ng</kbd></td><td>shonglap (সংলাপ)</td></tr>
+                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">ঃ</td><td class="key-glyph"><kbd>:</kbd></td><td>du:kho (দুঃখ)</td></tr>
+                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">ঁ</td><td class="key-glyph"><kbd>^</kbd></td><td>cha^d (চাঁদ)</td></tr>
+
+                                <tr data-cat="conjuncts"><td>Conjunct</td><td class="bn-glyph">ক্ষ</td><td class="key-glyph"><kbd>kkh</kbd></td><td>kkhoma (ক্ষমা)</td></tr>
+                                <tr data-cat="conjuncts"><td>Conjunct</td><td class="bn-glyph">জ্ঞ</td><td class="key-glyph"><kbd>jnj</kbd> / <kbd>gy</kbd></td><td>gyan (জ্ঞান)</td></tr>
+                                <tr data-cat="conjuncts"><td>Conjunct</td><td class="bn-glyph">ক্ত</td><td class="key-glyph"><kbd>kt</kbd></td><td>rokto (রক্ত)</td></tr>
+                                <tr data-cat="conjuncts"><td>Conjunct</td><td class="bn-glyph">ন্দ</td><td class="key-glyph"><kbd>nd</kbd></td><td>anondo (আনন্দ)</td></tr>
+                                <tr data-cat="conjuncts"><td>Conjunct</td><td class="bn-glyph">ঙ্গ</td><td class="key-glyph"><kbd>ngg</kbd></td><td>bongo (বঙ্গ)</td></tr>
+                                <tr data-cat="conjuncts"><td>Conjunct</td><td class="bn-glyph">ষ্ণ</td><td class="key-glyph"><kbd>ShN</kbd></td><td>krishno (কৃষ্ণ)</td></tr>
+
+                                <tr data-cat="numbers"><td>Number</td><td class="bn-glyph">১ ২ ৩ ৪ ৫</td><td class="key-glyph"><kbd>1 2 3 4 5</kbd></td><td>Bengali Numerals</td></tr>
+                                <tr data-cat="numbers"><td>Number</td><td class="bn-glyph">৬ ৭ ৮ ৯ ০</td><td class="key-glyph"><kbd>6 7 8 9 0</kbd></td><td>Bengali Numerals</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Compact Cheatsheet Footer with Expand/Collapse & Live Count -->
+                    <div class="cheatsheet-card-footer">
+                        <div class="cheatsheet-counter-pill">
+                            <span class="counter-dot"></span>
+                            <span id="cheatsheetCount">Showing all 61 characters</span>
+                        </div>
+                        <button type="button" class="cheatsheet-toggle-btn" id="toggleCheatsheetHeight" aria-expanded="false">
+                            <svg class="toggle-icon-expand" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="15 3 21 3 21 9"></polyline>
+                                <polyline points="9 21 3 21 3 15"></polyline>
+                                <line x1="21" y1="3" x2="14" y2="10"></line>
+                                <line x1="3" y1="21" x2="10" y2="14"></line>
+                            </svg>
+                            <svg class="toggle-icon-collapse" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+                                <polyline points="4 14 10 14 10 20"></polyline>
+                                <polyline points="20 10 14 10 14 4"></polyline>
+                                <line x1="14" y1="10" x2="21" y2="3"></line>
+                                <line x1="3" y1="21" x2="10" y2="14"></line>
+                            </svg>
+                            <span class="toggle-text" data-i18n="cheatsheet.expand">View Full Table</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- macOS Settings-Style FAQ -->
+        <section class="section" id="faq">
+            <div class="section-container">
+                <div class="section-lead">
+                    <span class="section-eyebrow">Answers</span>
+                    <h2 class="section-headline">Frequently Asked Questions</h2>
+                    <p class="section-subtext">Clear information regarding security, compatibility, and day-to-day use.</p>
+                </div>
+
+                <div class="faq-group">
+                    <details class="faq-row" open>
+                        <summary class="faq-summary">
+                            <span data-i18n="faq.q1">Is Bongo compatible with all Apple Silicon Macs (M1 through M4+)?</span>
+                            <span class="summary-caret" aria-hidden="true">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </span>
+                        </summary>
+                        <div class="faq-body">
+                            <p data-i18n="faq.a1">Yes, 100%. Bongo is compiled natively for Apple Silicon (<code>arm64</code>). It runs directly on every MacBook Air, MacBook Pro, Mac mini, iMac, Mac Studio, and Mac Pro powered by M1, M2, M3, M4, or future M-series processors running macOS 13 (Ventura), macOS 14 (Sonoma), or macOS 15 (Sequoia).</p>
+                        </div>
+                    </details>
+
+                    <details class="faq-row">
+                        <summary class="faq-summary">
+                            <span data-i18n="faq.q2">How is Bongo different from Apple's built-in Bengali keyboard?</span>
+                            <span class="summary-caret" aria-hidden="true">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </span>
+                        </summary>
+                        <div class="faq-body">
+                            <p data-i18n="faq.a2">Apple's built-in keyboard uses traditional Bengali layout mapping which requires memorizing special character positions. Bongo provides intuitive <strong>Avro Phonetic typing</strong>: write Bengali sounds phonetically using standard English letters (e.g. typing <code>ami</code> produces <code>আমি</code>, <code>dhonnobad</code> produces <code>ধন্যবাদ</code>), with a 150,000+ word dictionary and instant autocorrect.</p>
+                        </div>
+                    </details>
+
+                    <details class="faq-row">
+                        <summary class="faq-summary">
+                            <span data-i18n="faq.q3">Does Bongo track what I type or require accessibility permissions?</span>
+                            <span class="summary-caret" aria-hidden="true">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </span>
+                        </summary>
+                        <div class="faq-body">
+                            <p data-i18n="faq.a3"><strong>Absolutely not.</strong> Bongo is built on Apple's official native <code>InputMethodKit</code> framework. Unlike unofficial keyboard tools, Bongo does <strong>not</strong> require Accessibility permissions, does <strong>not</strong> log keystrokes, and has <strong>zero network telemetry</strong>. Your typing and personalized word selections remain strictly on your local device.</p>
+                        </div>
+                    </details>
+
+                    <details class="faq-row">
+                        <summary class="faq-summary">
+                            <span data-i18n="faq.q4">How do I switch quickly between English and Bongo?</span>
+                            <span class="summary-caret" aria-hidden="true">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </span>
+                        </summary>
+                        <div class="faq-body">
+                            <p data-i18n="faq.a4">Simply tap the <strong>Globe key (<kbd>fn</kbd> / Globe)</strong> on your modern Mac keyboard, or press <kbd>Control + Space</kbd>. You can also click the input switcher icon in the top macOS menu bar anytime.</p>
+                        </div>
+                    </details>
+
+                    <details class="faq-row">
+                        <summary class="faq-summary">
+                            <span data-i18n="faq.q5">Can I change the font style or size of candidate suggestions?</span>
+                            <span class="summary-caret" aria-hidden="true">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </span>
+                        </summary>
+                        <div class="faq-body">
+                            <p data-i18n="faq.a5">Yes! Open <strong>Bongo</strong> from your Applications folder (or choose "Settings..." from the Bongo menu bar item), navigate to the <strong>Fonts</strong> tab, and pick any installed Bengali font on your Mac (such as Kohinoor Bangla, Noto Sans Bengali, Ekush, etc.) with custom sizing and real-time live preview.</p>
+                        </div>
+                    </details>
+
+                    <details class="faq-row">
+                        <summary class="faq-summary">
+                            <span data-i18n="faq.q6">Is Bongo completely free and open source?</span>
+                            <span class="summary-caret" aria-hidden="true">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </span>
+                        </summary>
+                        <div class="faq-body">
+                            <p data-i18n="faq.a6">Yes. Bongo is 100% free with no subscriptions, in-app purchases, or ads. The entire codebase is open source under the MPL-2.0 license and available on <a href="https://github.com/mehedishakeel/Bongo" target="_blank" rel="noopener">GitHub</a>.</p>
+                        </div>
+                    </details>
+
+                    <details class="faq-row">
+                        <summary class="faq-summary">
+                            <span data-i18n="faq.q7">Is Bongo available for Linux?</span>
+                            <span class="summary-caret" aria-hidden="true">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </span>
+                        </summary>
+                        <div class="faq-body">
+                            <p data-i18n="faq.a7">Yes! Bongo provides native Linux support via IBus (<code>ibus-bongo</code>) and a GTK4 Settings application. It supports Ubuntu, Debian, Fedora, Arch, and all modern desktop environments (GNOME, KDE Plasma, XFCE). You can download the <code>.deb</code> package or install from source.</p>
+                        </div>
+                    </details>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Apple-Style Minimal Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-meta-row">
+                <div class="footer-brand-side">
+                    <div class="footer-logo">
+                        <img src="assets/bongo-logo.png?v=2" alt="Bongo Logo" width="22" height="22">
+                        <span>Bongo · বঙ্গ</span>
+                    </div>
+                    <p class="footer-desc-line" data-i18n="footer.desc">Native Apple Silicon Bengali Keyboard for macOS.<br>Fast, private, and beautifully integrated.</p>
+                    <p class="footer-author-line" data-i18n="footer.author">Crafted & maintained by <a href="https://mehedishakeel.com" target="_blank" rel="noopener"><strong>Mehedi Shakeel</strong></a>.</p>
+                </div>
+
+                <div class="footer-links-grid">
+                    <div class="footer-link-col">
+                        <span class="link-col-title" data-i18n="footer.col_product">Product</span>
+                        <a href="#playground" data-i18n="footer.interactive_demo">Interactive Demo</a>
+                        <a href="#features" data-i18n="nav.features">Features</a>
+                        <a href="#cheatsheet" data-i18n="footer.phonetic_map">Cheatsheet</a>
+                    </div>
+                    <div class="footer-link-col">
+                        <span class="link-col-title" data-i18n="footer.col_support">Support</span>
+                        <a href="#install" data-i18n="footer.install_guide">How to Install</a>
+                        <a href="#faq" data-i18n="nav.faq">FAQ</a>
+                        <a href="https://github.com/mehedishakeel/Bongo/issues" target="_blank" rel="noopener noreferrer" data-i18n="footer.issues">Report Issue</a>
+                    </div>
+                    <div class="footer-link-col">
+                        <span class="link-col-title" data-i18n="footer.col_project">Project</span>
+                        <a href="https://github.com/mehedishakeel/Bongo" target="_blank" rel="noopener noreferrer" data-i18n="footer.github">GitHub Source</a>
+                        <a href="https://github.com/mehedishakeel/Bongo/releases" target="_blank" rel="noopener noreferrer" data-i18n="footer.releases">Releases</a>
+                        <a href="https://github.com/mehedishakeel/Bongo/blob/main/LICENSE" target="_blank" rel="noopener noreferrer" data-i18n="footer.license">MPL-2.0 License</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom-row">
+                <span data-i18n="footer.copyright">© 2026 Mehedi Shakeel. All rights reserved.</span>
+                <div class="footer-system-badges">
+                    <span class="sys-badge">Apple Silicon (arm64)</span>
+                    <span class="sys-badge">100% Offline</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="translations.js?v=5.5"></script>
+    <script src="avro.js?v=5.5"></script>
+    <script src="app.js?v=5.5"></script>
+</body>
+</html>

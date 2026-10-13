@@ -10,7 +10,17 @@ import sys
 import json
 import re
 import ctypes
+import time
 from pathlib import Path
+
+LOG_FILE = Path("/tmp/bongo_ibus.log")
+
+def log_msg(msg: str):
+    try:
+        with open(LOG_FILE, "a", encoding="utf-8") as f:
+            f.write(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] {msg}\n")
+    except Exception:
+        pass
 
 # Setup GObject Introspection for IBus
 try:
@@ -156,8 +166,9 @@ class BongoNativeBinding:
         try:
             self.lib = ctypes.CDLL(lib_path)
             self._setup_signatures()
+            log_msg(f"BongoNativeBinding: successfully loaded native engine from '{lib_path}'")
         except (OSError, AttributeError, Exception) as e:
-            sys.stderr.write(f"Warning: Could not load {lib_path}: {e}. Running with built-in Avro engine.\n")
+            log_msg(f"BongoNativeBinding: could not load '{lib_path}': {e}. Using built-in Avro engine.")
             self.lib = None
             return
 
@@ -214,15 +225,25 @@ def load_settings():
 class BongoEngine(BaseEngine):
     __gtype_name__ = 'BongoEngine'
 
-    def __init__(self, *args, **kwargs):
-        if IBus is not None:
-            super().__init__(*args, **kwargs)
+    def __init__(self, bus=None, obj_path=None, **kwargs):
+        if IBus is not None and bus is not None and obj_path is not None:
+            super().__init__(
+                connection=bus.get_connection(),
+                object_path=obj_path,
+                **kwargs
+            )
+        elif IBus is not None:
+            super().__init__(**kwargs)
         else:
             super().__init__()
+
+        self.bus = bus
+        self.obj_path = obj_path
         self.phonetic_engine = AvroPhoneticEngine()
         self.native = BongoNativeBinding()
         self.engine_ptr = self.native.lib.bongo_engine_new() if (self.native and self.native.lib) else None
-        
+        log_msg(f"BongoEngine initialized: obj_path={obj_path}, native={bool(self.engine_ptr)}")
+
         self._settings_mtime = 0
         self.settings = load_settings()
         self.apply_settings()
@@ -251,10 +272,53 @@ class BongoEngine(BaseEngine):
                 pass
 
     def do_focus_in(self):
+        log_msg(f"BongoEngine: do_focus_in ({self.obj_path})")
         self.check_reload_settings()
+        if IBus is not None:
+            try:
+                prop_list = IBus.PropList()
+                prop = IBus.Property.new(
+                    "setup",
+                    IBus.PropType.NORMAL,
+                    IBus.Text.new_from_string("Bongo Settings"),
+                    "preferences-system",
+                    IBus.Text.new_from_string("Configure Bongo"),
+                    True,
+                    True,
+                    IBus.PropState.UNCHECKED,
+                    None
+                )
+                prop_list.append(prop)
+                self.register_properties(prop_list)
+            except Exception as e:
+                log_msg(f"register_properties error: {e}")
+
+    def do_focus_out(self):
+        log_msg(f"BongoEngine: do_focus_out ({self.obj_path})")
+        if self.has_session():
+            self.commit_current()
+        self.reset_session()
 
     def do_enable(self):
+        log_msg(f"BongoEngine: do_enable ({self.obj_path})")
         self.check_reload_settings()
+
+    def do_disable(self):
+        log_msg(f"BongoEngine: do_disable ({self.obj_path})")
+        self.reset_session()
+
+    def do_reset(self):
+        log_msg(f"BongoEngine: do_reset ({self.obj_path})")
+        self.reset_session()
+
+    def do_property_activate(self, prop_name, state):
+        log_msg(f"BongoEngine: do_property_activate ({prop_name})")
+        if prop_name == "setup":
+            import subprocess
+            try:
+                subprocess.Popen(["/usr/bin/bongo-settings"])
+            except Exception as e:
+                log_msg(f"Could not launch bongo-settings: {e}")
 
     def apply_settings(self):
         if not self.engine_ptr:
@@ -273,79 +337,83 @@ class BongoEngine(BaseEngine):
         if not is_press:
             return False
 
-        # Ignore Ctrl or Alt key combinations (e.g. Ctrl+C, Ctrl+V)
-        is_ctrl = bool(state & IBus.ModifierType.CONTROL_MASK)
-        is_alt = bool(state & IBus.ModifierType.MOD1_MASK)
-        is_super = bool(state & IBus.ModifierType.SUPER_MASK)
+        # Filter out Lock / NumLock masks for state checks
+        effective_state = state & ~(IBus.ModifierType.LOCK_MASK | IBus.ModifierType.MOD2_MASK)
+
+        # Ignore Ctrl, Alt, or Super combinations (e.g. Ctrl+C, Ctrl+V, Alt+Tab, Super+Space)
+        is_ctrl = bool(effective_state & IBus.ModifierType.CONTROL_MASK)
+        is_alt = bool(effective_state & IBus.ModifierType.MOD1_MASK)
+        is_super = bool(effective_state & (IBus.ModifierType.SUPER_MASK | IBus.ModifierType.MOD4_MASK))
         if is_ctrl or is_alt or is_super:
             if self.has_session():
                 self.commit_current()
             return False
 
-        # Key navigation in candidate table
+        key_name = IBus.keyval_name(keyval) if IBus else str(keyval)
+        log_msg(f"Key event: keyval={keyval:#x} ({key_name}), keycode={keycode}, state={state:#x}, in_session={self.has_session()}")
+
+        # Key navigation & controls in candidate table
         if self.has_session():
             # Escape: cancel composition
             if keyval == IBus.KEY_Escape:
+                log_msg("Action: Escape pressed, resetting session")
                 self.reset_session()
                 return True
 
             # Enter / Return: commit current candidate
             if keyval in (IBus.KEY_Return, IBus.KEY_KP_Enter):
+                log_msg("Action: Enter pressed, committing current candidate")
                 self.commit_current()
                 return True
 
             # Space: commit primary candidate, then let space pass through to the app
             if keyval == IBus.KEY_space:
+                log_msg("Action: Space pressed, committing candidate and passing space")
                 self.commit_current()
                 return False
 
             # Tab / Shift+Tab: candidate navigation
             if keyval in (IBus.KEY_Tab, IBus.KEY_ISO_Left_Tab):
-                is_shift = bool(state & IBus.ModifierType.SHIFT_MASK)
+                is_shift = bool(effective_state & IBus.ModifierType.SHIFT_MASK)
                 if is_shift:
                     self.table.cursor_up()
                 else:
                     self.table.cursor_down()
-                self._render_lookup_table()
+                self._update_candidate_selection()
                 return True
 
             # Number keys (1..9): commit candidate at index if multiple candidates exist
-            if not bool(state & IBus.ModifierType.SHIFT_MASK) and IBus.KEY_1 <= keyval <= IBus.KEY_9:
+            if not bool(effective_state & IBus.ModifierType.SHIFT_MASK) and IBus.KEY_1 <= keyval <= IBus.KEY_9:
                 idx = keyval - IBus.KEY_1
                 if idx < len(self.candidates) and len(self.candidates) > 1:
+                    log_msg(f"Action: Number key {idx+1} pressed, committing candidate index {idx}")
                     self.commit_candidate_at(idx)
                     return True
 
-            # Arrow Down / Up: candidate selection
+            # Arrow Down / Up / Page Down / Page Up: candidate selection
             if keyval in (IBus.KEY_Down, IBus.KEY_Page_Down):
                 self.table.cursor_down()
-                self._render_lookup_table()
+                self._update_candidate_selection()
                 return True
             if keyval in (IBus.KEY_Up, IBus.KEY_Page_Up):
                 self.table.cursor_up()
-                self._render_lookup_table()
+                self._update_candidate_selection()
                 return True
 
             # Backspace: delete character
             if keyval == IBus.KEY_BackSpace:
+                log_msg("Action: BackSpace pressed in active session")
                 self.handle_backspace()
                 return True
-
-        # Handle digit keys: if no active session and Shift is not held, insert Bengali digit directly
-        if not self.has_session() and not bool(state & IBus.ModifierType.SHIFT_MASK) and (IBus.KEY_0 <= keyval <= IBus.KEY_9 or IBus.KEY_KP_0 <= keyval <= IBus.KEY_KP_9):
-            digit_idx = (keyval - IBus.KEY_0) if (IBus.KEY_0 <= keyval <= IBus.KEY_9) else (keyval - IBus.KEY_KP_0)
-            bengali_digits = ["০", "১", "২", "৩", "৪", "৫", "৬", "৭", "৮", "৯"]
-            self.commit_text(IBus.Text.new_from_string(bengali_digits[digit_idx]))
-            return True
 
         # Process standard printable character
         ch = IBus.keyval_to_unicode(keyval)
         if ch > 0 and (32 <= ch <= 126 or ch >= 128):
-            # If not in session and character is whitespace/punctuation outside phonetic rules, pass through
+            # If not in session and character is whitespace outside phonetic rules, pass through
             if not self.has_session() and chr(ch) in " \t\r\n":
                 return False
 
-            handled = self.feed_character(ch, state)
+            handled = self.feed_character(ch, effective_state)
             if handled:
                 return True
 
@@ -362,7 +430,7 @@ class BongoEngine(BaseEngine):
     def feed_character(self, ch, state):
         is_shift = bool(state & IBus.ModifierType.SHIFT_MASK)
         modifier = 1 if is_shift else 0
-        cursor_idx = self.table.get_cursor_pos() if self.has_session() else 0
+        cursor_idx = self.table.get_cursor_pos() if (self.table and self.has_session()) else 0
 
         if self.engine_ptr and self.native and self.native.lib:
             try:
@@ -376,18 +444,20 @@ class BongoEngine(BaseEngine):
                             text = ctypes.string_at(preview_ptr).decode('utf-8', errors='replace')
                             self.native.lib.bongo_string_free(preview_ptr)
                             if text and IBus is not None:
+                                log_msg(f"Committing standalone char from native: '{text}'")
                                 self.commit_text(IBus.Text.new_from_string(text))
                         self.reset_session()
                     self.native.lib.bongo_suggestion_free(sugg_ptr)
                     return True
-            except Exception:
-                pass
+            except Exception as e:
+                log_msg(f"feed_character native error: {e}")
 
         # Built-in Avro phonetic transliteration fallback
         char_str = chr(ch)
         self.buffer += char_str
         self.candidates = self.phonetic_engine.get_candidates(self.buffer)
         self.preedit_str = self.candidates[0] if self.candidates else self.buffer
+        log_msg(f"feed_character (fallback): buffer='{self.buffer}', preedit='{self.preedit_str}', candidates={self.candidates[:3]}")
 
         if self.table is not None:
             self.table.clear()
@@ -412,8 +482,8 @@ class BongoEngine(BaseEngine):
                 else:
                     self.reset_session()
                     return
-            except Exception:
-                pass
+            except Exception as e:
+                log_msg(f"handle_backspace native error: {e}")
 
         if self.buffer:
             self.buffer = self.buffer[:-1]
@@ -454,6 +524,8 @@ class BongoEngine(BaseEngine):
         else:
             self.preedit_str = ""
 
+        log_msg(f"update_suggestions: preedit='{self.preedit_str}', count={count}, top_candidates={self.candidates[:3]}")
+
         if self.preedit_str:
             self.show_preedit()
             self._render_lookup_table()
@@ -461,25 +533,38 @@ class BongoEngine(BaseEngine):
             self.reset_session()
 
     def show_preedit(self):
-        if IBus is None:
+        if IBus is None or not self.preedit_str:
             return
-        text = IBus.Text.new_from_string(self.preedit_str)
-        text.append_attribute(IBus.AttrType.UNDERLINE, IBus.AttrUnderline.SINGLE, 0, len(self.preedit_str))
-        self.update_preedit_text(text, len(self.preedit_str), True)
-        self.show_preedit_text()
+        try:
+            text = IBus.Text.new_from_string(self.preedit_str)
+            self.update_preedit_text(text, len(self.preedit_str), True)
+            self.show_preedit_text()
+        except Exception as e:
+            log_msg(f"show_preedit error: {e}")
+
+    def _update_candidate_selection(self):
+        cursor = self.table.get_cursor_pos() if self.table is not None else 0
+        if 0 <= cursor < len(self.candidates):
+            self.preedit_str = self.candidates[cursor]
+            self.show_preedit()
+        self._render_lookup_table()
 
     def _render_lookup_table(self):
         if IBus is None or self.table is None:
             return
-        if self.candidates:
-            self.update_lookup_table(self.table, True)
-            self.show_lookup_table()
-        else:
-            self.hide_lookup_table()
+        try:
+            if self.candidates:
+                self.update_lookup_table(self.table, True)
+                self.show_lookup_table()
+            else:
+                self.hide_lookup_table()
+        except Exception as e:
+            log_msg(f"_render_lookup_table error: {e}")
 
     def commit_current(self):
         if not self.candidates:
             if self.preedit_str and IBus is not None:
+                log_msg(f"commit_current committing preedit: '{self.preedit_str}'")
                 self.commit_text(IBus.Text.new_from_string(self.preedit_str))
             self.reset_session()
             return
@@ -492,14 +577,16 @@ class BongoEngine(BaseEngine):
     def commit_candidate_at(self, idx):
         if idx < len(self.candidates):
             chosen = self.candidates[idx]
+            log_msg(f"commit_candidate_at[{idx}]: committing '{chosen}'")
             if IBus is not None:
                 self.commit_text(IBus.Text.new_from_string(chosen))
             if self.engine_ptr and self.native and self.native.lib:
                 try:
                     self.native.lib.bongo_engine_commit(self.engine_ptr, idx)
-                except Exception:
-                    pass
+                except Exception as e:
+                    log_msg(f"native commit error: {e}")
         elif self.preedit_str:
+            log_msg(f"commit_candidate_at fallback preedit: '{self.preedit_str}'")
             if IBus is not None:
                 self.commit_text(IBus.Text.new_from_string(self.preedit_str))
             if self.engine_ptr and self.native and self.native.lib:
@@ -524,18 +611,14 @@ class BongoEngine(BaseEngine):
         if self.table is not None:
             self.table.clear()
         if IBus is not None:
-            self.hide_preedit_text()
-            self.hide_lookup_table()
-
-    def do_focus_out(self):
-        if self.has_session():
-            self.commit_current()
-        self.reset_session()
-
-    def do_reset(self):
-        self.reset_session()
+            try:
+                self.hide_preedit_text()
+                self.hide_lookup_table()
+            except Exception:
+                pass
 
     def do_destroy(self):
+        log_msg(f"BongoEngine: do_destroy ({self.obj_path})")
         if self.engine_ptr and self.native and self.native.lib:
             try:
                 self.native.lib.bongo_engine_free(self.engine_ptr)
@@ -547,37 +630,46 @@ class BongoEngine(BaseEngine):
 
 
 class BongoFactory(BaseFactory):
-    def __init__(self, connection):
+    def __init__(self, bus):
         if IBus is not None:
-            super().__init__(connection=connection)
+            super().__init__(
+                connection=bus.get_connection(),
+                object_path=IBus.PATH_FACTORY
+            )
+        self.bus = bus
+        self.engine_id = 0
+        log_msg("BongoFactory initialized")
+
+    def create_engine_instance(self, engine_name):
+        log_msg(f"BongoFactory.create_engine_instance requested for: '{engine_name}'")
+        if engine_name == "bongo":
+            self.engine_id += 1
+            obj_path = f"/org/freedesktop/IBus/Engine/{self.engine_id}"
+            try:
+                engine = BongoEngine(self.bus, obj_path)
+                log_msg(f"BongoEngine instance #{self.engine_id} created successfully at {obj_path}")
+                return engine
+            except Exception as e:
+                log_msg(f"Failed to create BongoEngine: {e}")
+                import traceback
+                log_msg(traceback.format_exc())
+                return None
+        log_msg(f"Unknown engine name requested: '{engine_name}'")
+        return None
 
     def do_create_engine(self, engine_name):
-        if engine_name == "bongo":
-            return BongoEngine()
-        return None
+        return self.create_engine_instance(engine_name)
 
 
 class BongoApplication:
     def __init__(self, bus):
         self.bus = bus
-        try:
-            self.factory = BongoFactory(self.bus.get_connection())
-        except Exception:
-            self.factory = IBus.Factory.new(self.bus.get_connection())
-
-        try:
-            self.factory.add_engine("bongo", BongoEngine)
-        except Exception:
-            try:
-                if hasattr(BongoEngine, '__gtype__'):
-                    self.factory.add_engine("bongo", BongoEngine.__gtype__)
-            except Exception:
-                pass
+        self.factory = BongoFactory(self.bus)
 
         try:
             self.factory.connect("create-engine", self._on_create_engine)
-        except Exception:
-            pass
+        except Exception as e:
+            log_msg(f"Warning: could not connect create-engine signal: {e}")
 
         flags = 0
         try:
@@ -587,32 +679,42 @@ class BongoApplication:
             flags = 0
 
         self.bus.request_name("org.freedesktop.IBus.Bongo", flags)
+        log_msg("Requested D-Bus name 'org.freedesktop.IBus.Bongo'")
 
         if "--ibus" not in sys.argv:
             component_path = "/usr/share/ibus/component/bongo.xml"
             if not os.path.exists(component_path):
                 component_path = str(Path(__file__).parent / "bongo.xml")
             if os.path.exists(component_path):
-                component = IBus.Component.new_from_file(component_path)
-                self.bus.register_component(component)
+                try:
+                    component = IBus.Component.new_from_file(component_path)
+                    self.bus.register_component(component)
+                    log_msg(f"Registered IBus component from {component_path}")
+                except Exception as e:
+                    log_msg(f"Failed to register component: {e}")
 
     def _on_create_engine(self, factory, engine_name):
-        if engine_name == "bongo":
-            return BongoEngine()
-        return None
+        return self.factory.create_engine_instance(engine_name)
 
     def run(self):
+        log_msg("Starting GLib.MainLoop...")
         loop = GLib.MainLoop()
-        loop.run()
+        try:
+            loop.run()
+        except KeyboardInterrupt:
+            log_msg("GLib.MainLoop stopped by KeyboardInterrupt")
 
 
 def main():
+    log_msg(f"=== Bongo IBus Engine started (pid={os.getpid()}, argv={sys.argv}) ===")
     if IBus is None:
+        log_msg("Error: IBus 1.0 GObject library not found.")
         sys.stderr.write("Error: IBus 1.0 GObject library not found.\n")
         sys.exit(1)
     IBus.init()
     bus = IBus.Bus.new()
     if not bus.is_connected():
+        log_msg("Error: Could not connect to IBus daemon bus.")
         sys.stderr.write("Error: Could not connect to IBus daemon bus.\n")
         sys.exit(1)
 

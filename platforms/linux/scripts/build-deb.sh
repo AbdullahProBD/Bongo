@@ -89,6 +89,10 @@ chmod 755 "${BUILD_ROOT}/DEBIAN/postrm"
 if command -v dpkg-deb >/dev/null 2>&1; then
     dpkg-deb --build --root-owner-group "${BUILD_ROOT}" "${DIST_DIR}/${PKG_NAME}.deb"
     echo "Successfully generated: ${DIST_DIR}/${PKG_NAME}.deb"
+elif [ -f "${SCRIPT_DIR}/package_deb.py" ]; then
+    echo "dpkg-deb not found. Building package using package_deb.py..."
+    python3 "${SCRIPT_DIR}/package_deb.py" "${BUILD_ROOT}" "${DIST_DIR}/${PKG_NAME}.deb"
+    echo "Successfully generated: ${DIST_DIR}/${PKG_NAME}.deb"
 else
     echo "dpkg-deb not found. Staged tree is ready at ${BUILD_ROOT}"
 fi

@@ -15,10 +15,10 @@
             <language>bn</language>
             <license>MPL-2.0</license>
             <author>Mehedi Shakeel</author>
-            <icon>/usr/share/icons/hicolor/scalable/apps/bongo.svg</icon>
-            <layout>default</layout>
-            <longname>Bengali (Bongo)</longname>
-            <description>Native Bengali Phonetic Keyboard Input Method</description>
+            <icon>/usr/share/icons/hicolor/48x48/apps/bongo.png</icon>
+            <layout>us</layout>
+            <longname>Bongo</longname>
+            <description>Bongo Native Bengali Phonetic Keyboard Input Method</description>
             <rank>99</rank>
             <symbol>ব</symbol>
             <setup>/usr/bin/bongo-settings</setup>

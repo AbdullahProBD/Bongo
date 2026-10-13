@@ -164,5 +164,86 @@ class DistributionTests(unittest.TestCase):
         self.assertNotIn('openbangla.github.io', mac)
         self.assertNotIn('omicronlab.com/download/liveupdate', mac)
 
+    def test_phonetic_engine_accuracy(self):
+        import importlib.util
+
+        # 1. Test Windows Avro Phonetic Engine
+        spec_win = importlib.util.spec_from_file_location(
+            "bongo_win_service",
+            str(ROOT / "platforms/windows/service/bongo_service.py")
+        )
+        mod_win = importlib.util.module_from_spec(spec_win)
+        spec_win.loader.exec_module(mod_win)
+
+        win_eng = mod_win.AvroPhoneticEngine()
+        self.assertEqual(win_eng.get_candidates("ami")[0], "আমি")
+        self.assertEqual(win_eng.get_candidates("bangla")[0], "বাংলা")
+        self.assertEqual(win_eng.get_candidates("kemon")[0], "কেমন")
+        self.assertEqual(win_eng.get_candidates("dhonnobad")[0], "ধন্যবাদ")
+
+        # 2. Test Linux Avro Phonetic Engine directly
+        spec_lin = importlib.util.spec_from_file_location(
+            "bongo_lin_engine",
+            str(ROOT / "platforms/linux/ibus/bongo_ibus_engine.py")
+        )
+        mod_lin = importlib.util.module_from_spec(spec_lin)
+        spec_lin.loader.exec_module(mod_lin)
+
+        lin_eng = mod_lin.AvroPhoneticEngine()
+        self.assertEqual(lin_eng.get_candidates("ami")[0], "আমি")
+        self.assertEqual(lin_eng.get_candidates("bangla")[0], "বাংলা")
+        self.assertEqual(lin_eng.get_candidates("kemon")[0], "কেমন")
+        self.assertEqual(lin_eng.get_candidates("dhonnobad")[0], "ধন্যবাদ")
+
+        # 3. Test Windows Service Key Processing Lifecycle
+        svc = mod_win.BongoWindowsService()
+        self.assertFalse(svc.has_session())
+
+        # Feed "ami"
+        svc.process_key(0x41, True, False, False, False) # 'a'
+        svc.process_key(0x4D, True, False, False, False) # 'm'
+        svc.process_key(0x49, True, False, False, False) # 'i'
+        self.assertTrue(svc.has_session())
+        self.assertEqual(svc.candidates[0], "আমি")
+
+        # Space commits active candidate cleanly
+        handled = svc.process_key(mod_win.VK_SPACE, True, False, False, False)
+        self.assertTrue(handled)
+        self.assertFalse(svc.has_session())
+
+        # Feed "ami" and test Enter (commits without newline)
+        svc.process_key(0x41, True, False, False, False)
+        svc.process_key(0x4D, True, False, False, False)
+        svc.process_key(0x49, True, False, False, False)
+        self.assertTrue(svc.has_session())
+        h_ret = svc.process_key(mod_win.VK_RETURN, True, False, False, False)
+        self.assertTrue(h_ret)
+        self.assertFalse(svc.has_session())
+
+        # Feed "ami" and test punctuation (commits candidate, lets punctuation pass through)
+        svc.process_key(0x41, True, False, False, False)
+        svc.process_key(0x4D, True, False, False, False)
+        svc.process_key(0x49, True, False, False, False)
+        self.assertTrue(svc.has_session())
+        h_punct = svc.process_key(0xBF, True, True, False, False) # '?'
+        self.assertFalse(h_punct)
+        self.assertFalse(svc.has_session())
+
+        # Test period outside and inside session converts to Dari
+        h_dari_alone = svc.process_key(0xBE, True, False, False, False)
+        self.assertTrue(h_dari_alone)
+
+        svc.process_key(0x41, True, False, False, False)
+        h_dari_session = svc.process_key(0xBE, True, False, False, False)
+        self.assertTrue(h_dari_session)
+        self.assertFalse(svc.has_session())
+
+        # Test F12 toggle
+        self.assertTrue(svc.bangla_active)
+        svc.process_key(mod_win.VK_F12, True, False, False, False)
+        self.assertFalse(svc.bangla_active)
+        svc.process_key(mod_win.VK_F12, True, False, False, False)
+        self.assertTrue(svc.bangla_active)
+
 if __name__ == '__main__':
     unittest.main()

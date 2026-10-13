@@ -164,7 +164,15 @@ install -m 755 "${LINUX_ROOT}/ibus/bongo_ibus_engine.py" "${DESTDIR}${PREFIX}/li
 
 # 3. Install IBus component XML
 install -d "${DESTDIR}${PREFIX}/share/ibus/component"
-install -m 644 "${LINUX_ROOT}/ibus/bongo.xml" "${DESTDIR}${PREFIX}/share/ibus/component/bongo.xml"
+if [[ -z "${DESTDIR}" && "${PREFIX}" != "/usr" ]]; then
+    sed -e "s|/usr/libexec/bongo-ibus-engine|${PREFIX}/libexec/bongo-ibus-engine|g" \
+        -e "s|/usr/bin/bongo-settings|${PREFIX}/bin/bongo-settings|g" \
+        -e "s|/usr/share/|${PREFIX}/share/|g" \
+        "${LINUX_ROOT}/ibus/bongo.xml" > "${DESTDIR}${PREFIX}/share/ibus/component/bongo.xml"
+    chmod 644 "${DESTDIR}${PREFIX}/share/ibus/component/bongo.xml"
+else
+    install -m 644 "${LINUX_ROOT}/ibus/bongo.xml" "${DESTDIR}${PREFIX}/share/ibus/component/bongo.xml"
+fi
 
 # 4. Install GTK Settings & Welcome app
 chmod +x "${LINUX_ROOT}/ui/bongo_settings.py"

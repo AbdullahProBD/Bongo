@@ -34,9 +34,10 @@ platforms/windows/
 ## Features
 
 * **Universal Compatibility**: Works across all Windows applications including browsers (Chrome, Edge, Firefox), Microsoft Office (Word, PowerPoint), editors (VS Code, Notepad), and messaging apps.
-* **Instant Toggle**: Switch between English and Bangla at any moment using `F12` (customizable in Settings).
+* **Instant Toggle**: Switch between English and Bangla at any moment using `F12` or `Ctrl + Space` (customizable in Settings).
 * **Native Look and Feel**: Dark mode Settings application with 4 sections (Getting Started, Bongo Layout, Settings, Fonts).
 * **Live Candidate HUD**: Floating candidate bar preview with configurable Bengali fonts and sizes.
+* **Diagnostics & Logging**: Service activity and keystroke events are logged to `%APPDATA%\Bongo\bongo_service.log` for easy troubleshooting.
 * **Clean Distribution**: Available as both a standard Inno Setup executable (`Bongo-Setup-1.0.0.exe`) and an enterprise MSI package (`Bongo-1.0.0-x64.msi`).
 
 ---

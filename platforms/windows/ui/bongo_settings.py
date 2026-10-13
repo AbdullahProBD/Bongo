@@ -150,9 +150,20 @@ def set_windows_autostart(enabled: bool):
                 0,
                 winreg.KEY_SET_VALUE
             )
-            app_path = sys.executable
+            # Find bongo.exe (background input service) rather than settings GUI
+            bongo_exe = Path(sys.executable).parent / "bongo.exe"
+            if not bongo_exe.is_file():
+                bongo_exe = Path(__file__).resolve().parent.parent / "service" / "bongo_service.py"
+            if bongo_exe.is_file():
+                if bongo_exe.suffix == ".py":
+                    cmd = f'"{sys.executable}" "{bongo_exe}" --daemon'
+                else:
+                    cmd = f'"{bongo_exe}" --daemon'
+            else:
+                cmd = f'"{sys.executable}" --daemon'
+
             if enabled:
-                winreg.SetValueEx(key, "Bongo", 0, winreg.REG_SZ, f'"{app_path}"')
+                winreg.SetValueEx(key, "Bongo", 0, winreg.REG_SZ, cmd)
             else:
                 try:
                     winreg.DeleteValue(key, "Bongo")
@@ -167,11 +178,17 @@ def ensure_background_service():
     if sys.platform == "win32":
         try:
             import subprocess
-            proc = subprocess.run(["tasklist", "/FI", "IMAGENAME eq bongo.exe"], capture_output=True, text=True)
-            if "bongo.exe" not in proc.stdout:
+            proc = subprocess.run(
+                ["tasklist", "/FI", "IMAGENAME eq bongo.exe", "/NH"],
+                capture_output=True,
+                text=True
+            )
+            if "bongo.exe" not in proc.stdout.lower():
                 svc_candidates = [
                     Path(sys.executable).parent / "bongo.exe",
                     Path(__file__).resolve().parent.parent / "service" / "bongo_service.py",
+                    Path(os.environ.get("LOCALAPPDATA", "")) / "Programs" / "Bongo" / "bongo.exe",
+                    Path(r"C:\Program Files\Bongo\bongo.exe"),
                 ]
                 for sc in svc_candidates:
                     if sc.is_file():

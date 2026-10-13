@@ -238,12 +238,26 @@ class DistributionTests(unittest.TestCase):
         self.assertTrue(h_dari_session)
         self.assertFalse(svc.has_session())
 
-        # Test F12 toggle
+        # Test F12 and Ctrl+Space toggle
         self.assertTrue(svc.bangla_active)
         svc.process_key(mod_win.VK_F12, True, False, False, False)
         self.assertFalse(svc.bangla_active)
         svc.process_key(mod_win.VK_F12, True, False, False, False)
         self.assertTrue(svc.bangla_active)
+
+        # Test Ctrl+Space toggle
+        svc.process_key(mod_win.VK_SPACE, True, False, True, False)
+        self.assertFalse(svc.bangla_active)
+        svc.process_key(mod_win.VK_SPACE, True, False, True, False)
+        self.assertTrue(svc.bangla_active)
+
+        # Test Shifted uppercase typing (e.g. 'T' for ট vs 't' for ত)
+        svc.process_key(0x54, True, True, False, False) # 'T'
+        self.assertEqual(svc.candidates[0], "ট")
+        svc.clear_session()
+        svc.process_key(0x54, True, False, False, False) # 't'
+        self.assertEqual(svc.candidates[0], "ত")
+        svc.clear_session()
 
 if __name__ == '__main__':
     unittest.main()

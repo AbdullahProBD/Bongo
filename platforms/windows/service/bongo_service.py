@@ -37,6 +37,32 @@ def get_config_dir():
 CONFIG_DIR = get_config_dir()
 CONFIG_FILE = CONFIG_DIR / "settings.json"
 
+def get_log_file():
+    log_dir = get_config_dir()
+    try:
+        log_dir.mkdir(parents=True, exist_ok=True)
+    except Exception:
+        pass
+    return log_dir / "bongo_service.log"
+
+LOG_FILE = get_log_file()
+
+def log_msg(msg: str):
+    timestamp = time.strftime("[%Y-%m-%d %H:%M:%S]")
+    line = f"{timestamp} {msg}\n"
+    try:
+        with open(LOG_FILE, "a", encoding="utf-8") as f:
+            f.write(line)
+            f.flush()
+    except Exception:
+        pass
+    try:
+        if sys.stdout is not None:
+            sys.stdout.write(line)
+            sys.stdout.flush()
+    except Exception:
+        pass
+
 DEFAULT_SETTINGS = {
     "typing_mode": 0,         # 0: PhoneticFirst, 1: Smart, 2: PhoneticOnly
     "suggest_emoji": True,
@@ -78,10 +104,13 @@ class BongoNativeBinding:
     def __init__(self):
         self.lib = None
         dll_path = find_engine_dll()
+        log_msg(f"Checking for bongo_engine.dll at: {dll_path}")
         try:
             self.lib = ctypes.CDLL(dll_path)
             self._setup_signatures()
-        except (OSError, AttributeError, Exception):
+            log_msg(f"Loaded native bongo_engine.dll successfully from {dll_path}")
+        except Exception as e:
+            log_msg(f"Note: native engine not loaded ({e}), using built-in pure Python Avro phonetic engine.")
             self.lib = None
 
     def _setup_signatures(self):
@@ -326,6 +355,18 @@ if sys.platform == "win32":
     user32.GetKeyState.argtypes = [ctypes.c_int]
     user32.GetKeyState.restype = ctypes.c_short
 
+    user32.GetAsyncKeyState.argtypes = [ctypes.c_int]
+    user32.GetAsyncKeyState.restype = ctypes.c_short
+
+    user32.GetMessageW.argtypes = [ctypes.POINTER(wintypes.MSG), wintypes.HWND, wintypes.UINT, wintypes.UINT]
+    user32.GetMessageW.restype = wintypes.BOOL
+
+    user32.TranslateMessage.argtypes = [ctypes.POINTER(wintypes.MSG)]
+    user32.TranslateMessage.restype = wintypes.BOOL
+
+    user32.DispatchMessageW.argtypes = [ctypes.POINTER(wintypes.MSG)]
+    user32.DispatchMessageW.restype = ctypes.c_ssize_t
+
 
 def replace_inline_text(erase_count: int, new_text: str):
     """Atomically erases erase_count characters and injects new_text in one SendInput batch."""
@@ -383,7 +424,11 @@ def replace_inline_text(erase_count: int, new_text: str):
     if inputs:
         n = len(inputs)
         arr = (INPUT * n)(*inputs)
-        return user32.SendInput(n, ctypes.byref(arr), ctypes.sizeof(INPUT))
+        res = user32.SendInput(n, ctypes.byref(arr), ctypes.sizeof(INPUT))
+        if res != n:
+            err = kernel32.GetLastError()
+            log_msg(f"SendInput injected {res}/{n} events (error {err})")
+        return res
 
 
 def send_unicode_string(text: str):
@@ -414,6 +459,7 @@ class BongoWindowsService:
             self.commit_candidate(0)
         self.bangla_active = not self.bangla_active
         mode_str = "Bangla" if self.bangla_active else "English"
+        log_msg(f"Bongo: Switched to {mode_str} Mode")
         sys.stdout.write(f"Bongo: Switched to {mode_str} Mode\n")
         sys.stdout.flush()
 
@@ -446,7 +492,7 @@ class BongoWindowsService:
     def _sync_inline_text(self):
         target = self.preedit_str or (self.candidates[0] if self.candidates else "")
         replace_inline_text(self.last_injected_len, target)
-        self.last_injected_len = len(target)
+        self.last_injected_len = sum(2 if ord(c) > 0xFFFF else 1 for c in target)
 
     def update_suggestions(self, sugg_ptr):
         count = self.native.lib.bongo_suggestion_count(sugg_ptr)
@@ -515,7 +561,7 @@ class BongoWindowsService:
         self.preedit_str = ""
         self.last_injected_len = 0
 
-    def process_key(self, vk_code: int, is_down: bool, is_shift: bool, is_ctrl: bool, is_alt: bool) -> bool:
+    def process_key(self, vk_code: int, is_down: bool, is_shift: bool, is_ctrl: bool, is_alt: bool, is_caps: bool = False) -> bool:
         """
         Returns True if the keystroke was handled/swallowed,
         or False to let it pass through to the system.
@@ -523,8 +569,8 @@ class BongoWindowsService:
         if not is_down:
             return False
 
-        # Toggle shortcut (F12)
-        if vk_code == VK_F12:
+        # Toggle shortcut: F12 or Ctrl+Space
+        if vk_code == VK_F12 or (is_ctrl and vk_code == VK_SPACE):
             self.toggle_mode()
             return True
 
@@ -563,7 +609,7 @@ class BongoWindowsService:
                 if idx < len(self.candidates) and len(self.candidates) > 1:
                     chosen = self.candidates[idx]
                     replace_inline_text(self.last_injected_len, chosen)
-                    self.last_injected_len = len(chosen)
+                    self.last_injected_len = sum(2 if ord(c) > 0xFFFF else 1 for c in chosen)
                     self.commit_candidate(idx)
                     return True
                 else:
@@ -603,9 +649,22 @@ class BongoWindowsService:
             self.feed_character("`")
             return True
 
+        # Shifted symbol keys used in Avro phonetic transliteration
+        if is_shift:
+            if vk_code == 0x34:  # Shift + 4 -> '$' -> '৳'
+                self.feed_character("$")
+                return True
+            if vk_code == 0x36:  # Shift + 6 -> '^' -> 'ঁ'
+                self.feed_character("^")
+                return True
+            if vk_code == 0xBA:  # Shift + ; -> ':' -> 'ঃ'
+                self.feed_character(":")
+                return True
+
         # Process standard alphabet characters (A-Z)
         if 0x41 <= vk_code <= 0x5A:
-            char_code = vk_code + (0 if is_shift else 32)
+            is_upper = is_shift ^ is_caps
+            char_code = vk_code + (0 if is_upper else 32)
             ch = chr(char_code)
             self.feed_character(ch)
             return True
@@ -621,13 +680,15 @@ class BongoWindowsService:
     def run_windows_hook(self):
         """Sets up Windows low-level keyboard hook and message loop."""
         if sys.platform != "win32":
-            sys.stdout.write("Bongo Service: Windows environment required for hook loop.\n")
+            log_msg("Bongo Service: Windows environment required for hook loop.")
             return
+
+        log_msg("Installing low-level keyboard hook (WH_KEYBOARD_LL)...")
 
         def low_level_keyboard_proc(n_code, w_param, l_param):
             try:
-                if n_code >= 0:
-                    hook_data = ctypes.cast(l_param, ctypes.POINTER(KBDLLHOOKSTRUCT)).contents
+                if n_code >= 0 and l_param:
+                    hook_data = KBDLLHOOKSTRUCT.from_address(l_param)
 
                     # Immediately pass through keystrokes injected by SendInput (prevents recursion)
                     if hook_data.flags & LLKHF_INJECTED:
@@ -636,18 +697,20 @@ class BongoWindowsService:
                     is_down = w_param in (WM_KEYDOWN, WM_SYSKEYDOWN)
                     vk = hook_data.vkCode
 
-                    is_shift = bool(user32.GetKeyState(VK_SHIFT) & 0x8000)
-                    is_ctrl = bool(user32.GetKeyState(VK_CONTROL) & 0x8000)
-                    is_alt = bool(user32.GetKeyState(VK_MENU) & 0x8000)
+                    VK_CAPITAL = 0x14
+                    is_shift = bool((user32.GetAsyncKeyState(VK_SHIFT) & 0x8000) or (user32.GetKeyState(VK_SHIFT) & 0x8000))
+                    is_ctrl = bool((user32.GetAsyncKeyState(VK_CONTROL) & 0x8000) or (user32.GetKeyState(VK_CONTROL) & 0x8000))
+                    is_alt = bool((user32.GetAsyncKeyState(VK_MENU) & 0x8000) or (user32.GetKeyState(VK_MENU) & 0x8000))
+                    is_caps = bool(user32.GetKeyState(VK_CAPITAL) & 0x0001)
 
-                    handled = self.process_key(vk, is_down, is_shift, is_ctrl, is_alt)
+                    handled = self.process_key(vk, is_down, is_shift, is_ctrl, is_alt, is_caps)
                     if handled:
                         return 1  # Swallow event
             except (KeyboardInterrupt, SystemExit):
                 user32.PostQuitMessage(0)
                 return 0
-            except Exception:
-                pass
+            except Exception as e:
+                log_msg(f"Exception in hook proc: {e}")
 
             return user32.CallNextHookEx(self.hook_id, n_code, w_param, l_param)
 
@@ -662,10 +725,14 @@ class BongoWindowsService:
 
         if not self.hook_id:
             err_code = kernel32.GetLastError()
+            log_msg(f"Error: Failed to install low-level keyboard hook (code {err_code}).")
             sys.stderr.write(f"Error: Failed to install low-level keyboard hook (code {err_code}).\n")
             return
 
+        log_msg(f"Low-level keyboard hook installed successfully (hook_id={self.hook_id}).")
+
         def console_ctrl_handler(ctrl_type):
+            log_msg(f"Console control signal received ({ctrl_type}), posting quit message.")
             user32.PostQuitMessage(0)
             return 1
 
@@ -673,7 +740,9 @@ class BongoWindowsService:
         self._ctrl_handler_ref = PHANDLER_ROUTINE(console_ctrl_handler)
         kernel32.SetConsoleCtrlHandler(self._ctrl_handler_ref, True)
 
-        sys.stdout.write("Bongo Windows Service active. Press F12 to toggle Bangla/English.\n")
+        msg_welcome = "Bongo Windows Service active. Press F12 or Ctrl+Space to toggle Bangla/English.\n"
+        log_msg(msg_welcome.strip())
+        sys.stdout.write(msg_welcome)
         sys.stdout.flush()
 
         try:
@@ -681,27 +750,42 @@ class BongoWindowsService:
             while user32.GetMessageW(ctypes.byref(msg), 0, 0, 0) > 0:
                 user32.TranslateMessage(ctypes.byref(msg))
                 user32.DispatchMessageW(ctypes.byref(msg))
+        except Exception as e:
+            log_msg(f"Error in Windows message loop: {e}")
         finally:
             if self.hook_id:
                 user32.UnhookWindowsHookEx(self.hook_id)
                 self.hook_id = None
+                log_msg("Unhooked low-level keyboard hook.")
 
+
+_MUTEX_HANDLE = None
 
 def check_single_instance():
     """Ensures only a single instance of the Bongo Windows service runs concurrently."""
+    global _MUTEX_HANDLE
     if sys.platform != "win32":
-        return None
-    mutex_name = "Global\\BongoWindowsServiceMutex"
+        return True
+    mutex_name = "Local\\BongoWindowsServiceMutex"
     kernel32.CreateMutexW.argtypes = [ctypes.c_void_p, wintypes.BOOL, wintypes.LPCWSTR]
     kernel32.CreateMutexW.restype = ctypes.c_void_p
     h_mutex = kernel32.CreateMutexW(None, True, mutex_name)
     ERROR_ALREADY_EXISTS = 183
-    if kernel32.GetLastError() == ERROR_ALREADY_EXISTS:
-        return None
-    return h_mutex
+    last_err = kernel32.GetLastError()
+    if last_err == ERROR_ALREADY_EXISTS:
+        log_msg("Another instance of Bongo Windows Service is already running.")
+        return False
+    if not h_mutex:
+        log_msg(f"Warning: CreateMutexW returned NULL (error {last_err}), continuing service.")
+        return True
+    _MUTEX_HANDLE = h_mutex
+    log_msg("Acquired single-instance mutex.")
+    return True
 
 
 def main():
+    log_msg(f"Bongo Windows Service starting (args: {sys.argv})")
+
     # If launched interactively without --daemon, launch the settings/welcome window
     if sys.platform == "win32" and "--daemon" not in sys.argv:
         try:
@@ -712,17 +796,18 @@ def main():
             ]
             for c in candidates:
                 if c.is_file():
+                    log_msg(f"Launching settings window: {c}")
                     if c.suffix == ".py":
                         subprocess.Popen([sys.executable, str(c)])
                     else:
                         subprocess.Popen([str(c)])
                     break
-        except Exception:
-            pass
+        except Exception as e:
+            log_msg(f"Warning launching settings UI: {e}")
 
     if sys.platform == "win32":
-        mutex = check_single_instance()
-        if mutex is None:
+        if not check_single_instance():
+            log_msg("Bongo Windows Service is already running. Exiting duplicate instance.")
             sys.stdout.write("Bongo Windows Service is already running.\n")
             sys.stdout.flush()
             return
@@ -731,6 +816,7 @@ def main():
     if sys.platform == "win32":
         service.run_windows_hook()
     else:
+        log_msg("Bongo Windows Service initialized in headless cross-platform mode.")
         sys.stdout.write("Bongo Windows Service initialized in headless cross-platform mode.\n")
 
 

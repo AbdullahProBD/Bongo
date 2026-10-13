@@ -77,6 +77,16 @@ sudo apt install ./bongo_1.0.0_arm64.deb
 4. Search for **Bengali (Bongo)** and add it.
 5. Switch keyboards anytime with <kbd>Super + Space</kbd> or <kbd>Control + Space</kbd>.
 
+> **Tip for Virtual Machine users (e.g. running Linux on macOS host):**
+> macOS intercepts <kbd>Cmd + Space</kbd> for Spotlight. To set the input switch shortcut directly to <kbd>Control + Space</kbd> on Ubuntu:
+> ```bash
+> gsettings set org.gnome.desktop.wm.keybindings switch-input-source "['<Control>space']"
+> ```
+> Or to set it to <kbd>Alt + Shift</kbd>:
+> ```bash
+> gsettings set org.gnome.desktop.input-sources xkb-options "['grp:alt_shift_toggle']"
+> ```
+
 ---
 
 ## Bongo Settings Application

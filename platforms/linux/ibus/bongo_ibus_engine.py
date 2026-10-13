@@ -222,6 +222,31 @@ def load_settings():
     return defaults
 
 
+def extract_char_and_codepoint(keyval):
+    """
+    Safely extract (char_str, codepoint) from an IBus keyval.
+    Handles IBus.keyval_to_unicode returning either a Python str or int in PyGObject.
+    """
+    if IBus is not None:
+        try:
+            res = IBus.keyval_to_unicode(keyval)
+            if isinstance(res, str):
+                if res and res != '\x00':
+                    return res, ord(res)
+            elif isinstance(res, int) and res > 0:
+                try:
+                    return chr(res), res
+                except (ValueError, OverflowError):
+                    pass
+        except Exception:
+            pass
+
+    # Direct ASCII fallback
+    if 32 <= keyval <= 126:
+        return chr(keyval), keyval
+    return '', 0
+
+
 class BongoEngine(BaseEngine):
     __gtype_name__ = 'BongoEngine'
 
@@ -329,6 +354,14 @@ class BongoEngine(BaseEngine):
         self.native.lib.bongo_engine_set_emoji(self.engine_ptr, emoji)
 
     def do_process_key_event(self, keyval, keycode, state):
+        try:
+            return self._handle_key_event(keyval, keycode, state)
+        except Exception as e:
+            import traceback
+            log_msg(f"UNHANDLED ERROR in do_process_key_event: {e}\n{traceback.format_exc()}")
+            return False
+
+    def _handle_key_event(self, keyval, keycode, state):
         if IBus is None:
             return False
 
@@ -407,13 +440,13 @@ class BongoEngine(BaseEngine):
                 return True
 
         # Process standard printable character
-        ch = IBus.keyval_to_unicode(keyval)
-        if ch > 0 and (32 <= ch <= 126 or ch >= 128):
-            # If not in session and character is whitespace outside phonetic rules, pass through
-            if not self.has_session() and chr(ch) in " \t\r\n":
+        char_str, codepoint = extract_char_and_codepoint(keyval)
+        if char_str and codepoint > 0:
+            # If not in session and character is whitespace, pass through
+            if not self.has_session() and char_str in " \t\r\n":
                 return False
 
-            handled = self.feed_character(ch, effective_state)
+            handled = self.feed_character(char_str, codepoint, effective_state)
             if handled:
                 return True
 
@@ -427,14 +460,17 @@ class BongoEngine(BaseEngine):
                 pass
         return bool(self.buffer or self.preedit_str)
 
-    def feed_character(self, ch, state):
+    def feed_character(self, char_str, codepoint, state):
         is_shift = bool(state & IBus.ModifierType.SHIFT_MASK)
         modifier = 1 if is_shift else 0
         cursor_idx = self.table.get_cursor_pos() if (self.table and self.has_session()) else 0
 
+        log_msg(f"feed_character: char='{char_str}', codepoint={codepoint}, is_shift={is_shift}")
+
         if self.engine_ptr and self.native and self.native.lib:
             try:
-                sugg_ptr = self.native.lib.bongo_engine_feed_char(self.engine_ptr, ch, modifier, cursor_idx)
+                sugg_ptr = self.native.lib.bongo_engine_feed_char(self.engine_ptr, codepoint, modifier, cursor_idx)
+                log_msg(f"native feed_char returned sugg_ptr={sugg_ptr}, has_session={self.has_session()}")
                 if sugg_ptr:
                     if self.has_session():
                         self.update_suggestions(sugg_ptr)
@@ -450,14 +486,14 @@ class BongoEngine(BaseEngine):
                     self.native.lib.bongo_suggestion_free(sugg_ptr)
                     return True
             except Exception as e:
-                log_msg(f"feed_character native error: {e}")
+                import traceback
+                log_msg(f"feed_character native error: {e}\n{traceback.format_exc()}")
 
         # Built-in Avro phonetic transliteration fallback
-        char_str = chr(ch)
         self.buffer += char_str
         self.candidates = self.phonetic_engine.get_candidates(self.buffer)
         self.preedit_str = self.candidates[0] if self.candidates else self.buffer
-        log_msg(f"feed_character (fallback): buffer='{self.buffer}', preedit='{self.preedit_str}', candidates={self.candidates[:3]}")
+        log_msg(f"feed_character fallback: buffer='{self.buffer}', preedit='{self.preedit_str}', candidates={self.candidates[:3]}")
 
         if self.table is not None:
             self.table.clear()

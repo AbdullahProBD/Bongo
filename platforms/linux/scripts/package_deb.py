@@ -18,6 +18,7 @@ def tar_reset(tarinfo):
     tarinfo.gid = 0
     tarinfo.uname = "root"
     tarinfo.gname = "root"
+    tarinfo.pax_headers = {}
     # Ensure standard directory permissions
     if tarinfo.isdir():
         tarinfo.mode = 0o755
@@ -69,7 +70,7 @@ def package_deb(root_dir, deb_output_path):
         # 2. control.tar
         control_dir = root_path / "DEBIAN"
         control_tar = temp_dir / "control.tar"
-        with tarfile.open(control_tar, "w") as tar:
+        with tarfile.open(control_tar, "w", format=tarfile.GNU_FORMAT) as tar:
             tar.add(control_dir, arcname=".", filter=tar_reset, recursive=False)
             for item in sorted(control_dir.iterdir()):
                 tar.add(item, arcname=f"./{item.name}", filter=tar_reset)
@@ -80,7 +81,7 @@ def package_deb(root_dir, deb_output_path):
 
         # 3. data.tar
         data_tar = temp_dir / "data.tar"
-        with tarfile.open(data_tar, "w") as tar:
+        with tarfile.open(data_tar, "w", format=tarfile.GNU_FORMAT) as tar:
             tar.add(root_path, arcname=".", filter=tar_reset, recursive=False)
             for item in sorted(root_path.iterdir()):
                 if item.name == "DEBIAN":

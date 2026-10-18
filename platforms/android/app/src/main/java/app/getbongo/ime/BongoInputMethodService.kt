@@ -82,7 +82,7 @@ class BongoInputMethodService : InputMethodService() {
         val frame = FrameLayout(this).apply {
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
-                dp(userPrefs.keyboardHeightDp)
+                dp(getTargetKeyboardHeight())
             )
         }
         keyboardFrame = frame
@@ -153,9 +153,15 @@ class BongoInputMethodService : InputMethodService() {
 
         keyboardFrame?.layoutParams = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
-            dp(userPrefs.keyboardHeightDp)
+            dp(getTargetKeyboardHeight())
         )
     }
+
+    private fun getTargetKeyboardHeight(): Int {
+        val base = userPrefs.keyboardHeightDp
+        return if (userPrefs.showNumberRow) base + 36 else base
+    }
+
 
     override fun onFinishInputView(finishingInput: Boolean) {
         super.onFinishInputView(finishingInput)
@@ -290,6 +296,21 @@ class BongoInputMethodService : InputMethodService() {
                     }
                 } else {
                     sendDownUpKeyEvents(KeyEvent.KEYCODE_DEL)
+                }
+            }
+            is BongoKeyboardView.KeyAction.DeleteWord -> {
+                if (bongoEngine.hasSession()) {
+                    resetComposition()
+                } else {
+                    val before = ic.getTextBeforeCursor(80, 0)?.toString()
+                    if (!before.isNullOrEmpty()) {
+                        val trimmed = before.trimEnd()
+                        val lastWordIndex = trimmed.lastIndexOfAny(charArrayOf(' ', '\n', '\t', '।', '.', ',', '!', '?', ';', ':'))
+                        val charsToDelete = if (lastWordIndex == -1) before.length else (before.length - (lastWordIndex + 1))
+                        ic.deleteSurroundingText(charsToDelete.coerceAtLeast(1), 0)
+                    } else {
+                        sendDownUpKeyEvents(KeyEvent.KEYCODE_DEL)
+                    }
                 }
             }
             is BongoKeyboardView.KeyAction.Space -> {

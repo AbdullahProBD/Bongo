@@ -212,6 +212,31 @@ class SettingsActivity : Activity() {
             setOnCheckedChangeListener { _, isChecked -> userPrefs.bengaliDigits = isChecked }
         }
 
+        val numRowSwitch = Switch(this).apply {
+            text = "Permanent top number row (1-0 / ১-০)"
+            setTextColor(Color.WHITE)
+            isChecked = userPrefs.showNumberRow
+            setOnCheckedChangeListener { _, isChecked -> userPrefs.showNumberRow = isChecked }
+        }
+        val popupSwitch = Switch(this).apply {
+            text = "Key popup preview bubble on touch"
+            setTextColor(Color.WHITE)
+            isChecked = userPrefs.keyPopupPreview
+            setOnCheckedChangeListener { _, isChecked -> userPrefs.keyPopupPreview = isChecked }
+        }
+        val swipeDeleteSwitch = Switch(this).apply {
+            text = "Swipe left from backspace to delete words"
+            setTextColor(Color.WHITE)
+            isChecked = userPrefs.swipeDeleteWords
+            setOnCheckedChangeListener { _, isChecked -> userPrefs.swipeDeleteWords = isChecked }
+        }
+
+        prefsCard.addView(numRowSwitch)
+        prefsCard.addView(createSpacer(dp(8)))
+        prefsCard.addView(popupSwitch)
+        prefsCard.addView(createSpacer(dp(8)))
+        prefsCard.addView(swipeDeleteSwitch)
+        prefsCard.addView(createSpacer(dp(8)))
         prefsCard.addView(hapticSwitch)
         prefsCard.addView(createSpacer(dp(8)))
         prefsCard.addView(soundSwitch)

@@ -50,6 +50,18 @@ class UserPreferences(context: Context) {
         get() = prefs.getBoolean(KEY_BENGALI_DIGITS, false)
         set(value) = prefs.edit().putBoolean(KEY_BENGALI_DIGITS, value).apply()
 
+    var showNumberRow: Boolean
+        get() = prefs.getBoolean(KEY_SHOW_NUMBER_ROW, true)
+        set(value) = prefs.edit().putBoolean(KEY_SHOW_NUMBER_ROW, value).apply()
+
+    var keyPopupPreview: Boolean
+        get() = prefs.getBoolean(KEY_POPUP_PREVIEW, true)
+        set(value) = prefs.edit().putBoolean(KEY_POPUP_PREVIEW, value).apply()
+
+    var swipeDeleteWords: Boolean
+        get() = prefs.getBoolean(KEY_SWIPE_DELETE, true)
+        set(value) = prefs.edit().putBoolean(KEY_SWIPE_DELETE, value).apply()
+
     companion object {
         private const val PREFS_NAME = "bongo_preferences"
         private const val KEY_TYPING_MODE = "typing_mode"
@@ -62,5 +74,8 @@ class UserPreferences(context: Context) {
         private const val KEY_LONG_PRESS_SYMBOLS = "long_press_symbols"
         private const val KEY_CURSOR_SCRUBBING = "cursor_scrubbing"
         private const val KEY_BENGALI_DIGITS = "bengali_digits"
+        private const val KEY_SHOW_NUMBER_ROW = "show_number_row"
+        private const val KEY_POPUP_PREVIEW = "key_popup_preview"
+        private const val KEY_SWIPE_DELETE = "swipe_delete_words"
     }
 }

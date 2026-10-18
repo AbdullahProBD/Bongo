@@ -10,5 +10,6 @@ platforms/*/release/*
 local.properties
 *.apk
 *.aab
+release/
 
 

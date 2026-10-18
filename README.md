@@ -22,6 +22,10 @@
   <a href="https://github.com/mehedishakeel/Bongo/releases/latest/download/Bongo-1.0-macos-intel-x86_64.dmg">
     <img src="https://img.shields.io/badge/macOS-Intel_x86__64_DMG-3730a3?style=for-the-badge&logo=apple&logoColor=white" alt="Download macOS Intel DMG">
   </a>
+  &nbsp;
+  <a href="https://github.com/mehedishakeel/Bongo/releases/latest/download/Bongo-1.0-macos-universal.dmg">
+    <img src="https://img.shields.io/badge/macOS-Universal_DMG-1e1b4b?style=for-the-badge&logo=apple&logoColor=white" alt="Download macOS Universal DMG">
+  </a>
   <br>
   <a href="https://github.com/mehedishakeel/Bongo/releases/latest/download/bongo_1.0.0_amd64.deb">
     <img src="https://img.shields.io/badge/Linux-amd64_DEB-e11d48?style=for-the-badge&logo=linux&logoColor=white" alt="Download Linux amd64 DEB">

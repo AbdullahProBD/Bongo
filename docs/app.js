@@ -678,8 +678,8 @@ function initDownloadHub() {
    ======================================================== */
 function initDirectDownload() {
     const GITHUB_REPO = 'mehedishakeel/Bongo';
-    const CACHE_KEY = 'bongo_latest_assets_map';
-    const CACHE_TIME_KEY = 'bongo_latest_assets_time';
+    const CACHE_KEY = 'bongo_latest_assets_v1_0';
+    const CACHE_TIME_KEY = 'bongo_latest_assets_time_v1_0';
     const ONE_HOUR = 60 * 60 * 1000;
 
     function applyAssetUrls(assets) {

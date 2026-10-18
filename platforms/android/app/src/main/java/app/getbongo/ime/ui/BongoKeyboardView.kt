@@ -19,7 +19,7 @@ import app.getbongo.ime.model.UserPreferences
 /**
  * On-screen soft keyboard view for Bongo Android IME.
  * Sized and styled with comfortable touch targets matching modern keyboards (like Ridmik / Gboard),
- * clear visual feedback, accent keys, Bengali punctuation, and emoji trigger.
+ * clear visual feedback, accent keys, Bengali punctuation, emoji trigger, and IME picker long-press.
  */
 class BongoKeyboardView @JvmOverloads constructor(
     context: Context,
@@ -48,6 +48,10 @@ class BongoKeyboardView @JvmOverloads constructor(
         object ToggleLanguage : KeyAction()
         object ToggleSymbols : KeyAction()
         object ToggleEmoji : KeyAction()
+        object SwitchImePicker : KeyAction()
+        object Esc : KeyAction()
+        object Tab : KeyAction()
+        object Ctrl : KeyAction()
     }
 
     init {
@@ -125,12 +129,12 @@ class BongoKeyboardView @JvmOverloads constructor(
         val r2 = listOf("@", "#", "৳", "$", "%", "&", "-", "+", "(", ")")
         addRow(r2, hasSideSpacers = false)
 
-        // Symbols Row 2
-        val r3 = listOf("SYM_MORE", "*", "\"", "'", ":", ";", "!", "?", "BACKSPACE")
+        // Symbols Row 2 with ESC and TAB
+        val r3 = listOf("ESC", "*", "\"", "'", ":", ";", "!", "?", "BACKSPACE")
         addRow(r3, hasSideSpacers = false)
 
         // Bottom row
-        val r4 = listOf("ABC", "EMOJI", "LANG", "SPACE", "।", "RETURN")
+        val r4 = listOf("ABC", "TAB", "EMOJI", "LANG", "SPACE", "।", "RETURN")
         addRow(r4, hasSideSpacers = false)
     }
 
@@ -169,7 +173,7 @@ class BongoKeyboardView @JvmOverloads constructor(
         "SHIFT", "BACKSPACE" -> 1.45f
         "?123", "ABC" -> 1.25f
         "LANG", "EMOJI" -> 1.0f
-        "SYM_MORE" -> 1.2f
+        "ESC", "TAB", "CTRL" -> 1.1f
         else -> 1.0f
     }
 
@@ -196,13 +200,24 @@ class BongoKeyboardView @JvmOverloads constructor(
                 "EMOJI" -> "😊"
                 "?123" -> "?123"
                 "ABC" -> "ABC"
-                "SYM_MORE" -> "=/<"
+                "ESC" -> "Esc"
+                "TAB" -> "Tab"
+                "CTRL" -> "Ctrl"
                 else -> if (isShifted) key.uppercase() else key
             }
 
             setOnClickListener {
                 performHaptic()
                 handleKeyClick(key)
+            }
+
+            // Long-press Globe key or Space key to open Android IME picker
+            if (key == "LANG" || key == "SPACE") {
+                setOnLongClickListener {
+                    performHaptic()
+                    onKeyClickListener?.invoke(KeyAction.SwitchImePicker)
+                    true
+                }
             }
         }
         return tv
@@ -211,7 +226,7 @@ class BongoKeyboardView @JvmOverloads constructor(
     private fun getKeyTextSize(key: String): Float = when (key) {
         "SPACE" -> 14f
         "SHIFT", "BACKSPACE", "RETURN" -> 18f
-        "?123", "ABC", "SYM_MORE" -> 14f
+        "?123", "ABC", "ESC", "TAB", "CTRL" -> 13f
         "LANG", "EMOJI" -> 18f
         else -> 21f
     }
@@ -220,12 +235,12 @@ class BongoKeyboardView @JvmOverloads constructor(
         "RETURN" -> Color.WHITE
         "SHIFT" -> if (isShifted) Color.parseColor("#818cf8") else Color.WHITE
         "SPACE" -> if (isBangla) Color.parseColor("#e4e4e7") else Color.parseColor("#a1a1aa")
-        "?123", "ABC", "SYM_MORE" -> Color.parseColor("#d4d4d8")
+        "?123", "ABC", "ESC", "TAB", "CTRL" -> Color.parseColor("#d4d4d8")
         else -> Color.WHITE
     }
 
     private fun isSpecialKey(key: String): Boolean =
-        key in listOf("SHIFT", "BACKSPACE", "RETURN", "?123", "ABC", "LANG", "EMOJI", "SYM_MORE")
+        key in listOf("SHIFT", "BACKSPACE", "RETURN", "?123", "ABC", "LANG", "EMOJI", "ESC", "TAB", "CTRL")
 
     private fun createKeyBackground(key: String): StateListDrawable {
         val normalColor = when (key) {
@@ -243,9 +258,7 @@ class BongoKeyboardView @JvmOverloads constructor(
         val normal = GradientDrawable().apply {
             cornerRadius = dp(7).toFloat()
             setColor(normalColor)
-            if (key == "RETURN") {
-                // Subtle glow on return key
-            } else if (!isSpecialKey(key)) {
+            if (key != "RETURN" && !isSpecialKey(key)) {
                 setStroke(dp(1), Color.parseColor("#2d2e37"))
             }
         }
@@ -268,6 +281,9 @@ class BongoKeyboardView @JvmOverloads constructor(
             "SPACE" -> onKeyClickListener?.invoke(KeyAction.Space)
             "RETURN" -> onKeyClickListener?.invoke(KeyAction.Return)
             "EMOJI" -> onKeyClickListener?.invoke(KeyAction.ToggleEmoji)
+            "ESC" -> onKeyClickListener?.invoke(KeyAction.Esc)
+            "TAB" -> onKeyClickListener?.invoke(KeyAction.Tab)
+            "CTRL" -> onKeyClickListener?.invoke(KeyAction.Ctrl)
             "LANG" -> {
                 isBangla = !isBangla
                 buildKeyboard()
@@ -282,9 +298,6 @@ class BongoKeyboardView @JvmOverloads constructor(
                 isSymbols = false
                 buildKeyboard()
                 onKeyClickListener?.invoke(KeyAction.ToggleSymbols)
-            }
-            "SYM_MORE" -> {
-                // Could expand to more secondary math symbols if needed
             }
             else -> {
                 val ch = if (isShifted) key.uppercase().first() else key.first()

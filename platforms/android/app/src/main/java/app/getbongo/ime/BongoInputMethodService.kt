@@ -1,10 +1,13 @@
 package app.getbongo.ime
 
+import android.content.Context
 import android.graphics.Color
 import android.inputmethodservice.InputMethodService
+import android.os.SystemClock
 import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import app.getbongo.ime.engine.BongoEngine
@@ -15,7 +18,8 @@ import app.getbongo.ime.ui.EmojiKeyboardView
 /**
  * Main Android InputMethodService for Bongo.
  * Handles input routing between soft/hardware keyboard, the Bongo phonetic engine,
- * candidate selection strip, emoji panel, and the target application's InputConnection.
+ * candidate selection strip, shortcuts toolbar (Ctrl, Tab, Esc, Cursor),
+ * emoji panel, and the target application's InputConnection.
  */
 class BongoInputMethodService : InputMethodService() {
 
@@ -24,6 +28,7 @@ class BongoInputMethodService : InputMethodService() {
     private var emojiKeyboardView: EmojiKeyboardView? = null
     private var candidateStripView: CandidateStripView? = null
     private var isBanglaMode = true
+    private var isCtrlActive = false
 
     override fun onCreate() {
         super.onCreate()
@@ -43,6 +48,9 @@ class BongoInputMethodService : InputMethodService() {
             )
             onCandidateSelected = { index, _ ->
                 handleCandidateSelection(index)
+            }
+            onShortcutAction = { action ->
+                handleShortcutAction(action)
             }
         }
 
@@ -124,12 +132,76 @@ class BongoInputMethodService : InputMethodService() {
         resetComposition()
     }
 
+    private fun handleShortcutAction(action: CandidateStripView.ShortcutAction) {
+        val ic = currentInputConnection ?: return
+
+        when (action) {
+            is CandidateStripView.ShortcutAction.Esc -> {
+                sendDownUpKeyEvents(KeyEvent.KEYCODE_ESCAPE)
+            }
+            is CandidateStripView.ShortcutAction.Tab -> {
+                sendDownUpKeyEvents(KeyEvent.KEYCODE_TAB)
+            }
+            is CandidateStripView.ShortcutAction.ToggleCtrl -> {
+                isCtrlActive = !isCtrlActive
+                candidateStripView?.setCtrlActive(isCtrlActive)
+            }
+            is CandidateStripView.ShortcutAction.SelectAll -> {
+                ic.performContextMenuAction(android.R.id.selectAll)
+            }
+            is CandidateStripView.ShortcutAction.Copy -> {
+                ic.performContextMenuAction(android.R.id.copy)
+            }
+            is CandidateStripView.ShortcutAction.Paste -> {
+                ic.performContextMenuAction(android.R.id.paste)
+            }
+            is CandidateStripView.ShortcutAction.CursorLeft -> {
+                sendDownUpKeyEvents(KeyEvent.KEYCODE_DPAD_LEFT)
+            }
+            is CandidateStripView.ShortcutAction.CursorRight -> {
+                sendDownUpKeyEvents(KeyEvent.KEYCODE_DPAD_RIGHT)
+            }
+        }
+    }
+
     private fun handleKeyAction(action: BongoKeyboardView.KeyAction) {
         val ic = currentInputConnection ?: return
 
         when (action) {
             is BongoKeyboardView.KeyAction.CharacterKey -> {
                 val ch = action.ch
+
+                // If Ctrl is active, dispatch Ctrl shortcut
+                if (isCtrlActive) {
+                    val lower = ch.lowercaseChar()
+                    when (lower) {
+                        'a' -> ic.performContextMenuAction(android.R.id.selectAll)
+                        'c' -> ic.performContextMenuAction(android.R.id.copy)
+                        'v' -> ic.performContextMenuAction(android.R.id.paste)
+                        'x' -> ic.performContextMenuAction(android.R.id.cut)
+                        'z' -> ic.performContextMenuAction(android.R.id.undo)
+                        else -> {
+                            val keyCode = when (lower) {
+                                'd' -> KeyEvent.KEYCODE_D
+                                'l' -> KeyEvent.KEYCODE_L
+                                'w' -> KeyEvent.KEYCODE_W
+                                'k' -> KeyEvent.KEYCODE_K
+                                'u' -> KeyEvent.KEYCODE_U
+                                'e' -> KeyEvent.KEYCODE_E
+                                else -> KeyEvent.KEYCODE_UNKNOWN
+                            }
+                            if (keyCode != KeyEvent.KEYCODE_UNKNOWN) {
+                                val now = SystemClock.uptimeMillis()
+                                ic.sendKeyEvent(KeyEvent(now, now, KeyEvent.ACTION_DOWN, keyCode, 0, KeyEvent.META_CTRL_ON))
+                                ic.sendKeyEvent(KeyEvent(now, now, KeyEvent.ACTION_UP, keyCode, 0, KeyEvent.META_CTRL_ON))
+                            }
+                        }
+                    }
+                    isCtrlActive = false
+                    candidateStripView?.setCtrlActive(false)
+                    return
+                }
+
                 if (isBanglaMode && (ch in 'a'..'z' || ch in 'A'..'Z' || ch in "0123456789`~@#\$%^&*()-_=+[{]}\\|;:'\",<.>/?")) {
                     bongoEngine.feedChar(ch, keyboardView?.isShifted == true)
                     val composing = bongoEngine.preedit
@@ -183,8 +255,23 @@ class BongoInputMethodService : InputMethodService() {
                 isBanglaMode = !isBanglaMode
                 keyboardView?.setBanglaMode(isBanglaMode)
             }
+            is BongoKeyboardView.KeyAction.SwitchImePicker -> {
+                commitOngoingComposition()
+                val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+                imm?.showInputMethodPicker()
+            }
             is BongoKeyboardView.KeyAction.ToggleEmoji -> {
                 showEmojiKeyboard()
+            }
+            is BongoKeyboardView.KeyAction.Esc -> {
+                sendDownUpKeyEvents(KeyEvent.KEYCODE_ESCAPE)
+            }
+            is BongoKeyboardView.KeyAction.Tab -> {
+                sendDownUpKeyEvents(KeyEvent.KEYCODE_TAB)
+            }
+            is BongoKeyboardView.KeyAction.Ctrl -> {
+                isCtrlActive = !isCtrlActive
+                candidateStripView?.setCtrlActive(isCtrlActive)
             }
             is BongoKeyboardView.KeyAction.Shift,
             is BongoKeyboardView.KeyAction.ToggleSymbols -> {
@@ -211,6 +298,7 @@ class BongoInputMethodService : InputMethodService() {
 
     private fun resetComposition() {
         bongoEngine.resetSession()
+        isCtrlActive = false
         candidateStripView?.clear()
     }
 

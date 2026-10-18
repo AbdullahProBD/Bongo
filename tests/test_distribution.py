@@ -259,5 +259,56 @@ class DistributionTests(unittest.TestCase):
         self.assertEqual(svc.candidates[0], "ত")
         svc.clear_session()
 
+    def test_android_registration(self):
+        android_dir = ROOT / 'platforms/android'
+
+        # 1. AndroidManifest verification
+        manifest = (android_dir / 'app/src/main/AndroidManifest.xml').read_text()
+        self.assertIn('.BongoInputMethodService', manifest)
+        self.assertIn('android.permission.BIND_INPUT_METHOD', manifest)
+        self.assertIn('android.view.InputMethod', manifest)
+        self.assertIn('android.view.im', manifest)
+        self.assertIn('.ui.SettingsActivity', manifest)
+
+        # 2. IME Subtype XML verification
+        method_xml = (android_dir / 'app/src/main/res/xml/method.xml').read_text()
+        self.assertIn('imeSubtypeLocale="bn_BD"', method_xml)
+        self.assertIn('imeSubtypeLocale="en_US"', method_xml)
+        self.assertIn('imeSubtypeMode="keyboard"', method_xml)
+
+        # 3. Native Engine (Rust & JNI) verification
+        cargo_toml = (android_dir / 'engine/Cargo.toml').read_text()
+        self.assertIn('name = "bongo_engine"', cargo_toml)
+        self.assertIn('crate-type = ["cdylib"', cargo_toml)
+        self.assertTrue((android_dir / 'engine/.cargo/config.toml').is_file())
+        
+        lib_rs = (android_dir / 'engine/src/lib.rs').read_text()
+        self.assertIn('Java_app_getbongo_ime_engine_BongoNative_engineNew', lib_rs)
+        self.assertIn('Java_app_getbongo_ime_engine_BongoNative_engineFeedChar', lib_rs)
+        self.assertIn('Java_app_getbongo_ime_engine_BongoNative_engineCommit', lib_rs)
+
+        # 4. Kotlin IME architecture verification
+        ime_files = [
+            'app/src/main/java/app/getbongo/ime/BongoInputMethodService.kt',
+            'app/src/main/java/app/getbongo/ime/engine/BongoEngine.kt',
+            'app/src/main/java/app/getbongo/ime/engine/BongoNative.kt',
+            'app/src/main/java/app/getbongo/ime/engine/AvroPhoneticEngine.kt',
+            'app/src/main/java/app/getbongo/ime/model/UserPreferences.kt',
+            'app/src/main/java/app/getbongo/ime/ui/BongoKeyboardView.kt',
+            'app/src/main/java/app/getbongo/ime/ui/CandidateStripView.kt',
+            'app/src/main/java/app/getbongo/ime/ui/SettingsActivity.kt',
+        ]
+        for f in ime_files:
+            self.assertTrue((android_dir / f).is_file(), f"Missing Android source file: {f}")
+
+        # 5. Gradle build infrastructure & launcher assets
+        self.assertTrue((android_dir / 'build.gradle.kts').is_file())
+        self.assertTrue((android_dir / 'settings.gradle.kts').is_file())
+        self.assertTrue((android_dir / 'app/build.gradle.kts').is_file())
+        self.assertTrue((android_dir / 'gradlew').is_file())
+        self.assertTrue((android_dir / 'app/src/main/res/mipmap-hdpi/ic_launcher.png').is_file())
+        self.assertTrue((android_dir / 'README.md').is_file())
+
 if __name__ == '__main__':
     unittest.main()
+

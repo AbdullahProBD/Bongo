@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Bongo Palette (Matches macOS, Linux GTK4, and Windows theme) -->
+    <color name="bongo_bg_dark">#18181b</color>
+    <color name="bongo_bg_sidebar">#111113</color>
+    <color name="bongo_bg_card">#202024</color>
+    <color name="bongo_card_border">#2e2e33</color>
+    <color name="bongo_key_bg">#27272a</color>
+    <color name="bongo_key_pressed">#3f3f46</color>
+    <color name="bongo_accent">#6366f1</color>
+    <color name="bongo_accent_light">#818cf8</color>
+    <color name="bongo_text_primary">#ffffff</color>
+    <color name="bongo_text_secondary">#a1a1aa</color>
+    <color name="bongo_text_muted">#71717a</color>
+</resources>

@@ -1,0 +1,222 @@
+package app.getbongo.ime
+
+import android.graphics.Color
+import android.inputmethodservice.InputMethodService
+import android.view.KeyEvent
+import android.view.View
+import android.view.inputmethod.EditorInfo
+import android.widget.LinearLayout
+import app.getbongo.ime.engine.BongoEngine
+import app.getbongo.ime.ui.BongoKeyboardView
+import app.getbongo.ime.ui.CandidateStripView
+
+/**
+ * Main Android InputMethodService for Bongo.
+ * Handles input routing between soft/hardware keyboard, the Bongo phonetic engine,
+ * candidate selection strip, and the target application's InputConnection.
+ */
+class BongoInputMethodService : InputMethodService() {
+
+    private lateinit var bongoEngine: BongoEngine
+    private var keyboardView: BongoKeyboardView? = null
+    private var candidateStripView: CandidateStripView? = null
+    private var isBanglaMode = true
+
+    override fun onCreate() {
+        super.onCreate()
+        bongoEngine = BongoEngine()
+    }
+
+    override fun onCreateInputView(): View {
+        val root = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setBackgroundColor(Color.parseColor("#18181b"))
+        }
+
+        candidateStripView = CandidateStripView(this).apply {
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                dp(44)
+            )
+            onCandidateSelected = { index, _ ->
+                handleCandidateSelection(index)
+            }
+        }
+
+        val divider = View(this).apply {
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                dp(1)
+            )
+            setBackgroundColor(Color.parseColor("#27272a"))
+        }
+
+        keyboardView = BongoKeyboardView(this).apply {
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                dp(235)
+            )
+            setBanglaMode(isBanglaMode)
+            onKeyClickListener = { action ->
+                handleKeyAction(action)
+            }
+        }
+
+        root.addView(candidateStripView)
+        root.addView(divider)
+        root.addView(keyboardView)
+
+        return root
+    }
+
+    override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
+        super.onStartInputView(info, restarting)
+        resetComposition()
+    }
+
+    override fun onFinishInputView(finishingInput: Boolean) {
+        super.onFinishInputView(finishingInput)
+        commitOngoingComposition()
+        resetComposition()
+    }
+
+    private fun handleKeyAction(action: BongoKeyboardView.KeyAction) {
+        val ic = currentInputConnection ?: return
+
+        when (action) {
+            is BongoKeyboardView.KeyAction.CharacterKey -> {
+                val ch = action.ch
+                if (isBanglaMode && (ch in 'a'..'z' || ch in 'A'..'Z' || ch in "0123456789`~@#\$%^&*()-_=+[{]}\\|;:'\",<.>/?")) {
+                    bongoEngine.feedChar(ch, keyboardView?.isShifted == true)
+                    val composing = bongoEngine.preedit
+                    ic.setComposingText(composing, 1)
+                    candidateStripView?.setCandidates(bongoEngine.candidates)
+                } else {
+                    commitOngoingComposition()
+                    ic.commitText(ch.toString(), 1)
+                }
+            }
+            is BongoKeyboardView.KeyAction.Backspace -> {
+                if (isBanglaMode && bongoEngine.hasSession()) {
+                    val hasRemaining = bongoEngine.handleBackspace()
+                    if (hasRemaining && bongoEngine.preedit.isNotEmpty()) {
+                        ic.setComposingText(bongoEngine.preedit, 1)
+                        candidateStripView?.setCandidates(bongoEngine.candidates)
+                    } else {
+                        ic.setComposingText("", 0)
+                        candidateStripView?.clear()
+                    }
+                } else {
+                    sendDownUpKeyEvents(KeyEvent.KEYCODE_DEL)
+                }
+            }
+            is BongoKeyboardView.KeyAction.Space -> {
+                if (isBanglaMode && bongoEngine.hasSession()) {
+                    val committed = bongoEngine.commitCandidate(0)
+                    ic.commitText("$committed ", 1)
+                    candidateStripView?.clear()
+                } else {
+                    ic.commitText(" ", 1)
+                }
+            }
+            is BongoKeyboardView.KeyAction.Return -> {
+                if (isBanglaMode && bongoEngine.hasSession()) {
+                    val committed = bongoEngine.commitCandidate(0)
+                    ic.commitText(committed, 1)
+                    candidateStripView?.clear()
+                }
+                val editorInfo = currentInputEditorInfo
+                val imeOptions = editorInfo?.imeOptions ?: 0
+                val actionId = imeOptions and EditorInfo.IME_MASK_ACTION
+                if (actionId != EditorInfo.IME_ACTION_NONE && actionId != EditorInfo.IME_ACTION_UNSPECIFIED) {
+                    ic.performEditorAction(actionId)
+                } else {
+                    sendDownUpKeyEvents(KeyEvent.KEYCODE_ENTER)
+                }
+            }
+            is BongoKeyboardView.KeyAction.ToggleLanguage -> {
+                commitOngoingComposition()
+                isBanglaMode = !isBanglaMode
+                keyboardView?.setBanglaMode(isBanglaMode)
+            }
+            is BongoKeyboardView.KeyAction.Shift,
+            is BongoKeyboardView.KeyAction.ToggleSymbols -> {
+                // UI state handled internally in BongoKeyboardView
+            }
+        }
+    }
+
+    private fun handleCandidateSelection(index: Int) {
+        val ic = currentInputConnection ?: return
+        val committed = bongoEngine.commitCandidate(index)
+        ic.commitText("$committed ", 1)
+        candidateStripView?.clear()
+    }
+
+    private fun commitOngoingComposition() {
+        val ic = currentInputConnection ?: return
+        if (bongoEngine.hasSession()) {
+            val committed = bongoEngine.commitCandidate(0)
+            ic.commitText(committed, 1)
+            candidateStripView?.clear()
+        }
+    }
+
+    private fun resetComposition() {
+        bongoEngine.resetSession()
+        candidateStripView?.clear()
+    }
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        if (event == null) return super.onKeyDown(keyCode, event)
+
+        // Shortcut to switch mode: Control + Space
+        if (keyCode == KeyEvent.KEYCODE_SPACE && (event.isCtrlPressed || event.isMetaPressed)) {
+            commitOngoingComposition()
+            isBanglaMode = !isBanglaMode
+            keyboardView?.setBanglaMode(isBanglaMode)
+            return true
+        }
+
+        // Hardware keyboard support for active phonetic typing
+        if (isBanglaMode) {
+            when (keyCode) {
+                KeyEvent.KEYCODE_DEL -> {
+                    if (bongoEngine.hasSession()) {
+                        handleKeyAction(BongoKeyboardView.KeyAction.Backspace)
+                        return true
+                    }
+                }
+                KeyEvent.KEYCODE_SPACE -> {
+                    if (bongoEngine.hasSession()) {
+                        handleKeyAction(BongoKeyboardView.KeyAction.Space)
+                        return true
+                    }
+                }
+                KeyEvent.KEYCODE_ENTER -> {
+                    if (bongoEngine.hasSession()) {
+                        handleKeyAction(BongoKeyboardView.KeyAction.Return)
+                        return true
+                    }
+                }
+                else -> {
+                    val unicode = event.keyCharacterMap.get(keyCode, event.metaState)
+                    if (unicode > 0 && unicode.toChar().isLetterOrDigit()) {
+                        handleKeyAction(BongoKeyboardView.KeyAction.CharacterKey(unicode.toChar()))
+                        return true
+                    }
+                }
+            }
+        }
+
+        return super.onKeyDown(keyCode, event)
+    }
+
+    override fun onDestroy() {
+        bongoEngine.destroy()
+        super.onDestroy()
+    }
+
+    private fun dp(value: Int): Int =
+        (value * resources.displayMetrics.density).toInt()
+}

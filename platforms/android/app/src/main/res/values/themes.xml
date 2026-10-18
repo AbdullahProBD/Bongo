@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Bongo" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/bongo_accent</item>
+        <item name="colorPrimaryVariant">@color/bongo_accent_light</item>
+        <item name="colorOnPrimary">@color/bongo_text_primary</item>
+        <item name="android:windowBackground">@color/bongo_bg_dark</item>
+        <item name="android:statusBarColor">@color/bongo_bg_dark</item>
+        <item name="android:navigationBarColor">@color/bongo_bg_dark</item>
+    </style>
+</resources>

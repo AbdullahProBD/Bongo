@@ -43,7 +43,7 @@
     <img src="https://img.shields.io/badge/Windows-MSI_Installer-0369a1?style=for-the-badge&logo=windows&logoColor=white" alt="Download Windows MSI Package">
   </a>
   <br>
-  <a href="https://github.com/mehedishakeel/Bongo/releases/latest/download/bongo-android.apk">
+  <a href="https://github.com/mehedishakeel/Bongo/releases/latest/download/Bongo-1.0.0-android.apk">
     <img src="https://img.shields.io/badge/Android-APK_Download-22c55e?style=for-the-badge&logo=android&logoColor=white" alt="Download Android APK">
   </a>
 </p>
@@ -105,7 +105,7 @@ See [docs/WINDOWS-INSTALL.md](docs/WINDOWS-INSTALL.md) or [platforms/windows/REA
 
 ### Android (Smartphones & Tablets)
 
-1. **Download**: Get `bongo-android.apk` from [Releases](https://github.com/mehedishakeel/Bongo/releases/latest).
+1. **Download**: Get `Bongo-1.0.0-android.apk` from [Releases](https://github.com/mehedishakeel/Bongo/releases/latest).
 2. **Install**: Tap the downloaded APK to install. Allow "Install unknown apps" in Android settings if prompted.
 3. **Activate**:
    - Open **Bongo Settings** from your app drawer.

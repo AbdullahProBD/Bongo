@@ -5,12 +5,22 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.inputmethodservice.InputMethodService
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
+import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.os.SystemClock
+import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
+import android.speech.SpeechRecognizer
 import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import androidx.core.content.ContextCompat
+import app.getbongo.ime.ui.VoicePermissionActivity
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.Toast
@@ -187,10 +197,35 @@ class BongoInputMethodService : InputMethodService() {
         resetComposition()
     }
 
+    private var speechRecognizer: SpeechRecognizer? = null
+    private var isVoiceListening = false
+
+    private fun cycleTheme() {
+        val themes = listOf("midnight", "light", "oled")
+        val currentIdx = themes.indexOf(userPrefs.theme.lowercase())
+        val nextIdx = if (currentIdx == -1) 0 else (currentIdx + 1) % themes.size
+        userPrefs.theme = themes[nextIdx]
+    }
+
     private fun handleShortcutAction(action: CandidateStripView.ShortcutAction) {
         val ic = currentInputConnection ?: return
 
         when (action) {
+            is CandidateStripView.ShortcutAction.Emoji -> {
+                showEmojiKeyboard()
+            }
+            is CandidateStripView.ShortcutAction.Theme -> {
+                cycleTheme()
+            }
+            is CandidateStripView.ShortcutAction.Settings -> {
+                val intent = Intent(this, SettingsActivity::class.java).apply {
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+                startActivity(intent)
+            }
+            is CandidateStripView.ShortcutAction.More -> {
+                keyboardView?.toggleOptionsPanel()
+            }
             is CandidateStripView.ShortcutAction.Esc -> {
                 sendDownUpKeyEvents(KeyEvent.KEYCODE_ESCAPE)
             }
@@ -241,17 +276,140 @@ class BongoInputMethodService : InputMethodService() {
     }
 
     private fun handleVoiceInputAction() {
-        try {
-            val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-                putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-                putExtra(RecognizerIntent.EXTRA_LANGUAGE, if (isBanglaMode) "bn-BD" else "en-US")
-                putExtra(RecognizerIntent.EXTRA_PROMPT, "Speak now...")
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            val intent = Intent(this, VoicePermissionActivity::class.java).apply {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
             startActivity(intent)
-        } catch (_: Exception) {
-            Toast.makeText(this, "Voice recognition not available", Toast.LENGTH_SHORT).show()
+            return
         }
+
+        if (isVoiceListening) {
+            stopVoiceListening()
+            return
+        }
+
+        startVoiceListening()
+    }
+
+    private fun startVoiceListening() {
+        val handler = Handler(Looper.getMainLooper())
+        handler.post {
+            try {
+                if (!SpeechRecognizer.isRecognitionAvailable(this)) {
+                    switchToVoiceImeOrNotify()
+                    return@post
+                }
+
+                speechRecognizer?.destroy()
+                speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this).apply {
+                    setRecognitionListener(object : RecognitionListener {
+                        override fun onReadyForSpeech(params: Bundle?) {
+                            isVoiceListening = true
+                            candidateStripView?.showVoiceListening("Speak now...") {
+                                stopVoiceListening()
+                            }
+                        }
+
+                        override fun onBeginningOfSpeech() {
+                            candidateStripView?.updateVoicePrompt("Listening...")
+                        }
+
+                        override fun onRmsChanged(rmsdB: Float) {}
+
+                        override fun onBufferReceived(buffer: ByteArray?) {}
+
+                        override fun onEndOfSpeech() {
+                            candidateStripView?.updateVoicePrompt("Processing...")
+                        }
+
+                        override fun onError(error: Int) {
+                            isVoiceListening = false
+                            candidateStripView?.showShortcuts()
+                            when (error) {
+                                SpeechRecognizer.ERROR_NO_MATCH,
+                                SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> {
+                                    // User paused or finished speaking
+                                }
+                                SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS -> {
+                                    val intent = Intent(this@BongoInputMethodService, VoicePermissionActivity::class.java).apply {
+                                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    }
+                                    startActivity(intent)
+                                }
+                                else -> {
+                                    Toast.makeText(this@BongoInputMethodService, "Speech recognition error: $error", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        }
+
+                        override fun onResults(results: Bundle?) {
+                            isVoiceListening = false
+                            candidateStripView?.showShortcuts()
+                            val matches = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
+                            if (!matches.isNullOrEmpty()) {
+                                val recognized = matches[0]
+                                val ic = currentInputConnection
+                                if (ic != null && recognized.isNotEmpty()) {
+                                    ic.finishComposingText()
+                                    ic.commitText("$recognized ", 1)
+                                }
+                            }
+                        }
+
+                        override fun onPartialResults(partialResults: Bundle?) {
+                            val matches = partialResults?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
+                            if (!matches.isNullOrEmpty()) {
+                                val partial = matches[0]
+                                val ic = currentInputConnection
+                                ic?.setComposingText(partial, 1)
+                            }
+                        }
+
+                        override fun onEvent(eventType: Int, params: Bundle?) {}
+                    })
+                }
+
+                val recognizerIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+                    putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+                    putExtra(RecognizerIntent.EXTRA_LANGUAGE, if (isBanglaMode) "bn-BD" else "en-US")
+                    putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
+                    putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 3)
+                }
+
+                isVoiceListening = true
+                speechRecognizer?.startListening(recognizerIntent)
+                candidateStripView?.showVoiceListening("Speak now...") {
+                    stopVoiceListening()
+                }
+            } catch (e: Exception) {
+                isVoiceListening = false
+                candidateStripView?.showShortcuts()
+                Toast.makeText(this, "Voice typing unavailable: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun stopVoiceListening() {
+        isVoiceListening = false
+        try {
+            speechRecognizer?.stopListening()
+        } catch (_: Exception) {}
+        candidateStripView?.showShortcuts()
+    }
+
+    private fun switchToVoiceImeOrNotify() {
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+        val voiceSubtype = imm?.enabledInputMethodList?.firstOrNull { imi ->
+            imi.packageName.contains("speech") || imi.packageName.contains("tts") || imi.id.contains("voice")
+        }
+        if (voiceSubtype != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            try {
+                switchInputMethod(voiceSubtype.id)
+                return
+            } catch (_: Exception) {}
+        }
+        Toast.makeText(this, "Voice recognition service not available on device", Toast.LENGTH_SHORT).show()
     }
 
     private fun handleKeyAction(action: BongoKeyboardView.KeyAction) {
@@ -407,6 +565,12 @@ class BongoInputMethodService : InputMethodService() {
                 isCtrlActive = !isCtrlActive
                 candidateStripView?.setCtrlActive(isCtrlActive)
             }
+            is BongoKeyboardView.KeyAction.OpenThemes -> {
+                cycleTheme()
+            }
+            is BongoKeyboardView.KeyAction.ToggleVoice -> {
+                handleVoiceInputAction()
+            }
             is BongoKeyboardView.KeyAction.Shift,
             is BongoKeyboardView.KeyAction.ToggleSymbols -> {
                 // UI state handled internally in BongoKeyboardView
@@ -482,6 +646,9 @@ class BongoInputMethodService : InputMethodService() {
     }
 
     override fun onDestroy() {
+        stopVoiceListening()
+        speechRecognizer?.destroy()
+        speechRecognizer = null
         userPrefs.unregisterListener(prefChangeListener)
         bongoEngine.destroy()
         super.onDestroy()

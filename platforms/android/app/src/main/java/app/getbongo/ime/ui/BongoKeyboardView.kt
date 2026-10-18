@@ -106,6 +106,8 @@ class BongoKeyboardView @JvmOverloads constructor(
         object ToggleEmoji : KeyAction()
         object SwitchImePicker : KeyAction()
         object OpenSettings : KeyAction()
+        object OpenThemes : KeyAction()
+        object ToggleVoice : KeyAction()
         object CursorLeft : KeyAction()
         object CursorRight : KeyAction()
         object Esc : KeyAction()
@@ -251,10 +253,130 @@ class BongoKeyboardView @JvmOverloads constructor(
         } catch (_: Exception) {}
     }
 
+    var isOptionsVisible = false
+        private set
+
+    fun toggleOptionsPanel() {
+        isOptionsVisible = !isOptionsVisible
+        buildKeyboard()
+    }
+
+    private fun buildOptionsPanel() {
+        val root = LinearLayout(context).apply {
+            orientation = VERTICAL
+            gravity = Gravity.CENTER
+            layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
+            setPadding(dp(16), dp(16), dp(16), dp(16))
+        }
+
+        val row = LinearLayout(context).apply {
+            orientation = HORIZONTAL
+            gravity = Gravity.CENTER
+            layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
+        }
+
+        fun createOptionCircle(icon: String, label: String, onClick: () -> Unit): View {
+            val itemContainer = LinearLayout(context).apply {
+                orientation = VERTICAL
+                gravity = Gravity.CENTER
+                layoutParams = LayoutParams(0, LayoutParams.WRAP_CONTENT, 1f)
+            }
+
+            val circle = TextView(context).apply {
+                text = icon
+                gravity = Gravity.CENTER
+                setTextSize(TypedValue.COMPLEX_UNIT_SP, 22f)
+                val size = dp(56)
+                layoutParams = LinearLayout.LayoutParams(size, size).apply {
+                    bottomMargin = dp(6)
+                }
+                background = GradientDrawable().apply {
+                    shape = GradientDrawable.OVAL
+                    setColor(palette.keyNormalColor)
+                    setStroke(dp(1), palette.keyBorderColor)
+                }
+                isClickable = true
+                isFocusable = true
+                setOnClickListener {
+                    performHaptic()
+                    playKeySound()
+                    onClick()
+                }
+            }
+            itemContainer.addView(circle)
+
+            val tvLabel = TextView(context).apply {
+                text = label
+                gravity = Gravity.CENTER
+                setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
+                setTextColor(palette.keyTextColor)
+            }
+            itemContainer.addView(tvLabel)
+
+            return itemContainer
+        }
+
+        row.addView(createOptionCircle("🎨", "Theme") {
+            onKeyClickListener?.invoke(KeyAction.OpenThemes)
+        })
+
+        row.addView(createOptionCircle("⚙️", "Settings") {
+            isOptionsVisible = false
+            buildKeyboard()
+            onKeyClickListener?.invoke(KeyAction.OpenSettings)
+        })
+
+        row.addView(createOptionCircle("🌐", if (isBangla) "English" else "Bongo") {
+            isOptionsVisible = false
+            onKeyClickListener?.invoke(KeyAction.ToggleLanguage)
+        })
+
+        row.addView(createOptionCircle("123", if (userPrefs.showNumberRow) "Hide # Row" else "Show # Row") {
+            userPrefs.showNumberRow = !userPrefs.showNumberRow
+            isOptionsVisible = false
+            buildKeyboard()
+        })
+
+        root.addView(row)
+
+        val closeBtn = TextView(context).apply {
+            text = "✕ Back to Keyboard"
+            gravity = Gravity.CENTER
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
+            setTextColor(palette.stripSecondaryText)
+            setPadding(dp(16), dp(10), dp(16), dp(10))
+            isClickable = true
+            isFocusable = true
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                topMargin = dp(20)
+                gravity = Gravity.CENTER_HORIZONTAL
+            }
+            background = GradientDrawable().apply {
+                cornerRadius = dp(16).toFloat()
+                setColor(palette.keySpecialColor)
+            }
+            setOnClickListener {
+                isOptionsVisible = false
+                buildKeyboard()
+            }
+        }
+        root.addView(closeBtn)
+
+        addView(root)
+    }
+
     fun buildKeyboard() {
         hideKeyPopup()
         hideSpacePopup()
         removeAllViews()
+
+        if (isOptionsVisible) {
+            buildOptionsPanel()
+            return
+        }
 
         if (isSymbols) {
             if (isSymbolsShifted) {

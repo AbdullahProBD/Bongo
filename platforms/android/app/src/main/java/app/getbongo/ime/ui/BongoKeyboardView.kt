@@ -480,13 +480,14 @@ class BongoKeyboardView @JvmOverloads constructor(
         var isDragging = false
         val dragThreshold = dp(12)
 
-        view.setOnTouchListener { _, event ->
+        view.setOnTouchListener { v, event ->
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
                     startX = event.x
                     lastX = event.x
                     isDragging = false
-                    false
+                    v.isPressed = true
+                    true
                 }
                 MotionEvent.ACTION_MOVE -> {
                     val totalDx = Math.abs(event.x - startX)
@@ -502,37 +503,26 @@ class BongoKeyboardView @JvmOverloads constructor(
                             }
                             lastX = event.x
                         }
-                        true
-                    } else {
-                        false
                     }
+                    true
                 }
                 MotionEvent.ACTION_UP -> {
+                    v.isPressed = false
                     if (isDragging) {
                         isDragging = false
-                        true
                     } else {
                         performHaptic()
                         playKeySound()
                         onKeyClickListener?.invoke(KeyAction.Space)
-                        true
                     }
+                    true
                 }
                 MotionEvent.ACTION_CANCEL -> {
+                    v.isPressed = false
                     isDragging = false
-                    false
+                    true
                 }
                 else -> false
-            }
-        }
-
-        view.setOnLongClickListener {
-            if (!isDragging) {
-                performHaptic()
-                onKeyClickListener?.invoke(KeyAction.SwitchImePicker)
-                true
-            } else {
-                false
             }
         }
     }

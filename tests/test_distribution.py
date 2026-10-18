@@ -296,6 +296,7 @@ class DistributionTests(unittest.TestCase):
             'app/src/main/java/app/getbongo/ime/model/UserPreferences.kt',
             'app/src/main/java/app/getbongo/ime/ui/BongoKeyboardView.kt',
             'app/src/main/java/app/getbongo/ime/ui/CandidateStripView.kt',
+            'app/src/main/java/app/getbongo/ime/ui/EmojiKeyboardView.kt',
             'app/src/main/java/app/getbongo/ime/ui/SettingsActivity.kt',
         ]
         for f in ime_files:

@@ -4,10 +4,12 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.StateListDrawable
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.util.AttributeSet
+import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
 import android.widget.LinearLayout
@@ -16,8 +18,8 @@ import app.getbongo.ime.model.UserPreferences
 
 /**
  * On-screen soft keyboard view for Bongo Android IME.
- * Renders touch-optimized QWERTY layout with Avro phonetic switching,
- * Bengali numerals, and punctuation.
+ * Sized and styled with comfortable touch targets matching modern keyboards (like Ridmik / Gboard),
+ * clear visual feedback, accent keys, Bengali punctuation, and emoji trigger.
  */
 class BongoKeyboardView @JvmOverloads constructor(
     context: Context,
@@ -45,12 +47,13 @@ class BongoKeyboardView @JvmOverloads constructor(
         object Return : KeyAction()
         object ToggleLanguage : KeyAction()
         object ToggleSymbols : KeyAction()
+        object ToggleEmoji : KeyAction()
     }
 
     init {
         orientation = VERTICAL
-        setBackgroundColor(Color.parseColor("#18181b"))
-        setPadding(dp(4), dp(6), dp(4), dp(8))
+        setBackgroundColor(Color.parseColor("#121214")) // Sleek modern dark surface
+        setPadding(dp(3), dp(6), dp(3), dp(8))
         buildKeyboard()
     }
 
@@ -74,90 +77,127 @@ class BongoKeyboardView @JvmOverloads constructor(
 
     private fun performHaptic() {
         if (userPrefs.hapticFeedback) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                vibrator?.vibrate(VibrationEffect.createPredefined(VibrationEffect.EFFECT_CLICK))
-            } else {
-                @Suppress("DEPRECATION")
-                vibrator?.vibrate(20)
-            }
+            try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    vibrator?.vibrate(VibrationEffect.createPredefined(VibrationEffect.EFFECT_CLICK))
+                } else {
+                    @Suppress("DEPRECATION")
+                    vibrator?.vibrate(18)
+                }
+            } catch (_: Exception) {}
         }
     }
 
     fun buildKeyboard() {
         removeAllViews()
 
-        val rows = if (isSymbols) {
-            listOf(
-                listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "0"),
-                listOf("@", "#", "$", "%", "&", "-", "+", "(", ")"),
-                listOf("SYM_TOGGLE", "*", "\"", "'", ":", ";", "!", "?", "BACKSPACE"),
-                listOf("ABC", "LANG", "SPACE", "।", "RETURN")
-            )
+        if (isSymbols) {
+            buildSymbolsKeyboard()
         } else {
-            val r1 = listOf("q", "w", "e", "r", "t", "y", "u", "i", "o", "p")
-            val r2 = listOf("a", "s", "d", "f", "g", "h", "j", "k", "l")
-            val r3 = listOf("SHIFT", "z", "x", "c", "v", "b", "n", "m", "BACKSPACE")
-            val r4 = listOf("?123", "LANG", "SPACE", "।", "RETURN")
-            listOf(r1, r2, r3, r4)
+            buildLetterKeyboard()
+        }
+    }
+
+    private fun buildLetterKeyboard() {
+        // Row 1: 10 keys
+        val r1 = listOf("q", "w", "e", "r", "t", "y", "u", "i", "o", "p")
+        addRow(r1, hasSideSpacers = false)
+
+        // Row 2: 9 keys (centered with 0.5f spacers on each side so keys match row 1 width!)
+        val r2 = listOf("a", "s", "d", "f", "g", "h", "j", "k", "l")
+        addRow(r2, hasSideSpacers = true)
+
+        // Row 3: Shift + 7 keys + Backspace
+        val r3 = listOf("SHIFT", "z", "x", "c", "v", "b", "n", "m", "BACKSPACE")
+        addRow(r3, hasSideSpacers = false)
+
+        // Row 4: Bottom navigation bar
+        val r4 = listOf("?123", "EMOJI", "LANG", "SPACE", if (isBangla) "।" else ".", "RETURN")
+        addRow(r4, hasSideSpacers = false)
+    }
+
+    private fun buildSymbolsKeyboard() {
+        // Numbers
+        val r1 = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "0")
+        addRow(r1, hasSideSpacers = false)
+
+        // Symbols Row 1
+        val r2 = listOf("@", "#", "৳", "$", "%", "&", "-", "+", "(", ")")
+        addRow(r2, hasSideSpacers = false)
+
+        // Symbols Row 2
+        val r3 = listOf("SYM_MORE", "*", "\"", "'", ":", ";", "!", "?", "BACKSPACE")
+        addRow(r3, hasSideSpacers = false)
+
+        // Bottom row
+        val r4 = listOf("ABC", "EMOJI", "LANG", "SPACE", "।", "RETURN")
+        addRow(r4, hasSideSpacers = false)
+    }
+
+    private fun addRow(keys: List<String>, hasSideSpacers: Boolean) {
+        val rowLayout = LinearLayout(context).apply {
+            orientation = HORIZONTAL
+            layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, 0, 1f)
+            gravity = Gravity.CENTER_VERTICAL
         }
 
-        for (rowKeys in rows) {
-            val rowLayout = LinearLayout(context).apply {
-                orientation = HORIZONTAL
-                layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, 0, 1f)
-                weightSum = rowKeys.sumOf { getKeyWeight(it).toDouble() }.toFloat()
+        if (hasSideSpacers) {
+            val leftSpacer = View(context).apply {
+                layoutParams = LayoutParams(0, LayoutParams.MATCH_PARENT, 0.5f)
             }
-
-            for (key in rowKeys) {
-                val keyView = createKeyView(key)
-                rowLayout.addView(keyView)
-            }
-            addView(rowLayout)
+            rowLayout.addView(leftSpacer)
         }
+
+        for (key in keys) {
+            val keyView = createKeyView(key)
+            rowLayout.addView(keyView)
+        }
+
+        if (hasSideSpacers) {
+            val rightSpacer = View(context).apply {
+                layoutParams = LayoutParams(0, LayoutParams.MATCH_PARENT, 0.5f)
+            }
+            rowLayout.addView(rightSpacer)
+        }
+
+        addView(rowLayout)
     }
 
     private fun getKeyWeight(key: String): Float = when (key) {
         "SPACE" -> 4.0f
-        "SHIFT", "BACKSPACE" -> 1.5f
-        "RETURN" -> 1.5f
-        "?123", "ABC" -> 1.3f
-        "LANG" -> 1.2f
+        "RETURN" -> 1.55f
+        "SHIFT", "BACKSPACE" -> 1.45f
+        "?123", "ABC" -> 1.25f
+        "LANG", "EMOJI" -> 1.0f
+        "SYM_MORE" -> 1.2f
         else -> 1.0f
     }
 
     private fun createKeyView(key: String): View {
         val tv = TextView(context).apply {
             gravity = Gravity.CENTER
-            textSize = 18f
-            typeface = Typeface.DEFAULT_BOLD
-            setTextColor(Color.WHITE)
-
-            val normalBg = GradientDrawable().apply {
-                cornerRadius = dp(6).toFloat()
-                setColor(if (isSpecialKey(key)) Color.parseColor("#202024") else Color.parseColor("#27272a"))
-            }
-            background = normalBg
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, getKeyTextSize(key))
+            typeface = if (isSpecialKey(key)) Typeface.DEFAULT else Typeface.DEFAULT_BOLD
+            setTextColor(getKeyTextColor(key))
+            background = createKeyBackground(key)
 
             val weight = getKeyWeight(key)
             val lp = LayoutParams(0, LayoutParams.MATCH_PARENT, weight).apply {
-                setMargins(dp(3), dp(4), dp(3), dp(4))
+                setMargins(dp(2), dp(3), dp(2), dp(3))
             }
             layoutParams = lp
 
             text = when (key) {
-                "SHIFT" -> if (isShifted) "⬆" else "⇧"
+                "SHIFT" -> if (isShifted) "⇪" else "⇧"
                 "BACKSPACE" -> "⌫"
                 "RETURN" -> "⏎"
-                "SPACE" -> if (isBangla) "Bangla" else "English"
+                "SPACE" -> if (isBangla) "বাং • Avro" else "English"
                 "LANG" -> "🌐"
+                "EMOJI" -> "😊"
                 "?123" -> "?123"
                 "ABC" -> "ABC"
-                "SYM_TOGGLE" -> "=/<"
+                "SYM_MORE" -> "=/<"
                 else -> if (isShifted) key.uppercase() else key
-            }
-
-            if (key == "SHIFT" && isShifted) {
-                setTextColor(Color.parseColor("#818cf8"))
             }
 
             setOnClickListener {
@@ -168,8 +208,58 @@ class BongoKeyboardView @JvmOverloads constructor(
         return tv
     }
 
+    private fun getKeyTextSize(key: String): Float = when (key) {
+        "SPACE" -> 14f
+        "SHIFT", "BACKSPACE", "RETURN" -> 18f
+        "?123", "ABC", "SYM_MORE" -> 14f
+        "LANG", "EMOJI" -> 18f
+        else -> 21f
+    }
+
+    private fun getKeyTextColor(key: String): Int = when (key) {
+        "RETURN" -> Color.WHITE
+        "SHIFT" -> if (isShifted) Color.parseColor("#818cf8") else Color.WHITE
+        "SPACE" -> if (isBangla) Color.parseColor("#e4e4e7") else Color.parseColor("#a1a1aa")
+        "?123", "ABC", "SYM_MORE" -> Color.parseColor("#d4d4d8")
+        else -> Color.WHITE
+    }
+
     private fun isSpecialKey(key: String): Boolean =
-        key in listOf("SHIFT", "BACKSPACE", "RETURN", "?123", "ABC", "LANG", "SYM_TOGGLE")
+        key in listOf("SHIFT", "BACKSPACE", "RETURN", "?123", "ABC", "LANG", "EMOJI", "SYM_MORE")
+
+    private fun createKeyBackground(key: String): StateListDrawable {
+        val normalColor = when (key) {
+            "RETURN" -> Color.parseColor("#4f46e5") // Indigo accent
+            "SPACE" -> Color.parseColor("#222329")
+            "SHIFT" -> if (isShifted) Color.parseColor("#2e2f3d") else Color.parseColor("#1a1b20")
+            else -> if (isSpecialKey(key)) Color.parseColor("#1a1b20") else Color.parseColor("#24252c")
+        }
+
+        val pressedColor = when (key) {
+            "RETURN" -> Color.parseColor("#4338ca")
+            else -> Color.parseColor("#3b3d49")
+        }
+
+        val normal = GradientDrawable().apply {
+            cornerRadius = dp(7).toFloat()
+            setColor(normalColor)
+            if (key == "RETURN") {
+                // Subtle glow on return key
+            } else if (!isSpecialKey(key)) {
+                setStroke(dp(1), Color.parseColor("#2d2e37"))
+            }
+        }
+
+        val pressed = GradientDrawable().apply {
+            cornerRadius = dp(7).toFloat()
+            setColor(pressedColor)
+        }
+
+        return StateListDrawable().apply {
+            addState(intArrayOf(android.R.attr.state_pressed), pressed)
+            addState(intArrayOf(), normal)
+        }
+    }
 
     private fun handleKeyClick(key: String) {
         when (key) {
@@ -177,6 +267,7 @@ class BongoKeyboardView @JvmOverloads constructor(
             "BACKSPACE" -> onKeyClickListener?.invoke(KeyAction.Backspace)
             "SPACE" -> onKeyClickListener?.invoke(KeyAction.Space)
             "RETURN" -> onKeyClickListener?.invoke(KeyAction.Return)
+            "EMOJI" -> onKeyClickListener?.invoke(KeyAction.ToggleEmoji)
             "LANG" -> {
                 isBangla = !isBangla
                 buildKeyboard()
@@ -192,8 +283,8 @@ class BongoKeyboardView @JvmOverloads constructor(
                 buildKeyboard()
                 onKeyClickListener?.invoke(KeyAction.ToggleSymbols)
             }
-            "SYM_TOGGLE" -> {
-                // Future symbol page toggle
+            "SYM_MORE" -> {
+                // Could expand to more secondary math symbols if needed
             }
             else -> {
                 val ch = if (isShifted) key.uppercase().first() else key.first()

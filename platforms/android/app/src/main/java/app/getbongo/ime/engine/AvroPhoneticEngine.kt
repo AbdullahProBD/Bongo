@@ -142,7 +142,7 @@ class AvroPhoneticEngine {
                         Condition(
                             type = mObj.getString("type"),
                             scope = mObj.getString("scope"),
-                            value = mObj.optString("val", null)
+                            value = if (mObj.has("val")) mObj.getString("val") else null
                         )
                     )
                 }

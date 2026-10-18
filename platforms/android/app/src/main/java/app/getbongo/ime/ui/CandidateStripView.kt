@@ -3,14 +3,19 @@ package app.getbongo.ime.ui
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
+import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.StateListDrawable
 import android.util.AttributeSet
+import android.util.TypedValue
 import android.view.Gravity
+import android.view.View
 import android.widget.HorizontalScrollView
 import android.widget.LinearLayout
 import android.widget.TextView
 
 /**
- * Suggestion strip displaying candidates directly above the keyboard.
+ * Modern suggestion strip displaying transliterated candidate words
+ * directly above the keyboard with highlighted primary choice.
  */
 class CandidateStripView @JvmOverloads constructor(
     context: Context,
@@ -22,13 +27,14 @@ class CandidateStripView @JvmOverloads constructor(
         orientation = LinearLayout.HORIZONTAL
         gravity = Gravity.CENTER_VERTICAL
         layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT)
+        setPadding(dp(8), 0, dp(8), 0)
     }
 
     var onCandidateSelected: ((Int, String) -> Unit)? = null
 
     init {
         isHorizontalScrollBarEnabled = false
-        setBackgroundColor(Color.parseColor("#18181b")) // Dark Bongo surface
+        setBackgroundColor(Color.parseColor("#121214")) // Matches keyboard surface
         addView(container)
     }
 
@@ -41,13 +47,23 @@ class CandidateStripView @JvmOverloads constructor(
         candidates.forEachIndexed { index, candidate ->
             val tv = TextView(context).apply {
                 text = candidate
-                textSize = if (index == 0) 18f else 16f
+                setTextSize(TypedValue.COMPLEX_UNIT_SP, if (index == 0) 17f else 15f)
                 typeface = if (index == 0) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
-                setTextColor(if (index == 0) Color.parseColor("#818cf8") else Color.parseColor("#ffffff"))
-                setPadding(dp(16), dp(10), dp(16), dp(10))
+                setTextColor(if (index == 0) Color.WHITE else Color.parseColor("#d4d4d8"))
+                setPadding(dp(14), dp(6), dp(14), dp(6))
                 gravity = Gravity.CENTER
                 isClickable = true
                 isFocusable = true
+                background = createCandidateBackground(index == 0)
+
+                val lp = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    setMargins(dp(3), 0, dp(3), 0)
+                }
+                layoutParams = lp
+
                 setOnClickListener {
                     onCandidateSelected?.invoke(index, candidate)
                 }
@@ -59,6 +75,29 @@ class CandidateStripView @JvmOverloads constructor(
 
     fun clear() {
         container.removeAllViews()
+    }
+
+    private fun createCandidateBackground(isPrimary: Boolean): StateListDrawable {
+        val normal = GradientDrawable().apply {
+            cornerRadius = dp(16).toFloat()
+            if (isPrimary) {
+                setColor(Color.parseColor("#312e81")) // Indigo 900
+                setStroke(dp(1), Color.parseColor("#6366f1")) // Indigo 500 border
+            } else {
+                setColor(Color.parseColor("#202127"))
+                setStroke(dp(1), Color.parseColor("#2a2b34"))
+            }
+        }
+
+        val pressed = GradientDrawable().apply {
+            cornerRadius = dp(16).toFloat()
+            setColor(Color.parseColor("#4338ca"))
+        }
+
+        return StateListDrawable().apply {
+            addState(intArrayOf(android.R.attr.state_pressed), pressed)
+            addState(intArrayOf(), normal)
+        }
     }
 
     private fun dp(value: Int): Int =

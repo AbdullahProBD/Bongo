@@ -5,20 +5,23 @@ import android.inputmethodservice.InputMethodService
 import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 import app.getbongo.ime.engine.BongoEngine
 import app.getbongo.ime.ui.BongoKeyboardView
 import app.getbongo.ime.ui.CandidateStripView
+import app.getbongo.ime.ui.EmojiKeyboardView
 
 /**
  * Main Android InputMethodService for Bongo.
  * Handles input routing between soft/hardware keyboard, the Bongo phonetic engine,
- * candidate selection strip, and the target application's InputConnection.
+ * candidate selection strip, emoji panel, and the target application's InputConnection.
  */
 class BongoInputMethodService : InputMethodService() {
 
     private lateinit var bongoEngine: BongoEngine
     private var keyboardView: BongoKeyboardView? = null
+    private var emojiKeyboardView: EmojiKeyboardView? = null
     private var candidateStripView: CandidateStripView? = null
     private var isBanglaMode = true
 
@@ -30,7 +33,7 @@ class BongoInputMethodService : InputMethodService() {
     override fun onCreateInputView(): View {
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setBackgroundColor(Color.parseColor("#18181b"))
+            setBackgroundColor(Color.parseColor("#121214"))
         }
 
         candidateStripView = CandidateStripView(this).apply {
@@ -51,10 +54,17 @@ class BongoInputMethodService : InputMethodService() {
             setBackgroundColor(Color.parseColor("#27272a"))
         }
 
-        keyboardView = BongoKeyboardView(this).apply {
+        val keyboardFrame = FrameLayout(this).apply {
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
-                dp(235)
+                dp(270) // Sized comfortably matching Ridmik & Gboard
+            )
+        }
+
+        keyboardView = BongoKeyboardView(this).apply {
+            layoutParams = FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT
             )
             setBanglaMode(isBanglaMode)
             onKeyClickListener = { action ->
@@ -62,15 +72,49 @@ class BongoInputMethodService : InputMethodService() {
             }
         }
 
+        emojiKeyboardView = EmojiKeyboardView(this).apply {
+            layoutParams = FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT
+            )
+            visibility = View.GONE
+            onEmojiSelected = { emoji ->
+                currentInputConnection?.commitText(emoji, 1)
+            }
+            onBackToKeyboard = {
+                showKeyboard()
+            }
+            onBackspace = {
+                sendDownUpKeyEvents(KeyEvent.KEYCODE_DEL)
+            }
+        }
+
+        keyboardFrame.addView(keyboardView)
+        keyboardFrame.addView(emojiKeyboardView)
+
         root.addView(candidateStripView)
         root.addView(divider)
-        root.addView(keyboardView)
+        root.addView(keyboardFrame)
 
         return root
     }
 
+    private fun showKeyboard() {
+        emojiKeyboardView?.visibility = View.GONE
+        keyboardView?.visibility = View.VISIBLE
+        candidateStripView?.visibility = View.VISIBLE
+    }
+
+    private fun showEmojiKeyboard() {
+        commitOngoingComposition()
+        keyboardView?.visibility = View.GONE
+        candidateStripView?.visibility = View.GONE
+        emojiKeyboardView?.visibility = View.VISIBLE
+    }
+
     override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
         super.onStartInputView(info, restarting)
+        showKeyboard()
         resetComposition()
     }
 
@@ -138,6 +182,9 @@ class BongoInputMethodService : InputMethodService() {
                 commitOngoingComposition()
                 isBanglaMode = !isBanglaMode
                 keyboardView?.setBanglaMode(isBanglaMode)
+            }
+            is BongoKeyboardView.KeyAction.ToggleEmoji -> {
+                showEmojiKeyboard()
             }
             is BongoKeyboardView.KeyAction.Shift,
             is BongoKeyboardView.KeyAction.ToggleSymbols -> {

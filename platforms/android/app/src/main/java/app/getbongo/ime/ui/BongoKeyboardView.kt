@@ -492,57 +492,61 @@ class BongoKeyboardView @JvmOverloads constructor(
         }
 
         view.setOnTouchListener { v, event ->
-            when (event.action) {
-                MotionEvent.ACTION_DOWN -> {
-                    startX = event.x
-                    lastX = event.x
-                    isDragging = false
-                    isLongPressed = false
-                    v.isPressed = true
-                    longPressHandler.postDelayed(longPressRunnable, 450L)
-                    true
-                }
-                MotionEvent.ACTION_MOVE -> {
-                    val totalDx = Math.abs(event.x - startX)
-                    if (totalDx > dragThreshold) {
-                        longPressHandler.removeCallbacks(longPressRunnable)
-                    }
-                    if (userPrefs.cursorScrubbing && totalDx > dragThreshold) {
-                        isDragging = true
-                        val dx = event.x - lastX
-                        if (Math.abs(dx) >= dragThreshold) {
-                            performHaptic()
-                            if (dx > 0) {
-                                onKeyClickListener?.invoke(KeyAction.CursorRight)
-                            } else {
-                                onKeyClickListener?.invoke(KeyAction.CursorLeft)
-                            }
-                            lastX = event.x
-                        }
-                    }
-                    true
-                }
-                MotionEvent.ACTION_UP -> {
-                    longPressHandler.removeCallbacks(longPressRunnable)
-                    v.isPressed = false
-                    if (isDragging) {
+            try {
+                when (event.action) {
+                    MotionEvent.ACTION_DOWN -> {
+                        startX = event.x
+                        lastX = event.x
                         isDragging = false
-                    } else if (!isLongPressed) {
-                        performHaptic()
-                        playKeySound()
-                        onKeyClickListener?.invoke(KeyAction.Space)
+                        isLongPressed = false
+                        v.isPressed = true
+                        longPressHandler.postDelayed(longPressRunnable, 450L)
+                        true
                     }
-                    isLongPressed = false
-                    true
+                    MotionEvent.ACTION_MOVE -> {
+                        val totalDx = Math.abs(event.x - startX)
+                        if (totalDx > dragThreshold) {
+                            longPressHandler.removeCallbacks(longPressRunnable)
+                        }
+                        if (userPrefs.cursorScrubbing && totalDx > dragThreshold) {
+                            isDragging = true
+                            val dx = event.x - lastX
+                            if (Math.abs(dx) >= dragThreshold) {
+                                performHaptic()
+                                if (dx > 0) {
+                                    onKeyClickListener?.invoke(KeyAction.CursorRight)
+                                } else {
+                                    onKeyClickListener?.invoke(KeyAction.CursorLeft)
+                                }
+                                lastX = event.x
+                            }
+                        }
+                        true
+                    }
+                    MotionEvent.ACTION_UP -> {
+                        longPressHandler.removeCallbacks(longPressRunnable)
+                        v.isPressed = false
+                        if (isDragging) {
+                            isDragging = false
+                        } else if (!isLongPressed) {
+                            performHaptic()
+                            playKeySound()
+                            onKeyClickListener?.invoke(KeyAction.Space)
+                        }
+                        isLongPressed = false
+                        true
+                    }
+                    MotionEvent.ACTION_CANCEL -> {
+                        longPressHandler.removeCallbacks(longPressRunnable)
+                        v.isPressed = false
+                        isDragging = false
+                        isLongPressed = false
+                        true
+                    }
+                    else -> false
                 }
-                MotionEvent.ACTION_CANCEL -> {
-                    longPressHandler.removeCallbacks(longPressRunnable)
-                    v.isPressed = false
-                    isDragging = false
-                    isLongPressed = false
-                    true
-                }
-                else -> false
+            } catch (_: Exception) {
+                false
             }
         }
     }
@@ -631,6 +635,7 @@ class BongoKeyboardView @JvmOverloads constructor(
 
     override fun onDetachedFromWindow() {
         hideKeyPopup()
+        repeatHandler.removeCallbacksAndMessages(null)
         super.onDetachedFromWindow()
     }
 

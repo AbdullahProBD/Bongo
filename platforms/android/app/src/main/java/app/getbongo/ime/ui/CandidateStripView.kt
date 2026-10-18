@@ -1,6 +1,7 @@
 package app.getbongo.ime.ui
 
 import android.content.Context
+import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.StateListDrawable
@@ -232,8 +233,7 @@ class CandidateStripView @JvmOverloads constructor(
                 setColor(palette.stripPrimaryBg)
                 setStroke(dp(1), palette.stripPrimaryBorder)
             } else {
-                setColor(palette.stripSecondaryBg)
-                setStroke(dp(1), palette.keyBorderColor)
+                setColor(Color.TRANSPARENT)
             }
         }
 

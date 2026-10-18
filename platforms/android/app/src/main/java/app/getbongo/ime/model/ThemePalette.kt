@@ -61,23 +61,23 @@ data class ThemePalette(
                 stripSecondaryText = Color.parseColor("#3f3f46"),
                 dividerColor = Color.parseColor("#e4e4e7")
             )
-            else -> ThemePalette( // "midnight" (default)
+            else -> ThemePalette( // "midnight" (default, replicates classic Ridmik dark theme)
                 name = "midnight",
-                surfaceColor = Color.parseColor("#121214"),
-                keyNormalColor = Color.parseColor("#24252c"),
-                keySpecialColor = Color.parseColor("#1a1b20"),
-                keyReturnColor = Color.parseColor("#4f46e5"),
-                keyPressedColor = Color.parseColor("#3b3d49"),
+                surfaceColor = Color.parseColor("#18191b"),
+                keyNormalColor = Color.parseColor("#3c3d40"),
+                keySpecialColor = Color.parseColor("#222325"),
+                keyReturnColor = Color.parseColor("#222325"),
+                keyPressedColor = Color.parseColor("#595a5f"),
                 keyTextColor = Color.WHITE,
-                keySpecialTextColor = Color.parseColor("#d4d4d8"),
-                keyHintColor = Color.parseColor("#71717a"),
-                keyBorderColor = Color.parseColor("#2d2e37"),
-                stripPrimaryBg = Color.parseColor("#312e81"),
+                keySpecialTextColor = Color.WHITE,
+                keyHintColor = Color.parseColor("#8c8d93"),
+                keyBorderColor = Color.parseColor("#252629"),
+                stripPrimaryBg = Color.parseColor("#292a2d"),
                 stripPrimaryText = Color.WHITE,
                 stripPrimaryBorder = Color.parseColor("#6366f1"),
-                stripSecondaryBg = Color.parseColor("#202127"),
+                stripSecondaryBg = Color.parseColor("#1c1d20"),
                 stripSecondaryText = Color.parseColor("#d4d4d8"),
-                dividerColor = Color.parseColor("#27272a")
+                dividerColor = Color.parseColor("#202123")
             )
         }
     }

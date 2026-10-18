@@ -51,7 +51,7 @@ class UserPreferences(context: Context) {
         set(value) = prefs.edit().putBoolean(KEY_BENGALI_DIGITS, value).apply()
 
     var showNumberRow: Boolean
-        get() = prefs.getBoolean(KEY_SHOW_NUMBER_ROW, true)
+        get() = prefs.getBoolean(KEY_SHOW_NUMBER_ROW, false)
         set(value) = prefs.edit().putBoolean(KEY_SHOW_NUMBER_ROW, value).apply()
 
     var keyPopupPreview: Boolean

@@ -20,6 +20,7 @@ import app.getbongo.ime.model.UserPreferences
 import app.getbongo.ime.ui.BongoKeyboardView
 import app.getbongo.ime.ui.CandidateStripView
 import app.getbongo.ime.ui.EmojiKeyboardView
+import app.getbongo.ime.ui.SettingsActivity
 
 /**
  * Main Android InputMethodService for Bongo.
@@ -161,6 +162,17 @@ class BongoInputMethodService : InputMethodService() {
             LinearLayout.LayoutParams.MATCH_PARENT,
             dp(getTargetKeyboardHeight())
         )
+
+        val actionLabel = when (info?.imeOptions?.and(EditorInfo.IME_MASK_ACTION)) {
+            EditorInfo.IME_ACTION_GO -> "Go"
+            EditorInfo.IME_ACTION_SEARCH -> "Search"
+            EditorInfo.IME_ACTION_SEND -> "Send"
+            EditorInfo.IME_ACTION_NEXT -> "Next"
+            EditorInfo.IME_ACTION_DONE -> "Done"
+            else -> if (info?.inputType != null && (info.inputType and EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE) != 0) "⏎" else "Go"
+        }
+        val isUri = (info?.inputType != null && (info.inputType and EditorInfo.TYPE_MASK_VARIATION) == EditorInfo.TYPE_TEXT_VARIATION_URI)
+        keyboardView?.setActionInfo(actionLabel, isUri)
     }
 
     private fun getTargetKeyboardHeight(): Int {
@@ -369,6 +381,12 @@ class BongoInputMethodService : InputMethodService() {
                 commitOngoingComposition()
                 val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
                 imm?.showInputMethodPicker()
+            }
+            is BongoKeyboardView.KeyAction.OpenSettings -> {
+                val intent = Intent(this, SettingsActivity::class.java).apply {
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+                startActivity(intent)
             }
             is BongoKeyboardView.KeyAction.ToggleEmoji -> {
                 showEmojiKeyboard()

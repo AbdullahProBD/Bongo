@@ -27,8 +27,28 @@ class UserPreferences(context: Context) {
         set(value) = prefs.edit().putBoolean(KEY_SOUND, value).apply()
 
     var theme: String
-        get() = prefs.getString(KEY_THEME, "dark") ?: "dark"
+        get() = prefs.getString(KEY_THEME, "midnight") ?: "midnight"
         set(value) = prefs.edit().putString(KEY_THEME, value).apply()
+
+    var keyboardHeightDp: Int
+        get() = prefs.getInt(KEY_KEYBOARD_HEIGHT, 270)
+        set(value) = prefs.edit().putInt(KEY_KEYBOARD_HEIGHT, value).apply()
+
+    var doubleSpacePeriod: Boolean
+        get() = prefs.getBoolean(KEY_DOUBLE_SPACE_PERIOD, true)
+        set(value) = prefs.edit().putBoolean(KEY_DOUBLE_SPACE_PERIOD, value).apply()
+
+    var longPressSymbols: Boolean
+        get() = prefs.getBoolean(KEY_LONG_PRESS_SYMBOLS, true)
+        set(value) = prefs.edit().putBoolean(KEY_LONG_PRESS_SYMBOLS, value).apply()
+
+    var cursorScrubbing: Boolean
+        get() = prefs.getBoolean(KEY_CURSOR_SCRUBBING, true)
+        set(value) = prefs.edit().putBoolean(KEY_CURSOR_SCRUBBING, value).apply()
+
+    var bengaliDigits: Boolean
+        get() = prefs.getBoolean(KEY_BENGALI_DIGITS, false)
+        set(value) = prefs.edit().putBoolean(KEY_BENGALI_DIGITS, value).apply()
 
     companion object {
         private const val PREFS_NAME = "bongo_preferences"
@@ -37,5 +57,10 @@ class UserPreferences(context: Context) {
         private const val KEY_HAPTIC = "haptic_feedback"
         private const val KEY_SOUND = "sound_feedback"
         private const val KEY_THEME = "theme"
+        private const val KEY_KEYBOARD_HEIGHT = "keyboard_height"
+        private const val KEY_DOUBLE_SPACE_PERIOD = "double_space_period"
+        private const val KEY_LONG_PRESS_SYMBOLS = "long_press_symbols"
+        private const val KEY_CURSOR_SCRUBBING = "cursor_scrubbing"
+        private const val KEY_BENGALI_DIGITS = "bengali_digits"
     }
 }

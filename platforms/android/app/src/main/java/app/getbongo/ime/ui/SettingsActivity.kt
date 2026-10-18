@@ -22,8 +22,8 @@ import app.getbongo.ime.model.UserPreferences
 
 /**
  * Modern Bongo Keyboard settings & setup activity.
- * Guides user through activating the keyboard, switching input methods,
- * configuring preferences, and testing Bangla typing.
+ * Guides user through activating the keyboard, switching themes,
+ * adjusting height, and configuring advanced typing gestures.
  */
 class SettingsActivity : Activity() {
 
@@ -51,7 +51,7 @@ class SettingsActivity : Activity() {
             setTextColor(Color.parseColor("#818cf8"))
         }
         val subtitle = TextView(this).apply {
-            text = "Modern Bengali Phonetic Input Method"
+            text = "Modern Bengali Input Method for Android"
             textSize = 14f
             setTextColor(Color.parseColor("#a1a1aa"))
             setPadding(0, dp(4), 0, dp(24))
@@ -93,6 +93,140 @@ class SettingsActivity : Activity() {
 
         container.addView(createSpacer(dp(20)))
 
+        // Themes Card
+        container.addView(createSectionHeader("THEME SELECTION"))
+        val themeCard = createCardLayout()
+        val themeRow = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            weightSum = 3f
+        }
+        val themeOptions = listOf("midnight" to "Midnight", "oled" to "OLED Black", "light" to "Light")
+        val themeButtons = mutableListOf<Button>()
+
+        themeOptions.forEach { (key, label) ->
+            val isSelected = userPrefs.theme == key
+            val btn = Button(this).apply {
+                text = label
+                textSize = 12f
+                typeface = Typeface.DEFAULT_BOLD
+                setTextColor(if (isSelected) Color.WHITE else Color.parseColor("#a1a1aa"))
+                background = createOptionBackground(isSelected)
+                val lp = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f).apply {
+                    setMargins(dp(3), 0, dp(3), 0)
+                }
+                layoutParams = lp
+                setOnClickListener {
+                    userPrefs.theme = key
+                    themeButtons.forEachIndexed { i, b ->
+                        val sel = themeOptions[i].first == key
+                        b.setTextColor(if (sel) Color.WHITE else Color.parseColor("#a1a1aa"))
+                        b.background = createOptionBackground(sel)
+                    }
+                }
+            }
+            themeButtons.add(btn)
+            themeRow.addView(btn)
+        }
+        themeCard.addView(themeRow)
+        container.addView(themeCard)
+
+        container.addView(createSpacer(dp(20)))
+
+        // Keyboard Height Card
+        container.addView(createSectionHeader("KEYBOARD HEIGHT"))
+        val heightCard = createCardLayout()
+        val heightRow = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            weightSum = 3f
+        }
+        val heightOptions = listOf(250 to "Compact", 270 to "Standard", 295 to "Tall")
+        val heightButtons = mutableListOf<Button>()
+
+        heightOptions.forEach { (h, label) ->
+            val isSelected = userPrefs.keyboardHeightDp == h
+            val btn = Button(this).apply {
+                text = label
+                textSize = 12f
+                typeface = Typeface.DEFAULT_BOLD
+                setTextColor(if (isSelected) Color.WHITE else Color.parseColor("#a1a1aa"))
+                background = createOptionBackground(isSelected)
+                val lp = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f).apply {
+                    setMargins(dp(3), 0, dp(3), 0)
+                }
+                layoutParams = lp
+                setOnClickListener {
+                    userPrefs.keyboardHeightDp = h
+                    heightButtons.forEachIndexed { i, b ->
+                        val sel = heightOptions[i].first == h
+                        b.setTextColor(if (sel) Color.WHITE else Color.parseColor("#a1a1aa"))
+                        b.background = createOptionBackground(sel)
+                    }
+                }
+            }
+            heightButtons.add(btn)
+            heightRow.addView(btn)
+        }
+        heightCard.addView(heightRow)
+        container.addView(heightCard)
+
+        container.addView(createSpacer(dp(20)))
+
+        // Typing Gestures & Features Card
+        container.addView(createSectionHeader("TYPING & GESTURES"))
+        val prefsCard = createCardLayout()
+
+        val hapticSwitch = Switch(this).apply {
+            text = "Haptic feedback on keypress"
+            setTextColor(Color.WHITE)
+            isChecked = userPrefs.hapticFeedback
+            setOnCheckedChangeListener { _, isChecked -> userPrefs.hapticFeedback = isChecked }
+        }
+        val soundSwitch = Switch(this).apply {
+            text = "Sound effects on keypress"
+            setTextColor(Color.WHITE)
+            isChecked = userPrefs.soundFeedback
+            setOnCheckedChangeListener { _, isChecked -> userPrefs.soundFeedback = isChecked }
+        }
+        val scrubbingSwitch = Switch(this).apply {
+            text = "Spacebar cursor trackpad (swipe to scrub)"
+            setTextColor(Color.WHITE)
+            isChecked = userPrefs.cursorScrubbing
+            setOnCheckedChangeListener { _, isChecked -> userPrefs.cursorScrubbing = isChecked }
+        }
+        val doubleSpaceSwitch = Switch(this).apply {
+            text = "Double-tap Space for Dari (। / .)"
+            setTextColor(Color.WHITE)
+            isChecked = userPrefs.doubleSpacePeriod
+            setOnCheckedChangeListener { _, isChecked -> userPrefs.doubleSpacePeriod = isChecked }
+        }
+        val hintsSwitch = Switch(this).apply {
+            text = "Long-press letter for numbers & symbols"
+            setTextColor(Color.WHITE)
+            isChecked = userPrefs.longPressSymbols
+            setOnCheckedChangeListener { _, isChecked -> userPrefs.longPressSymbols = isChecked }
+        }
+        val bnDigitsSwitch = Switch(this).apply {
+            text = "Use Bengali numerals on hints (১, ২, ৩...)"
+            setTextColor(Color.WHITE)
+            isChecked = userPrefs.bengaliDigits
+            setOnCheckedChangeListener { _, isChecked -> userPrefs.bengaliDigits = isChecked }
+        }
+
+        prefsCard.addView(hapticSwitch)
+        prefsCard.addView(createSpacer(dp(8)))
+        prefsCard.addView(soundSwitch)
+        prefsCard.addView(createSpacer(dp(8)))
+        prefsCard.addView(scrubbingSwitch)
+        prefsCard.addView(createSpacer(dp(8)))
+        prefsCard.addView(doubleSpaceSwitch)
+        prefsCard.addView(createSpacer(dp(8)))
+        prefsCard.addView(hintsSwitch)
+        prefsCard.addView(createSpacer(dp(8)))
+        prefsCard.addView(bnDigitsSwitch)
+        container.addView(prefsCard)
+
+        container.addView(createSpacer(dp(20)))
+
         // Engine Status Card
         container.addView(createSectionHeader("ENGINE STATUS"))
         val statusCard = createCardLayout()
@@ -109,46 +243,9 @@ class SettingsActivity : Activity() {
         statusCard.addView(engineStatus)
         container.addView(statusCard)
 
-        container.addView(createSpacer(dp(20)))
-
-        // Preferences Card
-        container.addView(createSectionHeader("PREFERENCES"))
-        val prefsCard = createCardLayout()
-
-        val hapticSwitch = Switch(this).apply {
-            text = "Haptic feedback on keypress"
-            setTextColor(Color.WHITE)
-            isChecked = userPrefs.hapticFeedback
-            setOnCheckedChangeListener { _, isChecked ->
-                userPrefs.hapticFeedback = isChecked
-            }
-        }
-        val soundSwitch = Switch(this).apply {
-            text = "Sound feedback on keypress"
-            setTextColor(Color.WHITE)
-            isChecked = userPrefs.soundFeedback
-            setOnCheckedChangeListener { _, isChecked ->
-                userPrefs.soundFeedback = isChecked
-            }
-        }
-        val emojiSwitch = Switch(this).apply {
-            text = "Suggest emojis & symbols"
-            setTextColor(Color.WHITE)
-            isChecked = userPrefs.suggestEmoji
-            setOnCheckedChangeListener { _, isChecked ->
-                userPrefs.suggestEmoji = isChecked
-            }
-        }
-        prefsCard.addView(hapticSwitch)
-        prefsCard.addView(createSpacer(dp(8)))
-        prefsCard.addView(soundSwitch)
-        prefsCard.addView(createSpacer(dp(8)))
-        prefsCard.addView(emojiSwitch)
-        container.addView(prefsCard)
-
         // Footer version
         val footer = TextView(this).apply {
-            text = "Bongo for Android • v0.1.0\nLicensed under MIT"
+            text = "Bongo for Android • v0.2.0\nLicensed under MIT"
             textSize = 12f
             setTextColor(Color.parseColor("#52525b"))
             gravity = Gravity.CENTER
@@ -178,6 +275,17 @@ class SettingsActivity : Activity() {
         setPadding(dp(16), dp(16), dp(16), dp(16))
     }
 
+    private fun createOptionBackground(isSelected: Boolean): GradientDrawable = GradientDrawable().apply {
+        cornerRadius = dp(8).toFloat()
+        if (isSelected) {
+            setColor(Color.parseColor("#4f46e5"))
+            setStroke(dp(1), Color.parseColor("#6366f1"))
+        } else {
+            setColor(Color.parseColor("#27272a"))
+            setStroke(dp(1), Color.parseColor("#3f3f46"))
+        }
+    }
+
     private fun createButton(text: String, onClick: () -> Unit): Button = Button(this).apply {
         this.text = text
         setTextColor(Color.WHITE)
@@ -185,7 +293,7 @@ class SettingsActivity : Activity() {
         typeface = Typeface.DEFAULT_BOLD
         background = GradientDrawable().apply {
             cornerRadius = dp(8).toFloat()
-            setColor(Color.parseColor("#4f46e5")) // Indigo 600
+            setColor(Color.parseColor("#4f46e5"))
         }
         setPadding(dp(16), dp(12), dp(16), dp(12))
         setOnClickListener { onClick() }

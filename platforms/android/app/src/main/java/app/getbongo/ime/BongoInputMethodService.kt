@@ -1,16 +1,21 @@
 package app.getbongo.ime
 
+import android.content.ClipboardManager
 import android.content.Context
-import android.graphics.Color
+import android.content.Intent
 import android.inputmethodservice.InputMethodService
 import android.os.SystemClock
+import android.speech.RecognizerIntent
 import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 import android.widget.LinearLayout
+import android.widget.Toast
 import app.getbongo.ime.engine.BongoEngine
+import app.getbongo.ime.model.ThemePalette
+import app.getbongo.ime.model.UserPreferences
 import app.getbongo.ime.ui.BongoKeyboardView
 import app.getbongo.ime.ui.CandidateStripView
 import app.getbongo.ime.ui.EmojiKeyboardView
@@ -18,34 +23,45 @@ import app.getbongo.ime.ui.EmojiKeyboardView
 /**
  * Main Android InputMethodService for Bongo.
  * Handles input routing between soft/hardware keyboard, the Bongo phonetic engine,
- * candidate selection strip, shortcuts toolbar (Ctrl, Tab, Esc, Cursor),
+ * candidate selection strip, shortcuts toolbar (Ctrl, Tab, Esc, Clipboard, Voice),
  * emoji panel, and the target application's InputConnection.
  */
 class BongoInputMethodService : InputMethodService() {
 
     private lateinit var bongoEngine: BongoEngine
+    private lateinit var userPrefs: UserPreferences
     private var keyboardView: BongoKeyboardView? = null
     private var emojiKeyboardView: EmojiKeyboardView? = null
     private var candidateStripView: CandidateStripView? = null
+    private var keyboardFrame: FrameLayout? = null
+    private var dividerView: View? = null
+    private var rootView: LinearLayout? = null
+
     private var isBanglaMode = true
     private var isCtrlActive = false
+    private var lastSpaceTime = 0L
 
     override fun onCreate() {
         super.onCreate()
         bongoEngine = BongoEngine()
+        userPrefs = UserPreferences(this)
     }
 
     override fun onCreateInputView(): View {
+        val palette = ThemePalette.getPalette(userPrefs.theme)
+
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setBackgroundColor(Color.parseColor("#121214"))
+            setBackgroundColor(palette.surfaceColor)
         }
+        rootView = root
 
         candidateStripView = CandidateStripView(this).apply {
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 dp(44)
             )
+            applyTheme(palette)
             onCandidateSelected = { index, _ ->
                 handleCandidateSelection(index)
             }
@@ -59,15 +75,17 @@ class BongoInputMethodService : InputMethodService() {
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 dp(1)
             )
-            setBackgroundColor(Color.parseColor("#27272a"))
+            setBackgroundColor(palette.dividerColor)
         }
+        dividerView = divider
 
-        val keyboardFrame = FrameLayout(this).apply {
+        val frame = FrameLayout(this).apply {
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
-                dp(270) // Sized comfortably matching Ridmik & Gboard
+                dp(userPrefs.keyboardHeightDp)
             )
         }
+        keyboardFrame = frame
 
         keyboardView = BongoKeyboardView(this).apply {
             layoutParams = FrameLayout.LayoutParams(
@@ -75,6 +93,7 @@ class BongoInputMethodService : InputMethodService() {
                 FrameLayout.LayoutParams.MATCH_PARENT
             )
             setBanglaMode(isBanglaMode)
+            applyTheme(palette)
             onKeyClickListener = { action ->
                 handleKeyAction(action)
             }
@@ -97,12 +116,12 @@ class BongoInputMethodService : InputMethodService() {
             }
         }
 
-        keyboardFrame.addView(keyboardView)
-        keyboardFrame.addView(emojiKeyboardView)
+        frame.addView(keyboardView)
+        frame.addView(emojiKeyboardView)
 
         root.addView(candidateStripView)
         root.addView(divider)
-        root.addView(keyboardFrame)
+        root.addView(frame)
 
         return root
     }
@@ -124,6 +143,18 @@ class BongoInputMethodService : InputMethodService() {
         super.onStartInputView(info, restarting)
         showKeyboard()
         resetComposition()
+
+        // Sync theme and height changes from settings
+        val palette = ThemePalette.getPalette(userPrefs.theme)
+        rootView?.setBackgroundColor(palette.surfaceColor)
+        dividerView?.setBackgroundColor(palette.dividerColor)
+        candidateStripView?.applyTheme(palette)
+        keyboardView?.applyTheme(palette)
+
+        keyboardFrame?.layoutParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            dp(userPrefs.keyboardHeightDp)
+        )
     }
 
     override fun onFinishInputView(finishingInput: Boolean) {
@@ -146,6 +177,12 @@ class BongoInputMethodService : InputMethodService() {
                 isCtrlActive = !isCtrlActive
                 candidateStripView?.setCtrlActive(isCtrlActive)
             }
+            is CandidateStripView.ShortcutAction.Clipboard -> {
+                handleClipboardAction()
+            }
+            is CandidateStripView.ShortcutAction.VoiceInput -> {
+                handleVoiceInputAction()
+            }
             is CandidateStripView.ShortcutAction.SelectAll -> {
                 ic.performContextMenuAction(android.R.id.selectAll)
             }
@@ -161,6 +198,35 @@ class BongoInputMethodService : InputMethodService() {
             is CandidateStripView.ShortcutAction.CursorRight -> {
                 sendDownUpKeyEvents(KeyEvent.KEYCODE_DPAD_RIGHT)
             }
+        }
+    }
+
+    private fun handleClipboardAction() {
+        val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
+        val clip = clipboard?.primaryClip
+        if (clip != null && clip.itemCount > 0) {
+            val text = clip.getItemAt(0)?.coerceToText(this)?.toString()
+            if (!text.isNullOrEmpty()) {
+                candidateStripView?.showClipboardPreview(text) { toPaste ->
+                    currentInputConnection?.commitText(toPaste, 1)
+                }
+                return
+            }
+        }
+        currentInputConnection?.performContextMenuAction(android.R.id.paste)
+    }
+
+    private fun handleVoiceInputAction() {
+        try {
+            val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+                putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+                putExtra(RecognizerIntent.EXTRA_LANGUAGE, if (isBanglaMode) "bn-BD" else "en-US")
+                putExtra(RecognizerIntent.EXTRA_PROMPT, "Speak now...")
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+            startActivity(intent)
+        } catch (_: Exception) {
+            Toast.makeText(this, "Voice recognition not available", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -231,8 +297,19 @@ class BongoInputMethodService : InputMethodService() {
                     val committed = bongoEngine.commitCandidate(0)
                     ic.commitText("$committed ", 1)
                     candidateStripView?.clear()
+                    lastSpaceTime = SystemClock.uptimeMillis()
                 } else {
-                    ic.commitText(" ", 1)
+                    val now = SystemClock.uptimeMillis()
+                    // Double-tap Space for Dari (।) / Period (.)
+                    if (userPrefs.doubleSpacePeriod && (now - lastSpaceTime < 350L) && !bongoEngine.hasSession()) {
+                        sendDownUpKeyEvents(KeyEvent.KEYCODE_DEL)
+                        val period = if (isBanglaMode) "। " else ". "
+                        ic.commitText(period, 1)
+                        lastSpaceTime = 0L
+                    } else {
+                        ic.commitText(" ", 1)
+                        lastSpaceTime = now
+                    }
                 }
             }
             is BongoKeyboardView.KeyAction.Return -> {
@@ -262,6 +339,12 @@ class BongoInputMethodService : InputMethodService() {
             }
             is BongoKeyboardView.KeyAction.ToggleEmoji -> {
                 showEmojiKeyboard()
+            }
+            is BongoKeyboardView.KeyAction.CursorLeft -> {
+                sendDownUpKeyEvents(KeyEvent.KEYCODE_DPAD_LEFT)
+            }
+            is BongoKeyboardView.KeyAction.CursorRight -> {
+                sendDownUpKeyEvents(KeyEvent.KEYCODE_DPAD_RIGHT)
             }
             is BongoKeyboardView.KeyAction.Esc -> {
                 sendDownUpKeyEvents(KeyEvent.KEYCODE_ESCAPE)

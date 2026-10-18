@@ -294,6 +294,7 @@ class DistributionTests(unittest.TestCase):
             'app/src/main/java/app/getbongo/ime/engine/BongoNative.kt',
             'app/src/main/java/app/getbongo/ime/engine/AvroPhoneticEngine.kt',
             'app/src/main/java/app/getbongo/ime/model/UserPreferences.kt',
+            'app/src/main/java/app/getbongo/ime/model/ThemePalette.kt',
             'app/src/main/java/app/getbongo/ime/ui/BongoKeyboardView.kt',
             'app/src/main/java/app/getbongo/ime/ui/CandidateStripView.kt',
             'app/src/main/java/app/getbongo/ime/ui/EmojiKeyboardView.kt',

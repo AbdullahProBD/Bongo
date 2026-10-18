@@ -197,6 +197,11 @@ class DistributionTests(unittest.TestCase):
         self.assertEqual(lin_eng.get_candidates("bangla")[0], "বাংলা")
         self.assertEqual(lin_eng.get_candidates("kemon")[0], "কেমন")
         self.assertEqual(lin_eng.get_candidates("dhonnobad")[0], "ধন্যবাদ")
+        self.assertEqual(lin_eng.get_candidates("hya")[0], "হ্যাঁ")
+        self.assertEqual(lin_eng.get_candidates("chad")[0], "চাঁদ")
+        self.assertEqual(lin_eng.get_candidates("pach")[0], "পাঁচ")
+        self.assertEqual(lin_eng.get_candidates("hata")[0], "হাঁটা")
+        self.assertEqual(lin_eng.get_candidates("khuje")[0], "খুঁজে")
 
         # 3. Test Windows Service Key Processing Lifecycle
         svc = mod_win.BongoWindowsService()

@@ -222,7 +222,7 @@ class BongoKeyboardView @JvmOverloads constructor(
         addRow(r3, hasSideSpacers = false, isNumberRow = false)
 
         // Row 4: Bottom navigation bar
-        val r4 = listOf("?123", "EMOJI", "LANG", "SPACE", if (isBangla) "।" else ".", "RETURN")
+        val r4 = listOf("?123", "EMOJI", "LANG", "SPACE", ",", if (isBangla) "।" else ".", "RETURN")
         addRow(r4, hasSideSpacers = false, isNumberRow = false)
     }
 
@@ -233,10 +233,10 @@ class BongoKeyboardView @JvmOverloads constructor(
         val r2 = listOf("@", "#", "৳", "$", "%", "&", "-", "+", "(", ")")
         addRow(r2, hasSideSpacers = false, isNumberRow = false)
 
-        val r3 = listOf("ESC", "*", "\"", "'", ":", ";", "!", "?", "BACKSPACE")
+        val r3 = listOf("^", "/", "*", "\"", "'", ":", ";", "!", "?", "BACKSPACE")
         addRow(r3, hasSideSpacers = false, isNumberRow = false)
 
-        val r4 = listOf("ABC", "TAB", "EMOJI", "LANG", "SPACE", "।", "RETURN")
+        val r4 = listOf("ABC", "ESC", "LANG", "SPACE", ",", if (isBangla) "।" else ".", "RETURN")
         addRow(r4, hasSideSpacers = false, isNumberRow = false)
     }
 
@@ -271,12 +271,14 @@ class BongoKeyboardView @JvmOverloads constructor(
     }
 
     private fun getKeyWeight(key: String): Float = when (key) {
-        "SPACE" -> 4.0f
-        "RETURN" -> 1.55f
+        "SPACE" -> 3.3f
+        "RETURN" -> 1.6f
         "SHIFT", "BACKSPACE" -> 1.45f
-        "?123", "ABC" -> 1.25f
-        "LANG", "EMOJI" -> 1.0f
-        "ESC", "TAB", "CTRL" -> 1.1f
+        "?123", "ABC" -> 1.2f
+        "LANG", "EMOJI" -> 0.95f
+        "ESC", "TAB", "CTRL" -> 0.95f
+        "," -> 0.95f
+        ".", "।" -> 0.95f
         else -> 1.0f
     }
 

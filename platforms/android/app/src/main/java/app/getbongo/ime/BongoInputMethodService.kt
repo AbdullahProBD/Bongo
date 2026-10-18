@@ -274,6 +274,12 @@ class BongoInputMethodService : InputMethodService() {
                     return
                 }
 
+                if (ch == ',' || ch == '।' || (!isBanglaMode && ch == '.')) {
+                    commitOngoingComposition()
+                    ic.commitText(ch.toString(), 1)
+                    return
+                }
+
                 if (isBanglaMode && (ch in 'a'..'z' || ch in 'A'..'Z' || ch in "0123456789`~@#\$%^&*()-_=+[{]}\\|;:'\",<.>/?")) {
                     bongoEngine.feedChar(ch, keyboardView?.isShifted == true)
                     val composing = bongoEngine.preedit

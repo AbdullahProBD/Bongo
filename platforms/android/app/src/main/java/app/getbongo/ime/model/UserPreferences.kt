@@ -62,20 +62,28 @@ class UserPreferences(context: Context) {
         get() = prefs.getBoolean(KEY_SWIPE_DELETE, true)
         set(value) = prefs.edit().putBoolean(KEY_SWIPE_DELETE, value).apply()
 
+    fun registerListener(listener: SharedPreferences.OnSharedPreferenceChangeListener) {
+        prefs.registerOnSharedPreferenceChangeListener(listener)
+    }
+
+    fun unregisterListener(listener: SharedPreferences.OnSharedPreferenceChangeListener) {
+        prefs.unregisterOnSharedPreferenceChangeListener(listener)
+    }
+
     companion object {
-        private const val PREFS_NAME = "bongo_preferences"
-        private const val KEY_TYPING_MODE = "typing_mode"
-        private const val KEY_SUGGEST_EMOJI = "suggest_emoji"
-        private const val KEY_HAPTIC = "haptic_feedback"
-        private const val KEY_SOUND = "sound_feedback"
-        private const val KEY_THEME = "theme"
-        private const val KEY_KEYBOARD_HEIGHT = "keyboard_height"
-        private const val KEY_DOUBLE_SPACE_PERIOD = "double_space_period"
-        private const val KEY_LONG_PRESS_SYMBOLS = "long_press_symbols"
-        private const val KEY_CURSOR_SCRUBBING = "cursor_scrubbing"
-        private const val KEY_BENGALI_DIGITS = "bengali_digits"
-        private const val KEY_SHOW_NUMBER_ROW = "show_number_row"
-        private const val KEY_POPUP_PREVIEW = "key_popup_preview"
-        private const val KEY_SWIPE_DELETE = "swipe_delete_words"
+        const val PREFS_NAME = "bongo_preferences"
+        const val KEY_TYPING_MODE = "typing_mode"
+        const val KEY_SUGGEST_EMOJI = "suggest_emoji"
+        const val KEY_HAPTIC = "haptic_feedback"
+        const val KEY_SOUND = "sound_feedback"
+        const val KEY_THEME = "theme"
+        const val KEY_KEYBOARD_HEIGHT = "keyboard_height"
+        const val KEY_DOUBLE_SPACE_PERIOD = "double_space_period"
+        const val KEY_LONG_PRESS_SYMBOLS = "long_press_symbols"
+        const val KEY_CURSOR_SCRUBBING = "cursor_scrubbing"
+        const val KEY_BENGALI_DIGITS = "bengali_digits"
+        const val KEY_SHOW_NUMBER_ROW = "show_number_row"
+        const val KEY_POPUP_PREVIEW = "key_popup_preview"
+        const val KEY_SWIPE_DELETE = "swipe_delete_words"
     }
 }

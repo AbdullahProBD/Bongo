@@ -3,6 +3,7 @@ package app.getbongo.ime
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.inputmethodservice.InputMethodService
 import android.os.SystemClock
 import android.speech.RecognizerIntent
@@ -41,10 +42,15 @@ class BongoInputMethodService : InputMethodService() {
     private var isCtrlActive = false
     private var lastSpaceTime = 0L
 
+    private val prefChangeListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+        handlePreferenceChange(key)
+    }
+
     override fun onCreate() {
         super.onCreate()
         bongoEngine = BongoEngine()
         userPrefs = UserPreferences(this)
+        userPrefs.registerListener(prefChangeListener)
     }
 
     override fun onCreateInputView(): View {
@@ -458,8 +464,24 @@ class BongoInputMethodService : InputMethodService() {
     }
 
     override fun onDestroy() {
+        userPrefs.unregisterListener(prefChangeListener)
         bongoEngine.destroy()
         super.onDestroy()
+    }
+
+    private fun handlePreferenceChange(key: String?) {
+        val palette = ThemePalette.getPalette(userPrefs.theme)
+        rootView?.setBackgroundColor(palette.surfaceColor)
+        dividerView?.setBackgroundColor(palette.dividerColor)
+        candidateStripView?.applyTheme(palette)
+        keyboardView?.applyTheme(palette)
+
+        keyboardFrame?.layoutParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            dp(getTargetKeyboardHeight())
+        )
+        keyboardFrame?.requestLayout()
+        rootView?.requestLayout()
     }
 
     private fun dp(value: Int): Int =

@@ -107,6 +107,7 @@ class DistributionTests(unittest.TestCase):
         self.assertTrue((ROOT / 'platforms/macos').is_dir(), 'macOS platform directory must exist')
         self.assertTrue((ROOT / 'platforms/linux').is_dir(), 'Linux platform directory must exist')
         self.assertTrue((ROOT / 'platforms/windows').is_dir(), 'Windows platform directory must exist')
+        self.assertTrue((ROOT / 'platforms/android').is_dir(), 'Android platform directory must exist')
         self.assertFalse((ROOT / 'licenses/GPL-3.0.txt').exists(), 'Linux GPL license should not exist')
         self.assertFalse((ROOT / 'licenses/MPL-1.1.txt').exists(), 'Legacy MPL-1.1 license should not exist')
 
@@ -123,6 +124,7 @@ class DistributionTests(unittest.TestCase):
         self.assertIn('riti-macos', upstream)
         self.assertIn('riti-linux', upstream)
         self.assertIn('riti-windows', upstream)
+        self.assertIn('riti-android', upstream)
         self.assertNotIn('OpenBangla-Keyboard', upstream)
         self.assertNotIn('Avro-Keyboard', upstream)
 
@@ -144,6 +146,7 @@ class DistributionTests(unittest.TestCase):
         self.assertTrue((ROOT / 'platforms/macos/release/.gitkeep').is_file())
         self.assertTrue((ROOT / 'platforms/linux/release/.gitkeep').is_file())
         self.assertTrue((ROOT / 'platforms/windows/release/.gitkeep').is_file())
+        self.assertTrue((ROOT / 'platforms/android/release/.gitkeep').is_file())
         mac_scripts = {
             path.relative_to(ROOT).as_posix()
             for path in (ROOT / 'platforms/macos/scripts').glob('*')

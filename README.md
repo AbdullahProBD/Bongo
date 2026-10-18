@@ -5,11 +5,11 @@
 <h1 align="center">Bongo · বঙ্গ</h1>
 
 <p align="center">
-  <strong>Native Bangla Phonetic Keyboard for macOS, Linux & Windows</strong>
+  <strong>Native Bangla Phonetic Keyboard for macOS, Linux, Windows & Android</strong>
 </p>
 
 <p align="center">
-  <a href="https://github.com/mehedishakeel/Bongo/releases/latest"><img src="https://img.shields.io/badge/Platforms-macOS%20|%20Linux%20|%20Windows-4f46e5?style=flat-square" alt="Platforms"></a>
+  <a href="https://github.com/mehedishakeel/Bongo/releases/latest"><img src="https://img.shields.io/badge/Platforms-macOS%20|%20Linux%20|%20Windows%20|%20Android-4f46e5?style=flat-square" alt="Platforms"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MPL--2.0-indigo?style=flat-square" alt="License"></a>
   <a href="https://getbongo.app"><img src="https://img.shields.io/badge/Website-getbongo.app-6366f1?style=flat-square" alt="Website"></a>
 </p>
@@ -38,11 +38,15 @@
   <a href="https://github.com/mehedishakeel/Bongo/releases/latest/download/Bongo-1.0.0-x64.msi">
     <img src="https://img.shields.io/badge/Windows-MSI_Installer-0369a1?style=for-the-badge&logo=windows&logoColor=white" alt="Download Windows MSI Package">
   </a>
+  <br>
+  <a href="https://github.com/mehedishakeel/Bongo/releases/latest/download/bongo-android.apk">
+    <img src="https://img.shields.io/badge/Android-APK_Download-22c55e?style=for-the-badge&logo=android&logoColor=white" alt="Download Android APK">
+  </a>
 </p>
 
 ---
 
-**Bongo** is a fast, lightweight, and modern Bengali input method built natively for macOS (Apple Silicon M1/M2/M3/M4+ and Intel x86_64), modern Linux desktop environments (GNOME, KDE Plasma, XFCE), and Windows (Windows 10 & 11). It brings familiar phonetic typing directly into all your applications with instant suggestions, a sleek candidate HUD, and complete on-device privacy.
+**Bongo** is a fast, lightweight, and modern Bengali input method built natively for macOS (Apple Silicon M1/M2/M3/M4+ and Intel x86_64), modern Linux desktop environments (GNOME, KDE Plasma, XFCE), Windows (Windows 10 & 11), and Android smartphones & tablets. It brings familiar phonetic typing directly into all your applications with instant suggestions, a sleek candidate HUD/strip, and complete on-device privacy.
 
 **Visit the official website & interactive demo**: [https://getbongo.app](https://getbongo.app)
 
@@ -94,6 +98,17 @@ See [docs/LINUX-INSTALL.md](docs/LINUX-INSTALL.md) or [platforms/linux/README.md
    - Access settings, fonts, and layout cheat sheets anytime from the system tray icon or Start Menu.
 
 See [docs/WINDOWS-INSTALL.md](docs/WINDOWS-INSTALL.md) or [platforms/windows/README.md](platforms/windows/README.md) for details.
+
+### Android (Smartphones & Tablets)
+
+1. **Download**: Get `bongo-android.apk` from [Releases](https://github.com/mehedishakeel/Bongo/releases/latest).
+2. **Install**: Tap the downloaded APK to install. Allow "Install unknown apps" in Android settings if prompted.
+3. **Activate**:
+   - Open **Bongo Settings** from your app drawer.
+   - Follow the 2-step setup: **Enable Bongo Keyboard** in System Settings, then **Select Bongo Keyboard** as your active input method.
+   - Open any app to type! Switch between English and Bangla via the Space key or Globe key, swipe left on Backspace to erase words, or glide on Spacebar for smooth cursor scrubbing.
+
+See [platforms/android/README.md](platforms/android/README.md) for details.
 
 ---
 
@@ -172,6 +187,11 @@ Press <kbd>Space</kbd> to commit the highlighted word, or press number keys <kbd
 ### Build on Windows:
 ```cmd
 platforms\windows\scripts\build-windows.bat
+```
+
+### Build on Android:
+```sh
+cd platforms/android && ./gradlew assembleDebug
 ```
 
 ### Run Tests:

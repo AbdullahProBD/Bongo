@@ -549,6 +549,7 @@ function initDownloadHub() {
     const macPanel = document.getElementById('dl-panel-mac');
     const linuxPanel = document.getElementById('dl-panel-linux');
     const winPanel = document.getElementById('dl-panel-windows');
+    const androidPanel = document.getElementById('dl-panel-android');
     const copyBtn = document.getElementById('copyInstallCmd');
     const copyText = document.getElementById('copyCmdText');
 
@@ -565,14 +566,22 @@ function initDownloadHub() {
             macPanel.style.display = 'flex';
             linuxPanel.style.display = 'none';
             if (winPanel) winPanel.style.display = 'none';
+            if (androidPanel) androidPanel.style.display = 'none';
         } else if (os === 'windows') {
             macPanel.style.display = 'none';
             linuxPanel.style.display = 'none';
             if (winPanel) winPanel.style.display = 'flex';
+            if (androidPanel) androidPanel.style.display = 'none';
+        } else if (os === 'android') {
+            macPanel.style.display = 'none';
+            linuxPanel.style.display = 'none';
+            if (winPanel) winPanel.style.display = 'none';
+            if (androidPanel) androidPanel.style.display = 'flex';
         } else {
             macPanel.style.display = 'none';
             linuxPanel.style.display = 'flex';
             if (winPanel) winPanel.style.display = 'none';
+            if (androidPanel) androidPanel.style.display = 'none';
         }
     }
 
@@ -586,9 +595,11 @@ function initDownloadHub() {
     // Auto-detect OS
     try {
         const ua = navigator.userAgent || '';
-        if (/Win/i.test(ua)) {
+        if (/Android/i.test(ua)) {
+            switchHub('android');
+        } else if (/Win/i.test(ua)) {
             switchHub('windows');
-        } else if (/Linux|X11/i.test(ua) && !/Android/i.test(ua)) {
+        } else if (/Linux|X11/i.test(ua)) {
             switchHub('linux');
         } else {
             switchHub('mac');
@@ -707,6 +718,8 @@ function initDirectDownload() {
                 document.querySelectorAll('.download-windows-exe').forEach(el => el.setAttribute('href', url));
             } else if (name.endsWith('.msi')) {
                 document.querySelectorAll('.download-windows-msi').forEach(el => el.setAttribute('href', url));
+            } else if (name.endsWith('.apk')) {
+                document.querySelectorAll('.download-android-apk').forEach(el => el.setAttribute('href', url));
             }
         });
     }
@@ -864,6 +877,7 @@ function initInstallTabs() {
     const macSteps = document.getElementById('steps-mac');
     const linuxSteps = document.getElementById('steps-linux');
     const winSteps = document.getElementById('steps-windows');
+    const androidSteps = document.getElementById('steps-android');
     if (!tabs.length || !macSteps || !linuxSteps) return;
 
     tabs.forEach(tab => {
@@ -879,14 +893,22 @@ function initInstallTabs() {
                 macSteps.style.display = 'none';
                 linuxSteps.style.display = 'grid';
                 if (winSteps) winSteps.style.display = 'none';
+                if (androidSteps) androidSteps.style.display = 'none';
             } else if (os === 'windows') {
                 macSteps.style.display = 'none';
                 linuxSteps.style.display = 'none';
                 if (winSteps) winSteps.style.display = 'grid';
+                if (androidSteps) androidSteps.style.display = 'none';
+            } else if (os === 'android') {
+                macSteps.style.display = 'none';
+                linuxSteps.style.display = 'none';
+                if (winSteps) winSteps.style.display = 'none';
+                if (androidSteps) androidSteps.style.display = 'grid';
             } else {
                 macSteps.style.display = 'grid';
                 linuxSteps.style.display = 'none';
                 if (winSteps) winSteps.style.display = 'none';
+                if (androidSteps) androidSteps.style.display = 'none';
             }
         });
     });

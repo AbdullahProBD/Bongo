@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bongo · বঙ্গ: Native Bangla Keyboard for macOS & Linux</title>
-    <meta name="description" content="Bongo (বঙ্গ) is a modern, clean native Bengali phonetic keyboard built for Apple Silicon macOS and modern Linux. Fast, lightweight, zero-telemetry private on-device typing.">
-    <meta name="keywords" content="Bongo, getbongo, getbongo.app, bangla keyboard mac, bangla keyboard linux, avro keyboard mac, avro linux, apple silicon bangla, ibus bengali, arm64 bangla ime, mehedi shakeel">
+    <title>Bongo · বঙ্গ: Native Bangla Keyboard for macOS, Linux, Windows & Android</title>
+    <meta name="description" content="Bongo (বঙ্গ) is a modern, fast native Bengali phonetic keyboard built for Apple Silicon macOS, modern Linux, Windows 10/11, and Android. Fast, lightweight, zero-telemetry private on-device typing.">
+    <meta name="keywords" content="Bongo, getbongo, getbongo.app, bangla keyboard mac, bangla keyboard linux, bangla keyboard windows, bangla keyboard android, avro keyboard mac, avro linux, avro android, apple silicon bangla, ibus bengali, arm64 bangla ime, mehedi shakeel">
     <meta name="author" content="Mehedi Shakeel">
     <meta name="robots" content="index, follow">
     <meta name="theme-color" content="#f5f5f7">
@@ -19,16 +19,16 @@
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Bongo (বঙ্গ)">
     <meta property="og:url" content="https://getbongo.app/">
-    <meta property="og:title" content="Bongo · বঙ্গ: Native Bangla Keyboard for macOS & Linux">
-    <meta property="og:description" content="Native Apple Silicon & Linux Bengali input method. Fast, lightweight, on-device privacy, zero telemetry, modern UI. Free and open source.">
+    <meta property="og:title" content="Bongo · বঙ্গ: Native Bangla Keyboard for macOS, Linux, Windows & Android">
+    <meta property="og:description" content="Native Apple Silicon, Linux, Windows & Android Bengali input method. Fast, lightweight, on-device privacy, zero telemetry, modern UI. Free and open source.">
     <meta property="og:image" content="https://getbongo.app/assets/og-image.png">
     <meta property="og:locale" content="en_US">
     <meta property="og:locale:alternate" content="bn_BD">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Bongo · বঙ্গ: Native Bangla Keyboard for macOS & Linux">
-    <meta name="twitter:description" content="Native Apple Silicon & Linux Bengali input method. Fast, lightweight, on-device privacy, modern UI.">
+    <meta name="twitter:title" content="Bongo · বঙ্গ: Native Bangla Keyboard for macOS, Linux, Windows & Android">
+    <meta name="twitter:description" content="Native Apple Silicon, Linux, Windows & Android Bengali input method. Fast, lightweight, on-device privacy, modern UI.">
     <meta name="twitter:image" content="https://getbongo.app/assets/og-image.png">
 
     <!-- Favicon -->
@@ -46,9 +46,9 @@
           "name": "Bongo",
           "alternateName": "বঙ্গ",
           "applicationCategory": "UtilitiesApplication",
-          "operatingSystem": "macOS 13.0 or later (Apple Silicon & Intel), Linux (amd64 & arm64)",
+          "operatingSystem": "macOS 13.0 or later (Apple Silicon & Intel), Linux (amd64 & arm64), Windows 10/11 (x64), Android 8.0+",
           "softwareVersion": "1.0",
-          "description": "Bongo is a free, native, lightweight Bengali phonetic keyboard input method editor built for macOS and Linux.",
+          "description": "Bongo is a free, native, lightweight Bengali phonetic keyboard input method editor built for macOS, Linux, Windows, and Android.",
           "url": "https://getbongo.app/",
           "downloadUrl": "https://github.com/mehedishakeel/Bongo/releases/latest",
           "image": "https://getbongo.app/assets/og-image.png",
@@ -144,7 +144,7 @@
                         A New Era of Bangla Avro Typing
                     </h1>
                     <p class="hero-subline" data-i18n="hero.subtitle">
-                        Fast, lightweight, and private. Type naturally in Bengali across macOS, Linux, and Windows using familiar Avro phonetic rules.
+                        Fast, lightweight, and private. Type naturally in Bengali across macOS, Linux, Windows, and Android using familiar Avro phonetic rules.
                     </p>
                     <div class="download-hub" id="download-hub">
                         <!-- OS Segmented Switcher -->
@@ -166,6 +166,12 @@
                                     <path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.551H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.051-1.699"/>
                                 </svg>
                                 <span data-i18n="dl.tab_windows">Windows</span>
+                            </button>
+                            <button class="dl-tab-btn" data-hub-os="android" role="tab" aria-selected="false">
+                                <svg class="dl-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M17.523 15.3414c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.551 0 .9993.4482.9993.9993.0001.5511-.4483.9997-.9993.9997m-11.046 0c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.5511 0 .9993.4482.9993.9993 0 .5511-.4482.9997-.9993.9997m11.4045-6.02l1.9973-3.4592a.416.416 0 00-.1521-.5676.416.416 0 00-.5676.1521l-2.0223 3.503C15.5802 8.4116 13.8432 8.1 12 8.1c-1.8432 0-3.5802.3116-5.1378.8507L4.8399 5.4477a.416.416 0 00-.5676-.1521.416.416 0 00-.1521.5676l1.9973 3.4592C2.6889 11.1867.3432 14.6589 0 18.761h24c-.3432-4.1021-2.6889-7.5743-6.1185-9.4396"/>
+                                </svg>
+                                <span data-i18n="dl.tab_android">Android</span>
                             </button>
                         </div>
 
@@ -436,6 +442,86 @@
                             </div>
                         </div>
 
+                        <!-- Android Download Panel -->
+                        <div class="dl-panel" id="dl-panel-android" style="display: none;">
+                            <div class="dl-cards-grid">
+                                <!-- Card 1: Android Release APK -->
+                                <div class="dl-card dl-card-highlight">
+                                    <div class="dl-card-header">
+                                        <div class="dl-card-icon-box">
+                                            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M17.523 15.3414c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.551 0 .9993.4482.9993.9993.0001.5511-.4483.9997-.9993.9997m-11.046 0c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.5511 0 .9993.4482.9993.9993 0 .5511-.4482.9997-.9993.9997m11.4045-6.02l1.9973-3.4592a.416.416 0 00-.1521-.5676.416.416 0 00-.5676.1521l-2.0223 3.503C15.5802 8.4116 13.8432 8.1 12 8.1c-1.8432 0-3.5802.3116-5.1378.8507L4.8399 5.4477a.416.416 0 00-.5676-.1521.416.416 0 00-.1521.5676l1.9973 3.4592C2.6889 11.1867.3432 14.6589 0 18.761h24c-.3432-4.1021-2.6889-7.5743-6.1185-9.4396"/>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h4 class="dl-card-title" data-i18n="dl.android_apk_title">Android APK</h4>
+                                            <p class="dl-card-subtitle" data-i18n="dl.android_apk_subtitle">Smartphones & Tablets (Android 8.0+)</p>
+                                        </div>
+                                    </div>
+                                    <div class="dl-card-meta">
+                                        <span><code>.apk</code> Package</span>
+                                        <span>Android 8.0 Oreo+</span>
+                                        <span>~6.3 MB</span>
+                                    </div>
+                                    <a href="https://github.com/mehedishakeel/Bongo/releases/latest/download/bongo-android.apk" class="btn-dl-card btn-dl-primary download-android-apk">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="7 10 12 15 17 10"></polyline>
+                                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                                        </svg>
+                                        <span data-i18n="dl.android_apk_btn">Download Android APK</span>
+                                    </a>
+                                </div>
+
+                                <!-- Card 2: Features / Highlights on Mobile -->
+                                <div class="dl-card">
+                                    <div class="dl-card-header">
+                                        <div class="dl-card-icon-box">
+                                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                                                <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h4 class="dl-card-title" data-i18n="dl.android_features_title">Mobile Gestures & Tools</h4>
+                                            <p class="dl-card-subtitle" data-i18n="dl.android_features_subtitle">Cursor trackpad, swipe delete & emoji</p>
+                                        </div>
+                                    </div>
+                                    <div class="dl-card-meta">
+                                        <span>Spacebar Trackpad</span>
+                                        <span>Swipe Word Erase</span>
+                                        <span>Full Emoji Grid</span>
+                                    </div>
+                                    <a href="#install" class="btn-dl-card btn-dl-secondary">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                                        </svg>
+                                        <span data-i18n="dl.android_guide_btn">View Android Setup Guide</span>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- Android Quick Info Box -->
+                            <div class="dl-terminal-box">
+                                <div class="dl-terminal-header">
+                                    <span class="dl-terminal-dot dot-r"></span>
+                                    <span class="dl-terminal-dot dot-y"></span>
+                                    <span class="dl-terminal-dot dot-g"></span>
+                                    <span class="dl-terminal-title" data-i18n="dl.android_tip_title">Sideloading Tip:</span>
+                                </div>
+                                <div class="dl-terminal-body">
+                                    <code data-i18n="dl.android_tip_desc">Download bongo-android.apk directly on your phone and tap Install. No root or Google Play needed.</code>
+                                </div>
+                            </div>
+
+                            <div class="dl-panel-footer">
+                                <span data-i18n="dl.android_switch_tip">Instant Keyboard Switcher:</span>
+                                <span class="dl-universal-link" data-i18n="dl.android_switch_desc">Tap or long-press the Globe (🌐) key to switch between English and Bongo anytime</span>
+                            </div>
+                        </div>
+
                         <!-- Guide link -->
                         <div class="download-hub-links">
                             <a href="#install" class="hero-guide-link">
@@ -457,7 +543,7 @@
                                 <line x1="1" y1="9" x2="4" y2="9"></line>
                                 <line x1="1" y1="14" x2="4" y2="14"></line>
                             </svg>
-                            <span>macOS, Linux & Windows</span>
+                            <span>macOS, Linux, Windows & Android</span>
                         </div>
                         <div class="hero-spec-chip">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -725,6 +811,12 @@
                             </svg>
                             <span data-i18n="install.tab_windows">Windows</span>
                         </button>
+                        <button class="os-tab-btn" data-os="android" role="tab" aria-selected="false">
+                            <svg class="setup-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M17.523 15.3414c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.551 0 .9993.4482.9993.9993.0001.5511-.4483.9997-.9993.9997m-11.046 0c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.5511 0 .9993.4482.9993.9993 0 .5511-.4482.9997-.9993.9997m11.4045-6.02l1.9973-3.4592a.416.416 0 00-.1521-.5676.416.416 0 00-.5676.1521l-2.0223 3.503C15.5802 8.4116 13.8432 8.1 12 8.1c-1.8432 0-3.5802.3116-5.1378.8507L4.8399 5.4477a.416.416 0 00-.5676-.1521.416.416 0 00-.1521.5676l1.9973 3.4592C2.6889 11.1867.3432 14.6589 0 18.761h24c-.3432-4.1021-2.6889-7.5743-6.1185-9.4396"/>
+                            </svg>
+                            <span data-i18n="install.tab_android">Android</span>
+                        </button>
                     </div>
                 </div>
 
@@ -885,6 +977,54 @@
                     </div>
                 </div>
 
+                <!-- Android Steps -->
+                <div class="steps-row" id="steps-android" style="display: none;">
+                    <div class="setup-step-card">
+                        <div class="step-card-header">
+                            <span class="step-badge-num">01</span>
+                            <span class="step-badge-tag">INSTALL APK</span>
+                        </div>
+                        <div class="step-graphic">
+                            <div class="graphic-chip app-chip">
+                                <img src="assets/bongo-logo.png" alt="Bongo App" class="chip-app-icon" width="20" height="20">
+                                <span class="chip-label">bongo-android.apk</span>
+                            </div>
+                        </div>
+                        <h3 class="step-heading" data-i18n="step.android_1_title">Download & Install</h3>
+                        <p class="step-text" data-i18n="step.android_1_desc">Download <strong>bongo-android.apk</strong> directly on your phone and open it to install. Allow unknown apps installation if prompted.</p>
+                    </div>
+
+                    <div class="setup-step-card">
+                        <div class="step-card-header">
+                            <span class="step-badge-num">02</span>
+                            <span class="step-badge-tag">ENABLE IME</span>
+                        </div>
+                        <div class="step-graphic">
+                            <div class="graphic-status-pill">
+                                <span class="status-pulse-dot"></span>
+                                <span>Bongo Settings · 2-Step Setup</span>
+                            </div>
+                        </div>
+                        <h3 class="step-heading" data-i18n="step.android_2_title">Enable in Settings</h3>
+                        <p class="step-text" data-i18n="step.android_2_desc">Open the <strong>Bongo</strong> app from your home screen. Tap <strong>Enable Bongo Keyboard</strong> and toggle it ON in Android System Settings.</p>
+                    </div>
+
+                    <div class="setup-step-card">
+                        <div class="step-card-header">
+                            <span class="step-badge-num">03</span>
+                            <span class="step-badge-tag">START TYPING</span>
+                        </div>
+                        <div class="step-graphic">
+                            <div class="graphic-status-pill">
+                                <span class="status-pulse-dot"></span>
+                                <span>Bongo Keyboard · Active</span>
+                            </div>
+                        </div>
+                        <h3 class="step-heading" data-i18n="step.android_3_title">Select & Type</h3>
+                        <p class="step-text" data-i18n="step.android_3_desc">Tap <strong>Select Bongo Keyboard</strong> to set it as your active keyboard. Open WhatsApp, Messenger, or Chrome and start typing phonetically in Bangla!</p>
+                    </div>
+                </div>
+
                 <!-- Unified Bottom Setup Summary Dock -->
                 <div class="setup-footer-card">
                     <div class="setup-footer-left">
@@ -898,7 +1038,7 @@
                             </div>
                             <span class="setup-tip-label" data-i18n="install.shortcut_title">Quick Switch Shortcut</span>
                         </div>
-                        <p class="setup-tip-text" data-i18n="install.shortcut_desc">Tap the <strong>Globe</strong> (<kbd class="mac-kbd">fn</kbd>) key or press <kbd class="mac-kbd">Control + Space</kbd> (or <kbd>Super + Space</kbd> on Linux, or <kbd>F12</kbd> on Windows) to seamlessly switch between English and Bongo without lifting your hands.</p>
+                        <p class="setup-tip-text" data-i18n="install.shortcut_desc">Tap the <strong>Globe</strong> (<kbd class="mac-kbd">fn</kbd>) key or press <kbd class="mac-kbd">Control + Space</kbd> (or <kbd>Super + Space</kbd> on Linux, <kbd>F12</kbd> on Windows, or the Space/Globe key on Android) to seamlessly switch between English and Bongo without lifting your hands.</p>
                     </div>
                 </div>
             </div>

@@ -557,38 +557,28 @@ function initDownloadHub() {
 
     function switchHub(os) {
         hubTabs.forEach(tab => {
-            const isActive = tab.getAttribute('data-hub-os') === os;
+            const tabOs = tab.getAttribute('data-hub-os');
+            const isActive = tabOs === os;
             tab.classList.toggle('active', isActive);
             tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
         });
 
-        if (os === 'mac') {
-            macPanel.style.display = 'flex';
-            linuxPanel.style.display = 'none';
-            if (winPanel) winPanel.style.display = 'none';
-            if (androidPanel) androidPanel.style.display = 'none';
-        } else if (os === 'windows') {
-            macPanel.style.display = 'none';
-            linuxPanel.style.display = 'none';
-            if (winPanel) winPanel.style.display = 'flex';
-            if (androidPanel) androidPanel.style.display = 'none';
-        } else if (os === 'android') {
-            macPanel.style.display = 'none';
-            linuxPanel.style.display = 'none';
-            if (winPanel) winPanel.style.display = 'none';
-            if (androidPanel) androidPanel.style.display = 'flex';
-        } else {
-            macPanel.style.display = 'none';
-            linuxPanel.style.display = 'flex';
-            if (winPanel) winPanel.style.display = 'none';
-            if (androidPanel) androidPanel.style.display = 'none';
-        }
+        if (macPanel) macPanel.style.display = (os === 'mac') ? 'flex' : 'none';
+        if (linuxPanel) linuxPanel.style.display = (os === 'linux') ? 'flex' : 'none';
+        if (winPanel) winPanel.style.display = (os === 'windows') ? 'flex' : 'none';
+        if (androidPanel) androidPanel.style.display = (os === 'android') ? 'flex' : 'none';
     }
 
+    window.switchDownloadHub = switchHub;
+    window.switchHub = switchHub;
+
     hubTabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            const os = tab.getAttribute('data-hub-os');
-            switchHub(os);
+        tab.addEventListener('click', (e) => {
+            const btn = e.currentTarget || tab;
+            const os = btn.getAttribute('data-hub-os');
+            if (os) {
+                switchHub(os);
+            }
         });
     });
 
@@ -880,35 +870,28 @@ function initInstallTabs() {
     const androidSteps = document.getElementById('steps-android');
     if (!tabs.length || !macSteps || !linuxSteps) return;
 
+    function switchInstallTab(os) {
+        tabs.forEach(t => {
+            const tabOs = t.getAttribute('data-os');
+            const isActive = tabOs === os;
+            t.classList.toggle('active', isActive);
+            t.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        });
+
+        if (macSteps) macSteps.style.display = (os === 'mac') ? 'grid' : 'none';
+        if (linuxSteps) linuxSteps.style.display = (os === 'linux') ? 'grid' : 'none';
+        if (winSteps) winSteps.style.display = (os === 'windows') ? 'grid' : 'none';
+        if (androidSteps) androidSteps.style.display = (os === 'android') ? 'grid' : 'none';
+    }
+
+    window.switchInstallTab = switchInstallTab;
+
     tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            tabs.forEach(t => {
-                t.classList.remove('active');
-                t.setAttribute('aria-selected', 'false');
-            });
-            tab.classList.add('active');
-            tab.setAttribute('aria-selected', 'true');
-            const os = tab.getAttribute('data-os');
-            if (os === 'linux') {
-                macSteps.style.display = 'none';
-                linuxSteps.style.display = 'grid';
-                if (winSteps) winSteps.style.display = 'none';
-                if (androidSteps) androidSteps.style.display = 'none';
-            } else if (os === 'windows') {
-                macSteps.style.display = 'none';
-                linuxSteps.style.display = 'none';
-                if (winSteps) winSteps.style.display = 'grid';
-                if (androidSteps) androidSteps.style.display = 'none';
-            } else if (os === 'android') {
-                macSteps.style.display = 'none';
-                linuxSteps.style.display = 'none';
-                if (winSteps) winSteps.style.display = 'none';
-                if (androidSteps) androidSteps.style.display = 'grid';
-            } else {
-                macSteps.style.display = 'grid';
-                linuxSteps.style.display = 'none';
-                if (winSteps) winSteps.style.display = 'none';
-                if (androidSteps) androidSteps.style.display = 'none';
+        tab.addEventListener('click', (e) => {
+            const btn = e.currentTarget || tab;
+            const os = btn.getAttribute('data-os');
+            if (os) {
+                switchInstallTab(os);
             }
         });
     });

@@ -16,6 +16,39 @@ import ctypes
 from ctypes import wintypes
 from pathlib import Path
 
+# Add platforms/common to path for linguistic converter module
+COMMON_DIR = Path(__file__).resolve().parent.parent.parent / "common"
+if COMMON_DIR.is_dir() and str(COMMON_DIR) not in sys.path:
+    sys.path.insert(0, str(COMMON_DIR))
+
+try:
+    from converter import (
+        separate_padding,
+        fix_string_case,
+        apply_sandhi_rules,
+        AUTOCORRECT_LOANWORDS,
+        unicode_to_bijoy,
+        bijoy_to_unicode,
+    )
+except ImportError:
+    def separate_padding(word: str):
+        m1 = re.match(r"^([\-\]~!@#%&*()_=+[{}'\";<>\/?|.,:]+)", word or "")
+        p = m1.group(1) if m1 else ""
+        rest = (word or "")[len(p):]
+        m2 = re.search(r"([\-\]~!@#%&*()_=+[{}'\";<>\/?|.,:]+)$", rest)
+        s = m2.group(1) if m2 else ""
+        return p, rest[:len(rest) - len(s)] if s else rest, s
+    def fix_string_case(word: str):
+        cased = set("OIUDGJNRSTYZ")
+        return "".join(c if (c in cased or not c.isalpha()) else c.lower() for c in (word or ""))
+    def apply_sandhi_rules(stem: str, suffix: str):
+        return (stem or "") + (suffix or "")
+    AUTOCORRECT_LOANWORDS = {
+        "1st": "১ম", "2nd": "২য়", "3rd": "৩য়", "4th": "৪র্থ", "5th": "৫ম",
+        "class": "ক্লাস", "click": "ক্লিক", "school": "স্কুল", "police": "পুলিশ",
+        "google": "গুগল", "facebook": "ফেসবুক", "bongo": "বঙ্গ"
+    }
+
 class SafeStream:
     def write(self, s):
         pass
@@ -220,28 +253,48 @@ class AvroPhoneticEngine:
         cleaned = (word or '').strip()
         if not cleaned:
             return []
-        lower = cleaned.lower()
+
+        # 1. OmicronLab Punctuation Padding Isolator
+        punct_prefix, stem, punct_suffix = separate_padding(cleaned)
+        if not stem:
+            return [cleaned]
+
+        # 2. Case Normalizer
+        cased_stem = fix_string_case(stem)
+        lower = stem.lower()
         cands = []
         seen = set()
+
         def add(c):
             if c and c not in seen:
                 seen.add(c)
                 cands.append(c)
 
+        # 3. Curated Dictionary lookup
         if lower in self.dictionary:
             for c in self.dictionary[lower]:
                 add(c)
-        rule_based = self.convert_word(cleaned)
+
+        # 4. Autocorrect & English Loanwords (OmicronLab autodict)
+        if lower in AUTOCORRECT_LOANWORDS:
+            add(AUTOCORRECT_LOANWORDS[lower])
+
+        # 5. Rule-based phonetic conversion
+        rule_based = self.convert_word(cased_stem)
         add(rule_based)
-        if len(cands) < 5 and cleaned:
-            add(self.convert_word(cleaned[0].upper() + cleaned[1:]))
+
+        # 6. Fallback variations (TitleCase, Sibilant s/sh variants)
+        if len(cands) < 5 and stem:
+            add(self.convert_word(stem[0].upper() + stem[1:]))
         if len(cands) < 5:
             if 'sh' in lower:
-                add(self.convert_word(re.sub(r'sh', 's', cleaned, flags=re.IGNORECASE)))
+                add(self.convert_word(re.sub(r'sh', 's', stem, flags=re.IGNORECASE)))
             elif 's' in lower:
-                add(self.convert_word(re.sub(r's', 'sh', cleaned, flags=re.IGNORECASE)))
-        add(cleaned)
-        return cands[:5]
+                add(self.convert_word(re.sub(r's', 'sh', stem, flags=re.IGNORECASE)))
+        add(stem)
+
+        # Re-attach isolated punctuation padding
+        return [f"{punct_prefix}{c}{punct_suffix}" for c in cands[:5]]
 
 BENGALI_DIGITS = {
     "0": "০", "1": "১", "2": "২", "3": "৩", "4": "৪",

@@ -33,6 +33,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 9. Installation OS Tab Switcher (macOS / Linux)
     initInstallTabs();
+
+    // 10. Built-in Utilities: Unicode <-> Bijoy Converter
+    initConverter();
 });
 
 /* ========================================================
@@ -895,4 +898,177 @@ function initInstallTabs() {
             }
         });
     });
+}
+
+/* ========================================================
+   10. Built-in Utilities: Unicode ↔ Bijoy (ANSI) Converter
+   ======================================================== */
+function initConverter() {
+    const modeU2BBtn = document.getElementById('convModeU2B');
+    const modeB2UBtn = document.getElementById('convModeB2U');
+    const swapBtn = document.getElementById('btnSwapDirection');
+
+    const inputArea = document.getElementById('convInputText');
+    const outputArea = document.getElementById('convOutputText');
+
+    const inputLabel = document.getElementById('convInputLabel');
+    const inputBadge = document.getElementById('convInputBadge');
+    const outputLabel = document.getElementById('convOutputLabel');
+    const outputBadge = document.getElementById('convOutputBadge');
+
+    const inputCharCount = document.getElementById('convInputCharCount');
+    const inputWordCount = document.getElementById('convInputWordCount');
+    const outputCharCount = document.getElementById('convOutputCharCount');
+    const outputWordCount = document.getElementById('convOutputWordCount');
+
+    const clearBtn = document.getElementById('btnClearConvInput');
+    const copyBtn = document.getElementById('btnCopyConvOutput');
+    const copyBtnText = document.getElementById('convCopyBtnText');
+
+    const samplePills = document.querySelectorAll('.conv-sample-pill');
+
+    if (!inputArea || !outputArea) return;
+
+    let currentMode = 'u2b'; // 'u2b' or 'b2u'
+
+    function countWords(str) {
+        const trimmed = (str || '').trim();
+        if (!trimmed) return 0;
+        return trimmed.split(/\s+/).length;
+    }
+
+    function updateStats() {
+        const inVal = inputArea.value || '';
+        const outVal = outputArea.value || '';
+
+        const inChars = inVal.length;
+        const inWords = countWords(inVal);
+        const outChars = outVal.length;
+        const outWords = countWords(outVal);
+
+        if (inputCharCount) inputCharCount.textContent = `${inChars} chars`;
+        if (inputWordCount) inputWordCount.textContent = `${inWords} words`;
+        if (outputCharCount) outputCharCount.textContent = `${outChars} chars`;
+        if (outputWordCount) outputWordCount.textContent = `${outWords} words`;
+    }
+
+    function performConversion() {
+        const text = inputArea.value || '';
+        if (!window.BongoConverter) {
+            outputArea.value = text;
+            updateStats();
+            return;
+        }
+
+        if (!text) {
+            outputArea.value = '';
+            updateStats();
+            return;
+        }
+
+        if (currentMode === 'u2b') {
+            outputArea.value = window.BongoConverter.unicodeToBijoy(text);
+        } else {
+            outputArea.value = window.BongoConverter.bijoyToUnicode(text);
+        }
+
+        updateStats();
+    }
+
+    function setMode(mode) {
+        currentMode = mode;
+        const isU2B = mode === 'u2b';
+
+        if (modeU2BBtn) {
+            modeU2BBtn.classList.toggle('active', isU2B);
+            modeU2BBtn.setAttribute('aria-selected', isU2B ? 'true' : 'false');
+        }
+        if (modeB2UBtn) {
+            modeB2UBtn.classList.toggle('active', !isU2B);
+            modeB2UBtn.setAttribute('aria-selected', !isU2B ? 'true' : 'false');
+        }
+
+        if (inputBadge) inputBadge.textContent = isU2B ? 'Unicode' : 'Bijoy (ANSI)';
+        if (outputBadge) outputBadge.textContent = isU2B ? 'Bijoy (ANSI)' : 'Unicode';
+
+        if (isU2B) {
+            inputArea.classList.remove('bijoy-font');
+            outputArea.classList.add('bijoy-font');
+            inputArea.placeholder = "Type or paste Unicode Bangla text here (e.g. আমি বাংলায় গান গাই)...";
+        } else {
+            inputArea.classList.add('bijoy-font');
+            outputArea.classList.remove('bijoy-font');
+            inputArea.placeholder = "Type or paste Bijoy ANSI text here (e.g. Avwg evsjvq Mvb MvB)...";
+        }
+
+        performConversion();
+    }
+
+    function swapDirection() {
+        const currentOutput = outputArea.value || '';
+        const targetMode = currentMode === 'u2b' ? 'b2u' : 'u2b';
+        inputArea.value = currentOutput;
+        setMode(targetMode);
+        inputArea.focus();
+    }
+
+    // Attach Event Listeners
+    if (modeU2BBtn) {
+        modeU2BBtn.addEventListener('click', () => setMode('u2b'));
+    }
+    if (modeB2UBtn) {
+        modeB2UBtn.addEventListener('click', () => setMode('b2u'));
+    }
+    if (swapBtn) {
+        swapBtn.addEventListener('click', swapDirection);
+    }
+
+    inputArea.addEventListener('input', performConversion);
+    inputArea.addEventListener('paste', () => {
+        setTimeout(performConversion, 20);
+    });
+
+    if (clearBtn) {
+        clearBtn.addEventListener('click', () => {
+            inputArea.value = '';
+            outputArea.value = '';
+            updateStats();
+            inputArea.focus();
+        });
+    }
+
+    if (copyBtn) {
+        copyBtn.addEventListener('click', () => {
+            const textToCopy = outputArea.value || '';
+            if (!textToCopy) return;
+
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const origText = copyBtnText ? copyBtnText.textContent : 'Copy Output';
+                if (copyBtnText) copyBtnText.textContent = 'Copied!';
+                copyBtn.classList.add('copied');
+                setTimeout(() => {
+                    if (copyBtnText) copyBtnText.textContent = origText;
+                    copyBtn.classList.remove('copied');
+                }, 2000);
+            }).catch(() => {
+                outputArea.select();
+                document.execCommand('copy');
+            });
+        });
+    }
+
+    samplePills.forEach(pill => {
+        pill.addEventListener('click', (e) => {
+            const sampleText = e.currentTarget.getAttribute('data-sample');
+            if (sampleText) {
+                setMode('u2b');
+                inputArea.value = sampleText;
+                performConversion();
+                inputArea.focus();
+            }
+        });
+    });
+
+    // Initial pass
+    updateStats();
 }

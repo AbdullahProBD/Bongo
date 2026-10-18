@@ -90,6 +90,7 @@
                 <a href="#screenshots" data-i18n="nav.screenshots">Interface</a>
                 <a href="#install" data-i18n="nav.install">Install</a>
                 <a href="#cheatsheet" data-i18n="nav.cheatsheet">Cheatsheet</a>
+                <a href="#utilities" data-i18n="nav.utilities">Utilities</a>
                 <a href="#faq" data-i18n="nav.faq">FAQ</a>
 
                 <div class="nav-mobile-actions">
@@ -1175,6 +1176,109 @@
             </div>
         </section>
 
+        <!-- BUILT-IN UTILITIES: Unicode ↔ Bijoy Converter -->
+        <section class="section" id="utilities">
+            <div class="section-container">
+                <div class="section-lead">
+                    <span class="section-eyebrow" data-i18n="utilities.eyebrow">Built-in Utilities</span>
+                    <h2 class="section-headline" data-i18n="utilities.title">Unicode ↔ Bijoy (ANSI) Converter</h2>
+                    <p class="section-subtext" data-i18n="utilities.subtitle">Bidirectional, high-fidelity Bengali text conversion with 100% ligature accuracy. Zero dependencies, completely offline and instant.</p>
+                </div>
+
+                <div class="utilities-wrapper">
+                    <!-- Converter Toolbar -->
+                    <div class="converter-controls-bar">
+                        <div class="converter-mode-switcher" role="tablist">
+                            <button type="button" class="conv-mode-btn active" id="convModeU2B" data-mode="u2b" role="tab" aria-selected="true">
+                                <span data-i18n="utilities.tab_u2b">Unicode → Bijoy (ANSI)</span>
+                            </button>
+                            <button type="button" class="conv-mode-btn" id="convModeB2U" data-mode="b2u" role="tab" aria-selected="false">
+                                <span data-i18n="utilities.tab_b2u">Bijoy (ANSI) → Unicode</span>
+                            </button>
+                        </div>
+
+                        <button type="button" class="btn-swap-direction" id="btnSwapDirection" title="Swap conversion direction" aria-label="Swap conversion direction">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="17 1 21 5 17 9"></polyline>
+                                <path d="M3 11V9a4 4 0 0 1 4-4h14"></path>
+                                <polyline points="7 23 3 19 7 15"></polyline>
+                                <path d="M21 13v2a4 4 0 0 1-4 4H3"></path>
+                            </svg>
+                            <span data-i18n="utilities.swap">Swap Direction</span>
+                        </button>
+                    </div>
+
+                    <!-- Dual Card Converter Grid -->
+                    <div class="converter-grid">
+                        <!-- Source Input Card -->
+                        <div class="converter-card">
+                            <div class="converter-card-header">
+                                <div class="converter-card-title">
+                                    <span id="convInputLabel" data-i18n="utilities.input_label">Source Text</span>
+                                    <span class="format-badge" id="convInputBadge">Unicode</span>
+                                </div>
+                                <div class="converter-meta-stats">
+                                    <span id="convInputCharCount">0 chars</span>
+                                    <span>·</span>
+                                    <span id="convInputWordCount">0 words</span>
+                                </div>
+                            </div>
+
+                            <textarea id="convInputText" class="converter-textarea" placeholder="Type or paste Unicode Bangla text here (e.g. আমি বাংলায় গান গাই)..." data-i18n-placeholder="utilities.input_ph_u" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off"></textarea>
+
+                            <div class="converter-card-footer">
+                                <div class="converter-samples">
+                                    <span class="converter-samples-label" data-i18n="utilities.samples_label">Quick samples:</span>
+                                    <button type="button" class="conv-sample-pill" data-sample="আমি বাংলায় গান গাই">গান গাই</button>
+                                    <button type="button" class="conv-sample-pill" data-sample="আমার সোনার বাংলা, আমি তোমায় ভালোবাসি">সোনার বাংলা</button>
+                                    <button type="button" class="conv-sample-pill" data-sample="শুভ নববর্ষ! বাংলা আমার গর্ব">শুভ নববর্ষ</button>
+                                </div>
+                                <div class="converter-card-actions">
+                                    <button type="button" class="btn-conv-action btn-conv-secondary" id="btnClearConvInput">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                                        </svg>
+                                        <span data-i18n="utilities.clear">Clear</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Converted Output Card -->
+                        <div class="converter-card">
+                            <div class="converter-card-header">
+                                <div class="converter-card-title">
+                                    <span id="convOutputLabel" data-i18n="utilities.output_label">Converted Output</span>
+                                    <span class="format-badge" id="convOutputBadge">Bijoy (ANSI)</span>
+                                </div>
+                                <div class="converter-meta-stats">
+                                    <span id="convOutputCharCount">0 chars</span>
+                                    <span>·</span>
+                                    <span id="convOutputWordCount">0 words</span>
+                                </div>
+                            </div>
+
+                            <textarea id="convOutputText" class="converter-textarea bijoy-font" placeholder="Converted text will appear here automatically..." data-i18n-placeholder="utilities.output_ph" readonly spellcheck="false"></textarea>
+
+                            <div class="converter-card-footer">
+                                <div></div>
+                                <div class="converter-card-actions">
+                                    <button type="button" class="btn-conv-action btn-conv-primary" id="btnCopyConvOutput">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                        </svg>
+                                        <span id="convCopyBtnText" data-i18n="utilities.copy">Copy Output</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- macOS Settings-Style FAQ -->
         <section class="section" id="faq">
             <div class="section-container">
@@ -1306,6 +1410,7 @@
                         <a href="#playground" data-i18n="footer.interactive_demo">Interactive Demo</a>
                         <a href="#features" data-i18n="nav.features">Features</a>
                         <a href="#cheatsheet" data-i18n="footer.phonetic_map">Cheatsheet</a>
+                        <a href="#utilities" data-i18n="nav.utilities">Utilities</a>
                     </div>
                     <div class="footer-link-col">
                         <span class="link-col-title" data-i18n="footer.col_support">Support</span>
@@ -1334,6 +1439,7 @@
 
     <script src="translations.js?v=6.0"></script>
     <script src="avro.js?v=6.0"></script>
+    <script src="converter.js?v=6.0"></script>
     <script src="app.js?v=6.0"></script>
 </body>
 </html>

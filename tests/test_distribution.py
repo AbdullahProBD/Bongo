@@ -296,6 +296,7 @@ class DistributionTests(unittest.TestCase):
             'app/src/main/java/app/getbongo/ime/engine/BongoEngine.kt',
             'app/src/main/java/app/getbongo/ime/engine/BongoNative.kt',
             'app/src/main/java/app/getbongo/ime/engine/AvroPhoneticEngine.kt',
+            'app/src/main/java/app/getbongo/ime/engine/BijoyConverter.kt',
             'app/src/main/java/app/getbongo/ime/model/UserPreferences.kt',
             'app/src/main/java/app/getbongo/ime/model/ThemePalette.kt',
             'app/src/main/java/app/getbongo/ime/ui/BongoKeyboardView.kt',
@@ -313,6 +314,91 @@ class DistributionTests(unittest.TestCase):
         self.assertTrue((android_dir / 'gradlew').is_file())
         self.assertTrue((android_dir / 'app/src/main/res/mipmap-hdpi/ic_launcher.png').is_file())
         self.assertTrue((android_dir / 'README.md').is_file())
+
+    def test_linguistic_converter_and_utilities(self):
+        import sys
+        sys.path.insert(0, str(ROOT / 'platforms/common'))
+        from converter import (
+            unicode_to_bijoy,
+            bijoy_to_unicode,
+            separate_padding,
+            fix_string_case,
+            apply_sandhi_rules,
+            AUTOCORRECT_LOANWORDS,
+        )
+
+        # 1. Unicode to Bijoy conversion test suite
+        self.assertEqual(unicode_to_bijoy("আমি বাংলায় গান গাই"), "Avwg evsjvq Mvb MvB")
+        self.assertEqual(unicode_to_bijoy("আমি বাংলায় গান গাই"), "Avwg evsjvq Mvb MvB")
+        self.assertEqual(unicode_to_bijoy("বাংলা আমার ভাষা।"), "evsjv Avgvi fvlv|")
+        self.assertEqual(unicode_to_bijoy("কতল"), "KZj")
+        self.assertEqual(unicode_to_bijoy("সুতরাং"), "myZivs")
+        self.assertEqual(unicode_to_bijoy("চাঁদ"), "Pvu`")
+        self.assertEqual(unicode_to_bijoy("অর্ক"), "AK©")
+        self.assertEqual(unicode_to_bijoy("কুহেলিকা"), "Kz‡nwjKv")
+        self.assertEqual(unicode_to_bijoy("কি"), "wK")
+        self.assertEqual(unicode_to_bijoy("কীট"), "KxU")
+        self.assertEqual(unicode_to_bijoy("কে"), "†K")
+        self.assertEqual(unicode_to_bijoy("কো"), "†Kv")
+        self.assertEqual(unicode_to_bijoy("কৌ"), "†KŠ")
+        self.assertEqual(unicode_to_bijoy("সংখ্যা"), "msL¨v")
+        self.assertEqual(unicode_to_bijoy("বিদ্যুৎ"), "we`¨yr")
+        self.assertEqual(unicode_to_bijoy("কিন্তু"), "wKš‘")
+        self.assertEqual(unicode_to_bijoy("র‍্যাব"), "i¨ve")
+
+        # 2. Bijoy to Unicode reverse conversion
+        self.assertEqual(bijoy_to_unicode("Avwg evsjvq Mvb MvB"), "আমি বাংলায় গান গাই")
+        self.assertEqual(bijoy_to_unicode("evsjv Avgvi fvlv|"), "বাংলা আমার ভাষা।")
+        self.assertEqual(bijoy_to_unicode("KZj"), "কতল")
+        self.assertEqual(bijoy_to_unicode("myZivs"), "সুতরাং")
+        self.assertEqual(bijoy_to_unicode("Pvu`"), "চাঁদ")
+        self.assertEqual(bijoy_to_unicode("AK©"), "অর্ক")
+        self.assertEqual(bijoy_to_unicode("†K"), "কে")
+        self.assertEqual(bijoy_to_unicode("†Kv"), "কো")
+        self.assertEqual(bijoy_to_unicode("†KŠ"), "কৌ")
+        self.assertEqual(bijoy_to_unicode("wK"), "কি")
+
+        # 3. Punctuation Padding Isolator
+        p1, s1, suf1 = separate_padding("(ami)")
+        self.assertEqual(p1, "(")
+        self.assertEqual(s1, "ami")
+        self.assertEqual(suf1, ")")
+
+        p2, s2, suf2 = separate_padding('"bangla"')
+        self.assertEqual(p2, '"')
+        self.assertEqual(s2, "bangla")
+        self.assertEqual(suf2, '"')
+
+        p3, s3, suf3 = separate_padding("dhonnobad,")
+        self.assertEqual(p3, "")
+        self.assertEqual(s3, "dhonnobad")
+        self.assertEqual(suf3, ",")
+
+        p4, s4, suf4 = separate_padding("[kolkata]")
+        self.assertEqual(p4, "[")
+        self.assertEqual(s4, "kolkata")
+        self.assertEqual(suf4, "]")
+
+        # 4. Case Sensitivity Normalizer
+        self.assertEqual(fix_string_case("Bangla"), "bangla")
+        self.assertEqual(fix_string_case("Keno"), "keno")
+        self.assertEqual(fix_string_case("Ami"), "ami")
+        self.assertEqual(fix_string_case("Dhaka"), "Dhaka")
+
+        # 5. Morphological Suffix & Sandhi Engine
+        self.assertEqual(apply_sandhi_rules("জগৎ", "এর"), "জগতের")
+        self.assertEqual(apply_sandhi_rules("রং", "এ"), "রঙে")
+        self.assertEqual(apply_sandhi_rules("বই", "এ"), "বইয়ে")
+        self.assertEqual(apply_sandhi_rules("ভাই", "এর"), "ভাইয়ের")
+        self.assertEqual(apply_sandhi_rules("দেশ", "এর"), "দেশের")
+
+        # 6. Autocorrect & English Loanwords
+        self.assertEqual(AUTOCORRECT_LOANWORDS["1st"], "১ম")
+        self.assertEqual(AUTOCORRECT_LOANWORDS["2nd"], "২য়")
+        self.assertEqual(AUTOCORRECT_LOANWORDS["class"], "ক্লাস")
+        self.assertEqual(AUTOCORRECT_LOANWORDS["hospital"], "হাসপাতাল")
+        self.assertEqual(AUTOCORRECT_LOANWORDS["police"], "পুলিশ")
+        self.assertEqual(AUTOCORRECT_LOANWORDS["google"], "গুগল")
 
 if __name__ == '__main__':
     unittest.main()

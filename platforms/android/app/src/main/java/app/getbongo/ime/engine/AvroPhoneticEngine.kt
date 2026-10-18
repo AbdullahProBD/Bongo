@@ -52,6 +52,47 @@ class AvroPhoneticEngine {
         return pat.default
     }
 
+    private val autocorrectLoanwords: Map<String, List<String>> = mapOf(
+        "1st" to listOf("১ম"), "2nd" to listOf("২য়"), "3rd" to listOf("৩য়"), "4th" to listOf("৪র্থ"), "5th" to listOf("৫ম"),
+        "6th" to listOf("৬ষ্ঠ"), "7th" to listOf("৭ম"), "8th" to listOf("৮ম"), "9th" to listOf("৯ম"), "10th" to listOf("১০ম"),
+        "class" to listOf("ক্লাস"), "click" to listOf("ক্লিক"), "chittagong" to listOf("চট্টগ্রাম"), "cinema" to listOf("সিনেমা"),
+        "chemistry" to listOf("কেমিস্ট্রি"), "school" to listOf("স্কুল"), "college" to listOf("কলেজ"), "university" to listOf("বিশ্ববিদ্যালয়"),
+        "police" to listOf("পুলিশ"), "bank" to listOf("ব্যাংক"), "card" to listOf("কার্ড"), "doctor" to listOf("ডাক্তার"),
+        "hospital" to listOf("হাসপাতাল"), "station" to listOf("স্টেশন"), "ticket" to listOf("টিকিট"), "bus" to listOf("বাস"),
+        "train" to listOf("ট্রেন"), "phone" to listOf("ফোন"), "mobile" to listOf("মোবাইল"), "internet" to listOf("ইন্টারনেট"),
+        "email" to listOf("ইমেইল"), "facebook" to listOf("ফেসবুক"), "google" to listOf("গুগল"), "youtube" to listOf("ইউটিউব"),
+        "windows" to listOf("উইন্ডোজ"), "office" to listOf("অফিস"), "video" to listOf("ভিডিও"), "audio" to listOf("অডিও"),
+        "photo" to listOf("ছবি"), "camera" to listOf("ক্যামেরা"), "radio" to listOf("রেডিও"), "television" to listOf("টেলিভিশন"),
+        "problem" to listOf("সমস্যা"), "program" to listOf("প্রোগ্রাম"), "project" to listOf("প্রজেক্ট"), "file" to listOf("ফাইল"),
+        "folder" to listOf("ফোল্ডার"), "system" to listOf("সিস্টেম"), "service" to listOf("সার্ভিস"), "update" to listOf("আপডেট"),
+        "version" to listOf("ভার্সন"), "page" to listOf("পেজ"), "site" to listOf("সাইট"), "link" to listOf("লিঙ্ক"),
+        "post" to listOf("পোস্ট"), "comment" to listOf("কমেন্ট"), "message" to listOf("মেসেজ"), "chat" to listOf("চ্যাট"),
+        "group" to listOf("গ্রুপ"), "member" to listOf("মেম্বার"), "admin" to listOf("অ্যাডমিন"), "login" to listOf("লগইন"),
+        "password" to listOf("পাসওয়ার্ড"), "account" to listOf("অ্যাকাউন্ট"), "profile" to listOf("প্রোফাইল"),
+        "status" to listOf("স্ট্যাটাস"), "story" to listOf("স্টোরি"), "share" to listOf("শেয়ার"), "like" to listOf("লাইক"),
+        "subscribe" to listOf("সাবস্ক্রাইব"), "channel" to listOf("চ্যানেল"), "bongo" to listOf("বঙ্গ")
+    )
+
+    fun separatePadding(word: String): Triple<String, String, String> {
+        if (word.isEmpty()) return Triple("", "", "")
+        val punctChars = """[\-\]~!@#%&*()_=+[{}'";<>\/?|.,:]+"""
+        val prefixMatch = Regex("^($punctChars)").find(word)
+        val prefix = prefixMatch?.value ?: ""
+        val rest = word.substring(prefix.length)
+        val suffixMatch = Regex("($punctChars)$").find(rest)
+        val suffix = suffixMatch?.value ?: ""
+        val stem = if (suffix.isNotEmpty()) rest.substring(0, rest.length - suffix.length) else rest
+        return Triple(prefix, stem, suffix)
+    }
+
+    fun fixStringCase(word: String): String {
+        if (word.isEmpty()) return ""
+        val caseSensitive = "OIUDGJNRSTYZ"
+        return word.map { c ->
+            if (c in caseSensitive || !c.isLetter()) c else c.lowercaseChar()
+        }.joinToString("")
+    }
+
     fun convertWord(raw: String): String {
         if (raw.isEmpty()) return ""
         val inp = raw.map { c ->
@@ -93,7 +134,11 @@ class AvroPhoneticEngine {
         val cleaned = word.trim()
         if (cleaned.isEmpty()) return emptyList()
 
-        val lower = cleaned.lowercase()
+        val (punctPrefix, stem, punctSuffix) = separatePadding(cleaned)
+        if (stem.isEmpty()) return listOf(cleaned)
+
+        val casedStem = fixStringCase(stem)
+        val lower = stem.lowercase()
         val cands = mutableListOf<String>()
         val seen = mutableSetOf<String>()
 
@@ -104,22 +149,24 @@ class AvroPhoneticEngine {
         }
 
         dictionary[lower]?.forEach { add(it) }
+        autocorrectLoanwords[lower]?.forEach { add(it) }
 
-        val ruleBased = convertWord(cleaned)
+        val ruleBased = convertWord(casedStem)
         add(ruleBased)
 
         if (cands.size < 5) {
-            add(convertWord(cleaned.replaceFirstChar { it.uppercase() }))
+            add(convertWord(stem.replaceFirstChar { it.uppercase() }))
         }
         if (cands.size < 5) {
             if ("sh" in lower) {
-                add(convertWord(cleaned.replace("sh", "s", ignoreCase = true)))
+                add(convertWord(stem.replace("sh", "s", ignoreCase = true)))
             } else if ("s" in lower) {
-                add(convertWord(cleaned.replace("s", "sh", ignoreCase = true)))
+                add(convertWord(stem.replace("s", "sh", ignoreCase = true)))
             }
         }
-        add(cleaned)
-        return cands.take(5)
+        add(stem)
+
+        return cands.take(5).map { "$punctPrefix$it$punctSuffix" }
     }
 
     private fun loadPatterns(): List<PatternRule> {

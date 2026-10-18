@@ -853,38 +853,104 @@
         return output;
     }
 
+    var AUTOCORRECT_LOANWORDS = {
+        "1st": ["১ম"], "2nd": ["২য়"], "3rd": ["৩য়"], "4th": ["৪র্থ"], "5th": ["৫ম"],
+        "6th": ["৬ষ্ঠ"], "7th": ["৭ম"], "8th": ["৮ম"], "9th": ["৯ম"], "10th": ["১০ম"],
+        "class": ["ক্লাস"], "click": ["ক্লিক"], "chittagong": ["চট্টগ্রাম"], "cinema": ["সিনেমা"],
+        "chemistry": ["কেমিস্ট্রি"], "school": ["স্কুল"], "college": ["কলেজ"], "university": ["বিশ্ববিদ্যালয়"],
+        "police": ["পুলিশ"], "bank": ["ব্যাংক"], "card": ["কার্ড"], "doctor": ["ডাক্তার"],
+        "hospital": ["হাসপাতাল"], "station": ["স্টেশন"], "ticket": ["টিকিট"], "bus": ["বাস"],
+        "train": ["ট্রেন"], "phone": ["ফোন"], "mobile": ["মোবাইল"], "internet": ["ইন্টারনেট"],
+        "email": ["ইমেইল"], "facebook": ["ফেসবুক"], "google": ["গুগল"], "youtube": ["ইউটিউব"],
+        "windows": ["উইন্ডোজ"], "office": ["অফিস"], "video": ["ভিডিও"], "audio": ["অডিও"],
+        "photo": ["ছবি"], "camera": ["ক্যামেরা"], "radio": ["রেডিও"], "television": ["টেলিভিশন"],
+        "problem": ["সমস্যা"], "program": ["প্রোগ্রাম"], "project": ["প্রজেক্ট"], "file": ["ফাইল"],
+        "folder": ["ফোল্ডার"], "system": ["সিস্টেম"], "service": ["সার্ভিস"], "update": ["আপডেট"],
+        "version": ["ভার্সন"], "page": ["পেজ"], "site": ["সাইট"], "link": ["লিঙ্ক"],
+        "post": ["পোস্ট"], "comment": ["কমেন্ট"], "message": ["মেসেজ"], "chat": ["চ্যাট"],
+        "group": ["গ্রুপ"], "member": ["মেম্বার"], "admin": ["অ্যাডমিন"], "login": ["লগইন"],
+        "password": ["পাসওয়ার্ড"], "account": ["অ্যাকাউন্ট"], "profile": ["প্রোফাইল"],
+        "status": ["স্ট্যাটাস"], "story": ["স্টোরি"], "share": ["শেয়ার"], "like": ["লাইক"],
+        "subscribe": ["সাবস্ক্রাইব"], "channel": ["চ্যানেল"]
+    };
+
+    // Merge loanwords into AVRO_DICTIONARY
+    for (var lw in AUTOCORRECT_LOANWORDS) {
+        if (!AVRO_DICTIONARY[lw]) {
+            AVRO_DICTIONARY[lw] = AUTOCORRECT_LOANWORDS[lw];
+        }
+    }
+
+    function separatePadding(word) {
+        if (!word) return { prefix: "", stem: "", suffix: "" };
+        var m1 = word.match(/^([\-\]~!@#%&*()_=+[{}'\";<>\/?|.,:]+)/);
+        var prefix = m1 ? m1[1] : "";
+        var rest = word.slice(prefix.length);
+        var m2 = rest.match(/([\-\]~!@#%&*()_=+[{}'\";<>\/?|.,:]+)$/);
+        var suffix = m2 ? m2[1] : "";
+        var stem = suffix ? rest.slice(0, rest.length - suffix.length) : rest;
+        return { prefix: prefix, stem: stem, suffix: suffix };
+    }
+
+    function fixStringCase(word) {
+        if (!word) return "";
+        var caseSensitive = "OIUDGJNRSTYZ";
+        var out = [];
+        for (var i = 0; i < word.length; i++) {
+            var c = word[i];
+            if (caseSensitive.indexOf(c) !== -1 || !/[a-zA-Z]/.test(c)) {
+                out.push(c);
+            } else {
+                out.push(c.toLowerCase());
+            }
+        }
+        return out.join("");
+    }
+
     /**
-     * Transliterate a full text string, honoring whitespace & punctuation
+     * Transliterate a full text string, honoring whitespace & punctuation isolation
      */
     function convertText(text) {
         if (!text) return '';
-        // Tokenize into words and delimiters
-        var tokens = text.split(/([A-Za-z0-9`~@#\$%\^&\*\_\+\-=\[\]\{}\|;':",\.\/<>?]+)/);
+        var tokens = text.split(/(\s+)/);
         var result = '';
         for (var i = 0; i < tokens.length; i++) {
             var tok = tokens[i];
             if (!tok) continue;
-            if (/^[A-Za-z]/.test(tok)) {
-                var lower = tok.toLowerCase();
-                if (AVRO_DICTIONARY[lower] && AVRO_DICTIONARY[lower].length > 0) {
-                    result += AVRO_DICTIONARY[lower][0];
-                } else {
-                    result += convertWord(tok);
-                }
-            } else {
-                result += convertWord(tok);
+            if (/^\s+$/.test(tok)) {
+                result += tok;
+                continue;
             }
+            var pad = separatePadding(tok);
+            if (!pad.stem) {
+                result += tok;
+                continue;
+            }
+            var lower = pad.stem.toLowerCase();
+            var cased = fixStringCase(pad.stem);
+            var conv = '';
+            if (AVRO_DICTIONARY[lower] && AVRO_DICTIONARY[lower].length > 0) {
+                conv = AVRO_DICTIONARY[lower][0];
+            } else {
+                conv = convertWord(cased);
+            }
+            result += pad.prefix + conv + pad.suffix;
         }
         return result;
     }
 
     /**
-     * Return up to 5 suggested candidates for an active typing word
+     * Return up to 5 suggested candidates for an active typing word with punctuation isolation
      */
     function getCandidates(word) {
         var cleaned = (word || '').trim();
         if (!cleaned) return [];
-        var lower = cleaned.toLowerCase();
+
+        var pad = separatePadding(cleaned);
+        if (!pad.stem) return [cleaned];
+
+        var cased = fixStringCase(pad.stem);
+        var lower = pad.stem.toLowerCase();
         var candidates = [];
         var seen = {};
 
@@ -894,45 +960,47 @@
             candidates.push(cand);
         }
 
-        // 1. Check curated dictionary first
+        // 1. Curated dictionary & loanwords
         if (AVRO_DICTIONARY[lower]) {
             for (var i = 0; i < AVRO_DICTIONARY[lower].length; i++) {
                 add(AVRO_DICTIONARY[lower][i]);
             }
         }
 
-        // 2. Phonetic engine primary conversion
-        var ruleBased = convertWord(cleaned);
+        // 2. Phonetic engine rule conversion with case normalization
+        var ruleBased = convertWord(cased);
         add(ruleBased);
 
-        // 3. Fallback variations if fewer than 4 candidates
+        // 3. Fallback variations if fewer than 5 candidates
         if (candidates.length < 5) {
-            // Capitalized or alternative vowel
-            var alt1 = convertWord(cleaned.charAt(0).toUpperCase() + cleaned.slice(1));
+            var alt1 = convertWord(pad.stem.charAt(0).toUpperCase() + pad.stem.slice(1));
             add(alt1);
         }
         if (candidates.length < 5) {
-            // Sibilant variant: sh <-> s
             if (lower.indexOf('sh') !== -1) {
-                add(convertWord(cleaned.replace(/sh/gi, 's')));
+                add(convertWord(pad.stem.replace(/sh/gi, 's')));
             } else if (lower.indexOf('s') !== -1) {
-                add(convertWord(cleaned.replace(/s/gi, 'sh')));
+                add(convertWord(pad.stem.replace(/s/gi, 'sh')));
             }
         }
         if (candidates.length < 5) {
-            // Dental/Retroflex: d <-> D, t <-> T
             if (lower.indexOf('d') !== -1) {
-                add(convertWord(cleaned.replace(/d/gi, 'D')));
+                add(convertWord(pad.stem.replace(/d/gi, 'D')));
             }
             if (lower.indexOf('t') !== -1) {
-                add(convertWord(cleaned.replace(/t/gi, 'T')));
+                add(convertWord(pad.stem.replace(/t/gi, 'T')));
             }
         }
 
         // 4. Literal English word as last option
-        add(cleaned);
+        add(pad.stem);
 
-        return candidates.slice(0, 5);
+        // Re-wrap candidates with isolated punctuation padding
+        var finalCandidates = [];
+        for (var j = 0; j < Math.min(candidates.length, 5); j++) {
+            finalCandidates.push(pad.prefix + candidates[j] + pad.suffix);
+        }
+        return finalCandidates;
     }
 
     // Export module
@@ -940,6 +1008,8 @@
         convertWord: convertWord,
         convertText: convertText,
         getCandidates: getCandidates,
+        separatePadding: separatePadding,
+        fixStringCase: fixStringCase,
         dictionary: AVRO_DICTIONARY
     };
 

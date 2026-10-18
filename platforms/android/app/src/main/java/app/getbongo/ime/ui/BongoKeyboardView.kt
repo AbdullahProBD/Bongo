@@ -191,7 +191,7 @@ class BongoKeyboardView @JvmOverloads constructor(
                 "SHIFT" -> if (isShifted) "⇪" else "⇧"
                 "BACKSPACE" -> "⌫"
                 "RETURN" -> "⏎"
-                "SPACE" -> if (isBangla) "বাং • Avro" else "English"
+                "SPACE" -> if (isBangla) "Bongo" else "English"
                 "LANG" -> "🌐"
                 "EMOJI" -> "😊"
                 "?123" -> "?123"

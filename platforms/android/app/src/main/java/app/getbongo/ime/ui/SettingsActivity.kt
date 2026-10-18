@@ -78,7 +78,7 @@ class SettingsActivity : Activity() {
         container.addView(createSpacer(dp(20)))
 
         // Quick Test Field Card
-        container.addView(createSectionHeader("TEST TYPING (AVRO PHONETIC)"))
+        container.addView(createSectionHeader("TEST TYPING (BONGO PHONETIC)"))
         val testCard = createCardLayout()
         val testInput = EditText(this).apply {
             hint = "Type 'ami banglay gan gai' here..."
@@ -101,7 +101,7 @@ class SettingsActivity : Activity() {
             text = if (isNative) {
                 "⚡ Core: Rust Native Engine (JNI 64-bit)"
             } else {
-                "✓ Core: Pure-Kotlin Avro Engine (Resilient Fallback)"
+                "✓ Core: Pure-Kotlin Bongo Engine (Resilient Fallback)"
             }
             textSize = 14f
             setTextColor(if (isNative) Color.parseColor("#34d399") else Color.parseColor("#60a5fa"))

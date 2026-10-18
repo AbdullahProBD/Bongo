@@ -46,7 +46,9 @@ except ImportError:
     AUTOCORRECT_LOANWORDS = {
         "1st": "১ম", "2nd": "২য়", "3rd": "৩য়", "4th": "৪র্থ", "5th": "৫ম",
         "class": "ক্লাস", "click": "ক্লিক", "school": "স্কুল", "police": "পুলিশ",
-        "google": "গুগল", "facebook": "ফেসবুক", "bongo": "বঙ্গ"
+        "google": "গুগল", "facebook": "ফেসবুক", "bongo": "বঙ্গ",
+        "hya": "হ্যাঁ", "hea": "হ্যাঁ", "cad": "চাঁদ", "chad": "চাঁদ", "chada": "চাঁদা",
+        "pac": "পাঁচ", "pach": "পাঁচ", "hata": "হাঁটা", "khuj": "খুঁজ", "khuje": "খুঁজে",
     }
 
 class SafeStream:

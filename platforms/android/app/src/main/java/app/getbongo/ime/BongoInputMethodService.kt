@@ -204,7 +204,14 @@ class BongoInputMethodService : InputMethodService() {
         val themes = listOf("midnight", "light", "oled")
         val currentIdx = themes.indexOf(userPrefs.theme.lowercase())
         val nextIdx = if (currentIdx == -1) 0 else (currentIdx + 1) % themes.size
-        userPrefs.theme = themes[nextIdx]
+        val chosenTheme = themes[nextIdx]
+        userPrefs.theme = chosenTheme
+        val palette = ThemePalette.getPalette(chosenTheme)
+        rootView?.setBackgroundColor(palette.surfaceColor)
+        dividerView?.setBackgroundColor(palette.dividerColor)
+        keyboardView?.applyTheme(palette)
+        candidateStripView?.applyTheme(palette)
+        emojiKeyboardView?.applyTheme(palette)
     }
 
     private fun handleShortcutAction(action: CandidateStripView.ShortcutAction) {

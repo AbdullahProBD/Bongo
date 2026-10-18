@@ -183,6 +183,16 @@ class DistributionTests(unittest.TestCase):
         self.assertEqual(win_eng.get_candidates("bangla")[0], "বাংলা")
         self.assertEqual(win_eng.get_candidates("kemon")[0], "কেমন")
         self.assertEqual(win_eng.get_candidates("dhonnobad")[0], "ধন্যবাদ")
+        self.assertEqual(win_eng.get_candidates("hya")[0], "হ্যাঁ")
+        self.assertEqual(win_eng.get_candidates("chad")[0], "চাঁদ")
+        self.assertEqual(win_eng.get_candidates("pach")[0], "পাঁচ")
+        self.assertEqual(win_eng.get_candidates("hata")[0], "হাঁটা")
+        self.assertEqual(win_eng.get_candidates("khuje")[0], "খুঁজে")
+        # Punctuation padding isolation (Windows)
+        self.assertEqual(win_eng.get_candidates("(ami)")[0], "(আমি)")
+        self.assertEqual(win_eng.get_candidates('"bangla"')[0], '"বাংলা"')
+        self.assertEqual(win_eng.get_candidates("dhonnobad,")[0], "ধন্যবাদ,")
+        self.assertEqual(win_eng.get_candidates("[kolkata]")[0], "[কলকাতা]")
 
         # 2. Test Linux Avro Phonetic Engine directly
         spec_lin = importlib.util.spec_from_file_location(
@@ -202,6 +212,11 @@ class DistributionTests(unittest.TestCase):
         self.assertEqual(lin_eng.get_candidates("pach")[0], "পাঁচ")
         self.assertEqual(lin_eng.get_candidates("hata")[0], "হাঁটা")
         self.assertEqual(lin_eng.get_candidates("khuje")[0], "খুঁজে")
+        # Punctuation padding isolation (Linux)
+        self.assertEqual(lin_eng.get_candidates("(ami)")[0], "(আমি)")
+        self.assertEqual(lin_eng.get_candidates('"bangla"')[0], '"বাংলা"')
+        self.assertEqual(lin_eng.get_candidates("dhonnobad,")[0], "ধন্যবাদ,")
+        self.assertEqual(lin_eng.get_candidates("[kolkata]")[0], "[কলকাতা]")
 
         # 3. Test Windows Service Key Processing Lifecycle
         svc = mod_win.BongoWindowsService()

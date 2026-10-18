@@ -511,4 +511,14 @@ AUTOCORRECT_LOANWORDS: Dict[str, str] = {
     "password": "পাসওয়ার্ড", "account": "অ্যাকাউন্ট", "profile": "প্রোফাইল",
     "status": "স্ট্যাটাস", "story": "স্টোরি", "share": "শেয়ার", "like": "লাইক",
     "subscribe": "সাবস্ক্রাইব", "channel": "চ্যানেল", "bongo": "বঙ্গ",
+    # Compound Contractions & Chandrabindu Phonetic Expansions
+    "hya": "হ্যাঁ", "hea": "হ্যাঁ",
+    "cad": "চাঁদ", "chad": "চাঁদ", "chada": "চাঁদা",
+    "pac": "পাঁচ", "pach": "পাঁচ",
+    "hata": "হাঁটা", "hatchi": "হাঁটছি", "hatte": "হাঁটতে",
+    "khuj": "খুঁজ", "khuje": "খুঁজে", "khuji": "খুঁজি", "khujchi": "খুঁজছি",
+    "dhadha": "ধাঁধা", "aka": "আঁকা", "bash": "বাঁশ", "has": "হাঁস", "hash": "হাঁস",
+    "fapa": "ফাঁপা", "fad": "ফাঁদ", "fak": "ফাঁক", "fashi": "ফাঁসি",
+    "dhoya": "ধোঁয়া", "kacha": "কাঁচা", "shakha": "শাঁখা", "badha": "বাঁধা",
+    "dat": "দাঁত", "idur": "ইঁদুর", "katha": "কাঁথা", "kathal": "কাঁঠাল",
 }

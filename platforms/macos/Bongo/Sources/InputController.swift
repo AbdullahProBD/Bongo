@@ -160,23 +160,31 @@ class BongoInputController: IMKInputController {
             if !withoutEmoji.isEmpty { items = withoutEmoji }
         }
 
+        if let auxPtr = riti_suggestion_get_auxiliary_text(suggestion) {
+            auxiliaryText = String(cString: auxPtr)
+            riti_string_free(auxPtr)
+        }
+
         // Phonetic-first: the literal spelling goes on top, suggestions below.
+        // Exception: Curated compound contractions (e.g. "hya" -> "হ্যাঁ") keep their top priority.
         if engine.typingMode == .phoneticFirst, let phonetic = engine.currentPhonetic {
-            let wanted = Self.straightenQuotes(phonetic)
-            if let pos = items.firstIndex(where: { Self.straightenQuotes($0.text) == wanted }) {
-                let item = items.remove(at: pos)
-                items.insert(item, at: 0)
-                phoneticCandidate = item.text
+            let coreTyped = PhoneticFirstPicks.core(auxiliaryText).lowercased()
+            let isCompoundAutocorrect = (coreTyped == "hya" || coreTyped == "hea")
+
+            if !isCompoundAutocorrect {
+                let wanted = Self.straightenQuotes(phonetic)
+                if let pos = items.firstIndex(where: { Self.straightenQuotes($0.text) == wanted }) {
+                    let item = items.remove(at: pos)
+                    items.insert(item, at: 0)
+                    phoneticCandidate = item.text
+                }
+            } else if let first = items.first {
+                phoneticCandidate = first.text
             }
         }
 
         displayCandidates = items.map { $0.text }
         displayOrder = items.map { $0.index }
-
-        if let auxPtr = riti_suggestion_get_auxiliary_text(suggestion) {
-            auxiliaryText = String(cString: auxPtr)
-            riti_string_free(auxPtr)
-        }
 
         // riti's index is its remembered selection, or the preserved one after a
         // punctuation key. It is 0 - never negative - when nothing is remembered.

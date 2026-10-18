@@ -14,10 +14,12 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.Switch
 import android.widget.TextView
+import app.getbongo.ime.R
 import app.getbongo.ime.engine.BongoNative
 import app.getbongo.ime.model.UserPreferences
 
@@ -53,20 +55,13 @@ class SettingsActivity : Activity() {
             setPadding(0, dp(8), 0, dp(24))
         }
 
-        val appIcon = TextView(this).apply {
-            text = "ব"
-            textSize = 22f
-            typeface = Typeface.DEFAULT_BOLD
-            setTextColor(Color.WHITE)
-            gravity = Gravity.CENTER
-            background = GradientDrawable().apply {
-                cornerRadius = dp(14).toFloat()
-                setColor(Color.parseColor("#4f46e5")) // Indigo gradient base
-            }
+        val appIcon = ImageView(this).apply {
+            setImageResource(R.mipmap.ic_launcher)
             layoutParams = LinearLayout.LayoutParams(dp(44), dp(44)).apply {
                 setMargins(0, 0, dp(14), 0)
             }
         }
+
 
         val titleCol = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL

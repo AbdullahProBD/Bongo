@@ -378,6 +378,21 @@ kbd {
     display: none;
 }
 
+.nav-link-dl-mobile {
+    display: none;
+}
+
+.inline-dl-link {
+    color: var(--accent);
+    text-decoration: underline;
+    font-weight: 600;
+    transition: color 0.15s ease;
+}
+
+.inline-dl-link:hover {
+    color: var(--accent-hover);
+}
+
 /* ========================================================
    Modern Native Desktop Hero Section
    ======================================================== */
@@ -2497,6 +2512,12 @@ kbd {
 
     .nav-download-btn {
         display: none;
+    }
+
+    .nav-link-dl-mobile {
+        display: block;
+        color: var(--accent) !important;
+        font-weight: 600 !important;
     }
 
     .mobile-menu-toggle {

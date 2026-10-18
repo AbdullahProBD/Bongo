@@ -92,6 +92,7 @@
                 <a href="#cheatsheet" data-i18n="nav.cheatsheet">Cheatsheet</a>
                 <a href="#utilities" data-i18n="nav.utilities">Utilities</a>
                 <a href="#faq" data-i18n="nav.faq">FAQ</a>
+                <a href="#download-hub" class="nav-link-dl-mobile" data-i18n="nav.download_short">Download</a>
 
                 <div class="nav-mobile-actions">
                     <button class="btn-lang-mobile" id="mobileLangToggle" aria-label="বাংলা সংস্করণে পরিবর্তন করুন">
@@ -101,6 +102,15 @@
             </div>
 
             <div class="nav-actions">
+                <a href="#download-hub" class="btn-apple-pill nav-download-btn" data-i18n="nav.download_short">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 2px;">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    <span>Download</span>
+                </a>
+
                 <button class="lang-toggle" id="langToggle" aria-label="বাংলা সংস্করণে পরিবর্তন করুন" title="বাংলা সংস্করণে পড়ুন">
                     <span class="lang-text" id="langText">বাংলা</span>
                 </button>
@@ -829,10 +839,12 @@
                             <span class="step-badge-tag">DRAG & DROP</span>
                         </div>
                         <div class="step-graphic">
-                            <div class="graphic-chip app-chip">
-                                <img src="assets/bongo-logo.png" alt="Bongo App" class="chip-app-icon" width="20" height="20">
-                                <span class="chip-label">Bongo.app</span>
-                            </div>
+                            <a href="https://github.com/mehedishakeel/Bongo/releases/latest/download/Bongo-1.0-macos-universal.dmg" class="download-mac-universal inline-dl-chip" title="Download macOS Universal DMG">
+                                <div class="graphic-chip app-chip">
+                                    <img src="assets/bongo-logo.png" alt="Bongo App" class="chip-app-icon" width="20" height="20">
+                                    <span class="chip-label">Bongo.dmg</span>
+                                </div>
+                            </a>
                             <svg class="graphic-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                                 <line x1="5" y1="12" x2="19" y2="12"></line>
                                 <polyline points="12 5 19 12 12 19"></polyline>
@@ -890,10 +902,12 @@
                             <span class="step-badge-tag">INSTALL PACKAGE</span>
                         </div>
                         <div class="step-graphic">
-                            <div class="graphic-terminal-pill">
-                                <span class="term-prompt">$</span>
-                                <code>sudo apt install ./bongo.deb</code>
-                            </div>
+                            <a href="https://github.com/mehedishakeel/Bongo/releases/latest/download/bongo_1.0.0_amd64.deb" class="download-linux-amd64 inline-dl-chip" title="Download Linux .deb Package">
+                                <div class="graphic-terminal-pill">
+                                    <span class="term-prompt">$</span>
+                                    <code>sudo apt install ./bongo.deb</code>
+                                </div>
+                            </a>
                         </div>
                         <h3 class="step-heading" data-i18n="step.linux_1_title">Download or Install</h3>
                         <p class="step-text" data-i18n="step.linux_1_desc">Download <strong>bongo_1.0.0_amd64.deb</strong> (for standard PC) or <strong>bongo_1.0.0_arm64.deb</strong> (for ARM64) and install with <code>sudo apt install ./bongo_1.0.0_amd64.deb</code>, or use our one-line terminal installer.</p>
@@ -939,10 +953,12 @@
                             <span class="step-badge-tag">RUN INSTALLER</span>
                         </div>
                         <div class="step-graphic">
-                            <div class="graphic-chip app-chip">
-                                <img src="assets/bongo-logo.png" alt="Bongo App" class="chip-app-icon" width="20" height="20">
-                                <span class="chip-label">Bongo-Setup.exe</span>
-                            </div>
+                            <a href="https://github.com/mehedishakeel/Bongo/releases/latest/download/Bongo-Setup-1.0.0.exe" class="download-windows-exe inline-dl-chip" title="Download Windows Setup EXE">
+                                <div class="graphic-chip app-chip">
+                                    <img src="assets/bongo-logo.png" alt="Bongo App" class="chip-app-icon" width="20" height="20">
+                                    <span class="chip-label">Bongo-Setup.exe</span>
+                                </div>
+                            </a>
                         </div>
                         <h3 class="step-heading">Download & Run</h3>
                         <p class="step-text">Download <strong>Bongo-Setup-1.0.0.exe</strong> (or <strong>.msi</strong> for enterprise) and click Install. No external dependencies required.</p>
@@ -986,10 +1002,12 @@
                             <span class="step-badge-tag">INSTALL APK</span>
                         </div>
                         <div class="step-graphic">
-                            <div class="graphic-chip app-chip">
-                                <img src="assets/bongo-logo.png" alt="Bongo App" class="chip-app-icon" width="20" height="20">
-                                <span class="chip-label">Bongo-1.0.0-android.apk</span>
-                            </div>
+                            <a href="https://github.com/mehedishakeel/Bongo/releases/latest/download/Bongo-1.0.0-android.apk" class="download-android-apk inline-dl-chip" title="Download Android APK">
+                                <div class="graphic-chip app-chip">
+                                    <img src="assets/bongo-logo.png" alt="Bongo App" class="chip-app-icon" width="20" height="20">
+                                    <span class="chip-label">Bongo-1.0.0-android.apk</span>
+                                </div>
+                            </a>
                         </div>
                         <h3 class="step-heading" data-i18n="step.android_1_title">Download & Install</h3>
                         <p class="step-text" data-i18n="step.android_1_desc">Download <strong>Bongo-1.0.0-android.apk</strong> directly on your phone and open it to install. Allow unknown apps installation if prompted.</p>

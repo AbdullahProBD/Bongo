@@ -558,7 +558,7 @@ function initDownloadHub() {
 
     if (!hubTabs.length || !macPanel || !linuxPanel) return;
 
-    function switchHub(os) {
+    function switchHub(os, syncInstall = true) {
         hubTabs.forEach(tab => {
             const tabOs = tab.getAttribute('data-hub-os');
             const isActive = tabOs === os;
@@ -570,6 +570,10 @@ function initDownloadHub() {
         if (linuxPanel) linuxPanel.style.display = (os === 'linux') ? 'flex' : 'none';
         if (winPanel) winPanel.style.display = (os === 'windows') ? 'flex' : 'none';
         if (androidPanel) androidPanel.style.display = (os === 'android') ? 'flex' : 'none';
+
+        if (syncInstall && typeof window.switchInstallTab === 'function') {
+            window.switchInstallTab(os, false);
+        }
     }
 
     window.switchDownloadHub = switchHub;
@@ -681,8 +685,8 @@ function initDownloadHub() {
    ======================================================== */
 function initDirectDownload() {
     const GITHUB_REPO = 'mehedishakeel/Bongo';
-    const CACHE_KEY = 'bongo_latest_assets_v1_0';
-    const CACHE_TIME_KEY = 'bongo_latest_assets_time_v1_0';
+    const CACHE_KEY = 'bongo_latest_assets_v1_0_3';
+    const CACHE_TIME_KEY = 'bongo_latest_assets_time_v1_0_3';
     const ONE_HOUR = 60 * 60 * 1000;
 
     function applyAssetUrls(assets) {
@@ -873,7 +877,7 @@ function initInstallTabs() {
     const androidSteps = document.getElementById('steps-android');
     if (!tabs.length || !macSteps || !linuxSteps) return;
 
-    function switchInstallTab(os) {
+    function switchInstallTab(os, syncHub = true) {
         tabs.forEach(t => {
             const tabOs = t.getAttribute('data-os');
             const isActive = tabOs === os;
@@ -885,6 +889,10 @@ function initInstallTabs() {
         if (linuxSteps) linuxSteps.style.display = (os === 'linux') ? 'grid' : 'none';
         if (winSteps) winSteps.style.display = (os === 'windows') ? 'grid' : 'none';
         if (androidSteps) androidSteps.style.display = (os === 'android') ? 'grid' : 'none';
+
+        if (syncHub && typeof window.switchDownloadHub === 'function') {
+            window.switchDownloadHub(os, false);
+        }
     }
 
     window.switchInstallTab = switchInstallTab;

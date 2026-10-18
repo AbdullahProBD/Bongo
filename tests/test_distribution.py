@@ -320,6 +320,16 @@ class DistributionTests(unittest.TestCase):
         self.assertTrue((android_dir / 'app/src/main/res/mipmap-hdpi/ic_launcher.png').is_file())
         self.assertTrue((android_dir / 'README.md').is_file())
 
+        # 6. Verify space bar and subtype naming (Bongo & English, not Bangla.phonetic)
+        strings_xml = (android_dir / 'app/src/main/res/values/strings.xml').read_text()
+        self.assertIn('<string name="subtype_bengali">Bongo</string>', strings_xml)
+        self.assertIn('<string name="subtype_english">English</string>', strings_xml)
+        self.assertNotIn('Bangla.phonetic', strings_xml)
+
+        keyboard_kt = (android_dir / 'app/src/main/java/app/getbongo/ime/ui/BongoKeyboardView.kt').read_text()
+        self.assertIn('"SPACE" -> if (isBangla) "Bongo" else "English"', keyboard_kt)
+        self.assertNotIn('Bangla.phonetic', keyboard_kt)
+
     def test_linguistic_converter_and_utilities(self):
         import sys
         sys.path.insert(0, str(ROOT / 'platforms/common'))

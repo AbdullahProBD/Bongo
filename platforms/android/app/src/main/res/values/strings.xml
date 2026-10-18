@@ -2,8 +2,8 @@
 <resources>
     <string name="app_name">Bongo</string>
     <string name="ime_name">Bongo Keyboard</string>
-    <string name="subtype_bengali">Bongo Keyboard</string>
-    <string name="subtype_english">Bongo Keyboard</string>
+    <string name="subtype_bengali">Bongo</string>
+    <string name="subtype_english">English</string>
     <string name="settings_title">Bongo Settings</string>
 
     <!-- Settings tabs -->

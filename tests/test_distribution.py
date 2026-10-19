@@ -228,20 +228,50 @@ class DistributionTests(unittest.TestCase):
         svc.process_key(0x49, True, False, False, False) # 'i'
         self.assertTrue(svc.has_session())
         self.assertEqual(svc.candidates[0], "আমি")
+        # Candidate HUD visibility and candidate population
+        self.assertTrue(svc.hud.is_visible)
+        self.assertEqual(svc.hud.buffer, "ami")
+        self.assertEqual(svc.hud.selected_index, 0)
+        self.assertIn("আমি", svc.hud.candidates)
 
-        # Space commits active candidate cleanly
+        # Test Down Arrow and Tab navigation in HUD
+        self.assertTrue(hasattr(mod_win, "VK_DOWN"))
+        self.assertTrue(hasattr(mod_win, "VK_UP"))
+        svc.process_key(mod_win.VK_DOWN, True, False, False, False)
+        self.assertEqual(svc.selected_index, 1)
+        self.assertEqual(svc.hud.selected_index, 1)
+        self.assertEqual(svc.preedit_str, svc.candidates[1])
+
+        # Test Up Arrow navigation back to candidate 0
+        svc.process_key(mod_win.VK_UP, True, False, False, False)
+        self.assertEqual(svc.selected_index, 0)
+        self.assertEqual(svc.hud.selected_index, 0)
+        self.assertEqual(svc.preedit_str, svc.candidates[0])
+
+        # Space commits active candidate cleanly and hides HUD
         handled = svc.process_key(mod_win.VK_SPACE, True, False, False, False)
         self.assertTrue(handled)
         self.assertFalse(svc.has_session())
+        self.assertFalse(svc.hud.is_visible)
 
-        # Feed "ami" and test Enter (commits without newline)
+        # Feed "ami" and test Enter (commits without newline and hides HUD)
         svc.process_key(0x41, True, False, False, False)
         svc.process_key(0x4D, True, False, False, False)
         svc.process_key(0x49, True, False, False, False)
         self.assertTrue(svc.has_session())
+        self.assertTrue(svc.hud.is_visible)
         h_ret = svc.process_key(mod_win.VK_RETURN, True, False, False, False)
         self.assertTrue(h_ret)
+        # Feed "ami" and test mouse click on HUD candidate
+        svc.process_key(0x41, True, False, False, False)
+        svc.process_key(0x4D, True, False, False, False)
+        svc.process_key(0x49, True, False, False, False)
+        self.assertTrue(svc.has_session())
+        self.assertTrue(svc.hud.is_visible)
+        # Click on candidate 1 ("আমার" / "আম")
+        svc.hud.on_candidate_clicked(1)
         self.assertFalse(svc.has_session())
+        self.assertFalse(svc.hud.is_visible)
 
         # Feed "ami" and test punctuation (commits candidate, lets punctuation pass through)
         svc.process_key(0x41, True, False, False, False)
@@ -293,11 +323,10 @@ class DistributionTests(unittest.TestCase):
         self.assertIn('android.view.im', manifest)
         self.assertIn('.ui.SettingsActivity', manifest)
 
-        # 2. IME Subtype XML verification
+        # 2. IME Subtype XML verification (unified clean Bongo Keyboard declaration matching Ridmik)
         method_xml = (android_dir / 'app/src/main/res/xml/method.xml').read_text()
-        self.assertIn('imeSubtypeLocale="bn_BD"', method_xml)
-        self.assertIn('imeSubtypeLocale="en_US"', method_xml)
         self.assertIn('imeSubtypeMode="keyboard"', method_xml)
+        self.assertIn('isAsciiCapable="true"', method_xml)
 
         # 3. Native Engine (Rust & JNI) verification
         cargo_toml = (android_dir / 'engine/Cargo.toml').read_text()

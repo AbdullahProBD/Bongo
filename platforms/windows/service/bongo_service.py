@@ -319,6 +319,8 @@ VK_CONTROL = 0x11
 VK_MENU = 0x12  # Alt
 VK_ESCAPE = 0x1B
 VK_SPACE = 0x20
+VK_UP = 0x26
+VK_DOWN = 0x28
 VK_F12 = 0x7B
 
 INPUT_KEYBOARD = 1
@@ -326,14 +328,100 @@ KEYEVENTF_KEYUP = 0x0002
 KEYEVENTF_UNICODE = 0x0004
 LLKHF_INJECTED = 0x00000010
 
-# Win32 Structures and API Functions for Keyboard Injection
+# Win32 Candidate HUD Window Styles and Messages
+WS_EX_TOPMOST = 0x00000008
+WS_EX_TOOLWINDOW = 0x00000080
+WS_EX_NOACTIVATE = 0x08000000
+WS_POPUP = 0x80000000
+SW_SHOWNOACTIVATE = 4
+SW_HIDE = 0
+SWP_NOSIZE = 0x0001
+SWP_NOMOVE = 0x0002
+SWP_NOACTIVATE = 0x0010
+SWP_SHOWWINDOW = 0x0040
+HWND_TOPMOST = -1
+WM_PAINT = 0x000F
+WM_ERASEBKGND = 0x0014
+WM_DESTROY = 0x0002
+WM_MOUSEACTIVATE = 0x0021
+MA_NOACTIVATE = 3
+WM_LBUTTONDOWN = 0x0201
+CS_HREDRAW = 0x0002
+CS_VREDRAW = 0x0001
+CS_DROPSHADOW = 0x00020000
+TRANSPARENT = 1
+DT_LEFT = 0x00000000
+DT_TOP = 0x00000000
+DT_SINGLELINE = 0x00000020
+DT_VCENTER = 0x00000004
+DT_NOPREFIX = 0x00000800
+SPI_GETWORKAREA = 0x0030
+SRCCOPY = 0x00CC0020
+
+# Win32 Structures and API Functions for Keyboard Injection and Candidate HUD
 if sys.platform == "win32":
     user32 = ctypes.windll.user32
     kernel32 = ctypes.windll.kernel32
+    gdi32 = ctypes.windll.gdi32
 
     # Accurate 64-bit Win32 types
     wintypes.HMODULE = ctypes.c_void_p
     wintypes.HHOOK = ctypes.c_void_p
+
+    class POINT(ctypes.Structure):
+        _fields_ = [
+            ("x", wintypes.LONG),
+            ("y", wintypes.LONG),
+        ]
+
+    class RECT(ctypes.Structure):
+        _fields_ = [
+            ("left", wintypes.LONG),
+            ("top", wintypes.LONG),
+            ("right", wintypes.LONG),
+            ("bottom", wintypes.LONG),
+        ]
+
+    class GUITHREADINFO(ctypes.Structure):
+        _fields_ = [
+            ("cbSize", wintypes.DWORD),
+            ("flags", wintypes.DWORD),
+            ("hwndActive", wintypes.HWND),
+            ("hwndFocus", wintypes.HWND),
+            ("hwndCapture", wintypes.HWND),
+            ("hwndMenuOwner", wintypes.HWND),
+            ("hwndMoveSize", wintypes.HWND),
+            ("hwndCaret", wintypes.HWND),
+            ("rcCaret", RECT),
+        ]
+
+    class PAINTSTRUCT(ctypes.Structure):
+        _fields_ = [
+            ("hdc", wintypes.HDC),
+            ("fErase", wintypes.BOOL),
+            ("rcPaint", RECT),
+            ("fRestore", wintypes.BOOL),
+            ("fIncUpdate", wintypes.BOOL),
+            ("rgbReserved", ctypes.c_byte * 32),
+        ]
+
+    WNDPROC = ctypes.WINFUNCTYPE(ctypes.c_ssize_t, wintypes.HWND, wintypes.UINT, wintypes.WPARAM, wintypes.LPARAM)
+
+    class WNDCLASSEXW(ctypes.Structure):
+        _fields_ = [
+            ("cbSize", wintypes.UINT),
+            ("style", wintypes.UINT),
+            ("lpfnWndProc", WNDPROC),
+            ("cbClsExtra", ctypes.c_int),
+            ("cbWndExtra", ctypes.c_int),
+            ("hInstance", wintypes.HINSTANCE),
+            ("hIcon", wintypes.HICON),
+            ("hCursor", wintypes.HICON),
+            ("hbrBackground", wintypes.HBRUSH),
+            ("lpszMenuName", wintypes.LPCWSTR),
+            ("lpszClassName", wintypes.LPCWSTR),
+            ("hIconSm", wintypes.HICON),
+        ]
 
     class MOUSEINPUT(ctypes.Structure):
         _fields_ = [
@@ -422,6 +510,126 @@ if sys.platform == "win32":
     user32.DispatchMessageW.argtypes = [ctypes.POINTER(wintypes.MSG)]
     user32.DispatchMessageW.restype = ctypes.c_ssize_t
 
+    user32.GetForegroundWindow.restype = wintypes.HWND
+    user32.GetWindowThreadProcessId.argtypes = [wintypes.HWND, ctypes.POINTER(wintypes.DWORD)]
+    user32.GetWindowThreadProcessId.restype = wintypes.DWORD
+
+    user32.GetGUIThreadInfo.argtypes = [wintypes.DWORD, ctypes.POINTER(GUITHREADINFO)]
+    user32.GetGUIThreadInfo.restype = wintypes.BOOL
+
+    user32.GetCaretPos.argtypes = [ctypes.POINTER(POINT)]
+    user32.GetCaretPos.restype = wintypes.BOOL
+
+    user32.ClientToScreen.argtypes = [wintypes.HWND, ctypes.POINTER(POINT)]
+    user32.ClientToScreen.restype = wintypes.BOOL
+
+    user32.GetCursorPos.argtypes = [ctypes.POINTER(POINT)]
+    user32.GetCursorPos.restype = wintypes.BOOL
+
+    user32.GetWindowRect.argtypes = [wintypes.HWND, ctypes.POINTER(RECT)]
+    user32.GetWindowRect.restype = wintypes.BOOL
+
+    user32.GetClientRect.argtypes = [wintypes.HWND, ctypes.POINTER(RECT)]
+    user32.GetClientRect.restype = wintypes.BOOL
+
+    user32.SystemParametersInfoW.argtypes = [wintypes.UINT, wintypes.UINT, ctypes.c_void_p, wintypes.UINT]
+    user32.SystemParametersInfoW.restype = wintypes.BOOL
+
+    user32.RegisterClassExW.argtypes = [ctypes.POINTER(WNDCLASSEXW)]
+    user32.RegisterClassExW.restype = wintypes.ATOM
+
+    user32.CreateWindowExW.argtypes = [
+        wintypes.DWORD, wintypes.LPCWSTR, wintypes.LPCWSTR, wintypes.DWORD,
+        ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int,
+        wintypes.HWND, wintypes.HMENU, wintypes.HINSTANCE, wintypes.LPVOID
+    ]
+    user32.CreateWindowExW.restype = wintypes.HWND
+
+    user32.DestroyWindow.argtypes = [wintypes.HWND]
+    user32.DestroyWindow.restype = wintypes.BOOL
+
+    user32.ShowWindow.argtypes = [wintypes.HWND, ctypes.c_int]
+    user32.ShowWindow.restype = wintypes.BOOL
+
+    user32.SetWindowPos.argtypes = [
+        wintypes.HWND, wintypes.HWND,
+        ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int,
+        wintypes.UINT
+    ]
+    user32.SetWindowPos.restype = wintypes.BOOL
+
+    user32.InvalidateRect.argtypes = [wintypes.HWND, ctypes.POINTER(RECT), wintypes.BOOL]
+    user32.InvalidateRect.restype = wintypes.BOOL
+
+    user32.UpdateWindow.argtypes = [wintypes.HWND]
+    user32.UpdateWindow.restype = wintypes.BOOL
+
+    user32.BeginPaint.argtypes = [wintypes.HWND, ctypes.POINTER(PAINTSTRUCT)]
+    user32.BeginPaint.restype = wintypes.HDC
+
+    user32.EndPaint.argtypes = [wintypes.HWND, ctypes.POINTER(PAINTSTRUCT)]
+    user32.EndPaint.restype = wintypes.BOOL
+
+    user32.DefWindowProcW.argtypes = [wintypes.HWND, wintypes.UINT, wintypes.WPARAM, wintypes.LPARAM]
+    user32.DefWindowProcW.restype = ctypes.c_ssize_t
+
+    user32.FillRect.argtypes = [wintypes.HDC, ctypes.POINTER(RECT), wintypes.HBRUSH]
+    user32.FillRect.restype = ctypes.c_int
+
+    user32.FrameRect.argtypes = [wintypes.HDC, ctypes.POINTER(RECT), wintypes.HBRUSH]
+    user32.FrameRect.restype = ctypes.c_int
+
+    user32.DrawTextW.argtypes = [wintypes.HDC, wintypes.LPCWSTR, ctypes.c_int, ctypes.POINTER(RECT), wintypes.UINT]
+    user32.DrawTextW.restype = ctypes.c_int
+
+    # GDI32 Signatures
+    gdi32.CreateSolidBrush.argtypes = [wintypes.COLORREF]
+    gdi32.CreateSolidBrush.restype = wintypes.HBRUSH
+
+    gdi32.DeleteObject.argtypes = [wintypes.HGDIOBJ]
+    gdi32.DeleteObject.restype = wintypes.BOOL
+
+    gdi32.CreateFontW.argtypes = [
+        ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int,
+        wintypes.DWORD, wintypes.DWORD, wintypes.DWORD, wintypes.DWORD,
+        wintypes.DWORD, wintypes.DWORD, wintypes.DWORD, wintypes.DWORD,
+        wintypes.LPCWSTR
+    ]
+    gdi32.CreateFontW.restype = wintypes.HFONT
+
+    gdi32.SelectObject.argtypes = [wintypes.HDC, wintypes.HGDIOBJ]
+    gdi32.SelectObject.restype = wintypes.HGDIOBJ
+
+    gdi32.SetTextColor.argtypes = [wintypes.HDC, wintypes.COLORREF]
+    gdi32.SetTextColor.restype = wintypes.COLORREF
+
+    gdi32.SetBkMode.argtypes = [wintypes.HDC, ctypes.c_int]
+    gdi32.SetBkMode.restype = ctypes.c_int
+
+    gdi32.CreateCompatibleDC.argtypes = [wintypes.HDC]
+    gdi32.CreateCompatibleDC.restype = wintypes.HDC
+
+    gdi32.CreateCompatibleBitmap.argtypes = [wintypes.HDC, ctypes.c_int, ctypes.c_int]
+    gdi32.CreateCompatibleBitmap.restype = wintypes.HBITMAP
+
+    gdi32.DeleteDC.argtypes = [wintypes.HDC]
+    gdi32.DeleteDC.restype = wintypes.BOOL
+
+    gdi32.BitBlt.argtypes = [
+        wintypes.HDC, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int,
+        wintypes.HDC, ctypes.c_int, ctypes.c_int, wintypes.DWORD
+    ]
+    gdi32.BitBlt.restype = wintypes.BOOL
+
+    gdi32.RoundRect.argtypes = [
+        wintypes.HDC, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int,
+        ctypes.c_int, ctypes.c_int
+    ]
+    gdi32.RoundRect.restype = wintypes.BOOL
+
+    gdi32.CreatePen.argtypes = [ctypes.c_int, ctypes.c_int, wintypes.COLORREF]
+    gdi32.CreatePen.restype = wintypes.HPEN
+
 
 def replace_inline_text(erase_count: int, new_text: str):
     """Atomically erases erase_count characters and injects new_text in one SendInput batch."""
@@ -491,6 +699,311 @@ def send_unicode_string(text: str):
     replace_inline_text(0, text)
 
 
+class BongoCandidateHUD:
+    """
+    Floating Candidate HUD Window for Windows.
+    Renders live Avro phonetic suggestions near the typing cursor/caret.
+    Uses native Win32 popup window with WS_EX_NOACTIVATE to avoid stealing focus.
+    """
+    def __init__(self, settings: dict, on_candidate_clicked=None):
+        self.settings = settings
+        self.on_candidate_clicked = on_candidate_clicked
+        self.buffer = ""
+        self.candidates = []
+        self.selected_index = 0
+        self.is_visible = False
+        self.hwnd = None
+        self._wnd_proc_ref = None
+        self._font_bengali = None
+        self._font_bengali_bold = None
+        self._font_ui = None
+        self._font_ui_bold = None
+        self._font_header = None
+        self._bg_brush = None
+        self._border_pen = None
+        self._active_brush = None
+        self._active_border_brush = None
+        self._sep_brush = None
+        self._last_caret_pos = (200, 200)
+
+        if sys.platform == "win32":
+            self._init_win32()
+
+    def _create_font(self, name: str, size: int, bold: bool = False):
+        if sys.platform != "win32":
+            return None
+        weight = 700 if bold else 400
+        height = -int(size * 96 / 72)
+        return gdi32.CreateFontW(
+            height, 0, 0, 0, weight,
+            0, 0, 0,
+            1,  # DEFAULT_CHARSET
+            0, 0,
+            5,  # CLEARTYPE_QUALITY
+            0,
+            name
+        )
+
+    def _init_win32(self):
+        if sys.platform != "win32" or self.hwnd is not None:
+            return
+        try:
+            self._wnd_proc_ref = WNDPROC(self._wnd_proc)
+            hinst = kernel32.GetModuleHandleW(None)
+            cls_name = "BongoCandidateHUDClass"
+
+            wc = WNDCLASSEXW()
+            wc.cbSize = ctypes.sizeof(WNDCLASSEXW)
+            wc.style = CS_HREDRAW | CS_VREDRAW | CS_DROPSHADOW
+            wc.lpfnWndProc = self._wnd_proc_ref
+            wc.cbClsExtra = 0
+            wc.cbWndExtra = 0
+            wc.hInstance = hinst
+            wc.hIcon = None
+            wc.hCursor = None
+            wc.hbrBackground = None
+            wc.lpszMenuName = None
+            wc.lpszClassName = cls_name
+            wc.hIconSm = None
+
+            user32.RegisterClassExW(ctypes.byref(wc))
+
+            ex_style = WS_EX_TOPMOST | WS_EX_TOOLWINDOW | WS_EX_NOACTIVATE
+            style = WS_POPUP
+
+            self.hwnd = user32.CreateWindowExW(
+                ex_style,
+                cls_name,
+                "BongoCandidateHUD",
+                style,
+                -1000, -1000, 260, 150,
+                None, None, hinst, None
+            )
+
+            font_name = self.settings.get("candidate_font", "Noto Sans Bengali")
+            if font_name == "System Font (Default)":
+                font_name = "Segoe UI"
+            font_size = self.settings.get("candidate_font_size", 16)
+
+            self._font_bengali = self._create_font(font_name, font_size, bold=False)
+            self._font_bengali_bold = self._create_font(font_name, font_size, bold=True)
+            self._font_ui = self._create_font("Segoe UI", 11, bold=False)
+            self._font_ui_bold = self._create_font("Segoe UI", 11, bold=True)
+            self._font_header = self._create_font("Segoe UI", 10, bold=False)
+
+            self._bg_brush = gdi32.CreateSolidBrush(0x131111)           # #111113
+            self._border_pen = gdi32.CreatePen(0, 1, 0x332E2E)          # #2e2e33
+            self._active_brush = gdi32.CreateSolidBrush(0x382323)       # #232338
+            self._active_border_brush = gdi32.CreateSolidBrush(0xF16663)  # #6366f1
+            self._sep_brush = gdi32.CreateSolidBrush(0x2E2E33)          # #2e2e33
+
+            log_msg("Bongo Candidate HUD window initialized.")
+        except Exception as e:
+            log_msg(f"Could not initialize Bongo Candidate HUD: {e}")
+            self.hwnd = None
+
+    def _wnd_proc(self, hwnd, msg, wparam, lparam):
+        if msg == WM_MOUSEACTIVATE:
+            return MA_NOACTIVATE
+        elif msg == WM_ERASEBKGND:
+            return 1
+        elif msg == WM_PAINT:
+            self._paint(hwnd)
+            return 0
+        elif msg == WM_LBUTTONDOWN:
+            click_y = (lparam >> 16) & 0xFFFF
+            row_y = click_y - 31
+            row_idx = row_y // 30
+            if 0 <= row_idx < len(self.candidates):
+                if self.on_candidate_clicked:
+                    self.on_candidate_clicked(row_idx)
+            return 0
+        return user32.DefWindowProcW(hwnd, msg, wparam, lparam)
+
+    def _paint(self, hwnd):
+        if sys.platform != "win32":
+            return
+        ps = PAINTSTRUCT()
+        hdc = user32.BeginPaint(hwnd, ctypes.byref(ps))
+        if not hdc:
+            return
+
+        rc = RECT()
+        user32.GetClientRect(hwnd, ctypes.byref(rc))
+        w = max(rc.right - rc.left, 240)
+        h = max(rc.bottom - rc.top, 60)
+
+        mem_dc = gdi32.CreateCompatibleDC(hdc)
+        mem_bmp = gdi32.CreateCompatibleBitmap(hdc, w, h)
+        old_bmp = gdi32.SelectObject(mem_dc, mem_bmp)
+
+        # 1. Fill background
+        user32.FillRect(mem_dc, ctypes.byref(rc), self._bg_brush)
+
+        # 2. Border
+        old_pen = gdi32.SelectObject(mem_dc, self._border_pen)
+        old_brush = gdi32.SelectObject(mem_dc, self._bg_brush)
+        gdi32.RoundRect(mem_dc, 0, 0, w, h, 10, 10)
+
+        gdi32.SetBkMode(mem_dc, TRANSPARENT)
+
+        # 3. Header bar: Latin buffer and Avro Bengali tag
+        gdi32.SelectObject(mem_dc, self._font_header)
+        gdi32.SetTextColor(mem_dc, 0xF88C81)  # #818cf8
+        aux_text = f"{self.buffer}  ·  বাংলা"
+        rc_aux = RECT(12, 6, w - 12, 24)
+        user32.DrawTextW(mem_dc, aux_text, -1, ctypes.byref(rc_aux), DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_NOPREFIX)
+
+        # Header divider line
+        rc_sep = RECT(8, 27, w - 8, 28)
+        user32.FillRect(mem_dc, ctypes.byref(rc_sep), self._sep_brush)
+
+        # 4. Candidates list
+        start_y = 31
+        row_h = 30
+        for i, cand in enumerate(self.candidates[:9]):
+            y = start_y + (i * row_h)
+            is_active = (i == self.selected_index)
+
+            rc_row = RECT(6, y, w - 6, y + row_h - 2)
+            if is_active:
+                user32.FillRect(mem_dc, ctypes.byref(rc_row), self._active_brush)
+                user32.FrameRect(mem_dc, ctypes.byref(rc_row), self._active_border_brush)
+
+            # Shortcut number [1], [2]...
+            num_text = f"{i + 1}"
+            rc_num = RECT(14, y, 32, y + row_h - 2)
+            gdi32.SelectObject(mem_dc, self._font_ui_bold if is_active else self._font_ui)
+            gdi32.SetTextColor(mem_dc, 0xF88C81 if is_active else 0x7A7171)
+            user32.DrawTextW(mem_dc, num_text, -1, ctypes.byref(rc_num), DT_LEFT | DT_VCENTER | DT_SINGLELINE)
+
+            # Bengali candidate word
+            rc_cand = RECT(36, y, w - 12, y + row_h - 2)
+            gdi32.SelectObject(mem_dc, self._font_bengali_bold if is_active else self._font_bengali)
+            gdi32.SetTextColor(mem_dc, 0xFFFFFF if is_active else 0xD8D4D4)
+            user32.DrawTextW(mem_dc, cand, -1, ctypes.byref(rc_cand), DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_NOPREFIX)
+
+        gdi32.BitBlt(hdc, 0, 0, w, h, mem_dc, 0, 0, SRCCOPY)
+
+        gdi32.SelectObject(mem_dc, old_bmp)
+        gdi32.SelectObject(mem_dc, old_pen)
+        gdi32.SelectObject(mem_dc, old_brush)
+        gdi32.DeleteObject(mem_bmp)
+        gdi32.DeleteDC(mem_dc)
+        user32.EndPaint(hwnd, ctypes.byref(ps))
+
+    def _get_caret_screen_pos(self):
+        if sys.platform != "win32":
+            return self._last_caret_pos
+        try:
+            # 1. Try GetGUIThreadInfo on active foreground thread
+            hwnd_fg = user32.GetForegroundWindow()
+            if hwnd_fg:
+                tid = user32.GetWindowThreadProcessId(hwnd_fg, None)
+                gui_info = GUITHREADINFO()
+                gui_info.cbSize = ctypes.sizeof(GUITHREADINFO)
+                if user32.GetGUIThreadInfo(tid, ctypes.byref(gui_info)):
+                    if gui_info.hwndCaret and (gui_info.rcCaret.right > gui_info.rcCaret.left or gui_info.rcCaret.bottom > gui_info.rcCaret.top):
+                        pt = POINT(gui_info.rcCaret.left, gui_info.rcCaret.bottom)
+                        user32.ClientToScreen(gui_info.hwndCaret, ctypes.byref(pt))
+                        if pt.x > 0 or pt.y > 0:
+                            return pt.x, pt.y
+                    elif gui_info.hwndFocus:
+                        rc_focus = RECT()
+                        if user32.GetWindowRect(gui_info.hwndFocus, ctypes.byref(rc_focus)):
+                            return rc_focus.left + 15, rc_focus.bottom
+
+            # 2. Try GetCaretPos
+            pt_caret = POINT()
+            if user32.GetCaretPos(ctypes.byref(pt_caret)):
+                if pt_caret.x > 0 or pt_caret.y > 0:
+                    hwnd_target = user32.GetFocus() or hwnd_fg
+                    if hwnd_target:
+                        user32.ClientToScreen(hwnd_target, ctypes.byref(pt_caret))
+                        return pt_caret.x, pt_caret.y + 18
+
+            # 3. Fallback to mouse cursor position
+            pt_cursor = POINT()
+            if user32.GetCursorPos(ctypes.byref(pt_cursor)):
+                if pt_cursor.x > 0 or pt_cursor.y > 0:
+                    return pt_cursor.x + 8, pt_cursor.y + 20
+
+            # 4. Fallback to active window bounds
+            if hwnd_fg:
+                rc_win = RECT()
+                if user32.GetWindowRect(hwnd_fg, ctypes.byref(rc_win)):
+                    return rc_win.left + 50, rc_win.top + 100
+        except Exception:
+            pass
+        return self._last_caret_pos
+
+    def update(self, buffer: str, candidates: list, selected_index: int = 0):
+        self.buffer = buffer or ""
+        self.candidates = candidates or []
+        self.selected_index = selected_index
+        if not self.buffer or not self.candidates:
+            self.hide()
+            return
+
+        self.is_visible = True
+        if sys.platform != "win32" or not self.hwnd:
+            return
+
+        count = min(len(self.candidates), 9)
+        h = 32 + (count * 30) + 6
+        w = 260
+
+        caret_x, caret_y = self._get_caret_screen_pos()
+        self._last_caret_pos = (caret_x, caret_y)
+
+        rc_work = RECT()
+        user32.SystemParametersInfoW(SPI_GETWORKAREA, 0, ctypes.byref(rc_work), 0)
+
+        x = caret_x
+        y = caret_y + 4
+
+        # If HUD extends past bottom of work area, flip above caret
+        if y + h > rc_work.bottom:
+            y = caret_y - h - 24
+
+        # Keep fully on screen horizontally
+        if x + w > rc_work.right:
+            x = rc_work.right - w - 8
+        if x < rc_work.left:
+            x = rc_work.left + 8
+
+        # Keep on screen vertically
+        if y < rc_work.top:
+            y = rc_work.top + 8
+
+        user32.SetWindowPos(
+            self.hwnd,
+            HWND_TOPMOST,
+            int(x), int(y), int(w), int(h),
+            SWP_NOACTIVATE | SWP_SHOWWINDOW
+        )
+        user32.InvalidateRect(self.hwnd, None, True)
+        user32.UpdateWindow(self.hwnd)
+
+    def hide(self):
+        self.is_visible = False
+        if sys.platform == "win32" and self.hwnd:
+            user32.ShowWindow(self.hwnd, SW_HIDE)
+
+    def destroy(self):
+        self.hide()
+        if sys.platform == "win32":
+            if self.hwnd:
+                user32.DestroyWindow(self.hwnd)
+                self.hwnd = None
+            for font in (self._font_bengali, self._font_bengali_bold, self._font_ui, self._font_ui_bold, self._font_header):
+                if font:
+                    gdi32.DeleteObject(font)
+            for gdi_obj in (self._bg_brush, self._border_pen, self._active_brush, self._active_border_brush, self._sep_brush):
+                if gdi_obj:
+                    gdi32.DeleteObject(gdi_obj)
+
+
 class BongoWindowsService:
     def __init__(self):
         self.settings = load_settings()
@@ -503,15 +1016,20 @@ class BongoWindowsService:
 
         self.buffer = ""
         self.candidates = []
+        self.selected_index = 0
         self.preedit_str = ""
         self.last_injected_len = 0
+
+        self.hud = BongoCandidateHUD(self.settings, on_candidate_clicked=self.commit_candidate)
 
         self.hook_id = None
         self.hook_proc_ref = None
 
     def toggle_mode(self):
         if self.has_session():
-            self.commit_candidate(0)
+            self.commit_candidate(self.selected_index)
+        self.hud.hide()
+        self.selected_index = 0
         self.bangla_active = not self.bangla_active
         mode_str = "Bangla" if self.bangla_active else "English"
         log_msg(f"Bongo: Switched to {mode_str} Mode")
@@ -525,6 +1043,7 @@ class BongoWindowsService:
 
     def feed_character(self, ch: str):
         self.buffer += ch
+        self.selected_index = 0
         if self.engine_ptr and self.native and self.native.lib:
             try:
                 cp = ord(ch)
@@ -534,6 +1053,8 @@ class BongoWindowsService:
                     self.update_suggestions(sugg_ptr)
                     self.native.lib.bongo_suggestion_free(sugg_ptr)
                     self._sync_inline_text()
+                    if self.settings.get("typing_mode", 0) != 2 and self.candidates:
+                        self.hud.update(self.buffer, self.candidates, self.selected_index)
                     return True
             except Exception:
                 pass
@@ -542,6 +1063,8 @@ class BongoWindowsService:
         self.candidates = self.phonetic_engine.get_candidates(self.buffer)
         self.preedit_str = self.candidates[0] if self.candidates else self.buffer
         self._sync_inline_text()
+        if self.settings.get("typing_mode", 0) != 2 and self.candidates:
+            self.hud.update(self.buffer, self.candidates, self.selected_index)
         return True
 
     def _sync_inline_text(self):
@@ -569,6 +1092,7 @@ class BongoWindowsService:
             self.preedit_str = ""
 
     def handle_backspace(self):
+        self.selected_index = 0
         if self.engine_ptr and self.native and self.native.lib:
             try:
                 sugg_ptr = self.native.lib.bongo_engine_backspace(self.engine_ptr, False)
@@ -576,6 +1100,10 @@ class BongoWindowsService:
                     self.update_suggestions(sugg_ptr)
                     self.native.lib.bongo_suggestion_free(sugg_ptr)
                     self._sync_inline_text()
+                    if self.settings.get("typing_mode", 0) != 2 and self.candidates:
+                        self.hud.update(self.buffer, self.candidates, self.selected_index)
+                    else:
+                        self.hud.hide()
                     return
                 else:
                     self.clear_session()
@@ -591,24 +1119,43 @@ class BongoWindowsService:
                 self.candidates = self.phonetic_engine.get_candidates(self.buffer)
                 self.preedit_str = self.candidates[0] if self.candidates else self.buffer
                 self._sync_inline_text()
+                if self.settings.get("typing_mode", 0) != 2 and self.candidates:
+                    self.hud.update(self.buffer, self.candidates, self.selected_index)
+                else:
+                    self.hud.hide()
 
-    def commit_candidate(self, index=0):
+    def commit_candidate(self, index=None):
+        if index is None:
+            index = self.selected_index
+        if 0 <= index < len(self.candidates):
+            chosen = self.candidates[index]
+            if chosen != self.preedit_str:
+                replace_inline_text(self.last_injected_len, chosen)
+                self.last_injected_len = sum(2 if ord(c) > 0xFFFF else 1 for c in chosen)
+                self.preedit_str = chosen
+
         if self.engine_ptr and self.native and self.native.lib:
             self.native.lib.bongo_engine_commit(self.engine_ptr, index)
         # Inline text is already on screen, so simply finalize session state
+        self.hud.hide()
         self.buffer = ""
         self.candidates = []
+        self.selected_index = 0
         self.preedit_str = ""
         self.last_injected_len = 0
 
     def clear_session(self):
         """Erases any actively composed inline text and resets engine state."""
+        self.hud.hide()
+        self.selected_index = 0
         if self.last_injected_len > 0:
             replace_inline_text(self.last_injected_len, "")
             self.last_injected_len = 0
         self.reset_session()
 
     def reset_session(self):
+        self.hud.hide()
+        self.selected_index = 0
         if self.engine_ptr and self.native and self.native.lib:
             self.native.lib.bongo_engine_reset(self.engine_ptr)
         self.buffer = ""
@@ -635,7 +1182,7 @@ class BongoWindowsService:
         # Pass through Ctrl or Alt combos (e.g. Ctrl+C, Alt+Tab)
         if is_ctrl or is_alt:
             if self.has_session():
-                self.commit_candidate(0)
+                self.commit_candidate(self.selected_index)
             return False
 
         # In-session navigation and candidate selection
@@ -645,31 +1192,52 @@ class BongoWindowsService:
                 return True
 
             if vk_code == VK_SPACE:
-                self.commit_candidate(0)
+                self.commit_candidate(self.selected_index)
                 send_unicode_string(" ")
                 return True
 
             if vk_code == VK_RETURN:
                 # Commits active candidate cleanly without inserting an extra newline
-                self.commit_candidate(0)
+                self.commit_candidate(self.selected_index)
                 return True
 
             if vk_code == VK_BACK:
                 self.handle_backspace()
                 return True
 
+            # Candidate cycling navigation (Down Arrow, Tab -> next candidate)
+            if vk_code in (VK_DOWN, VK_TAB):
+                if len(self.candidates) > 1:
+                    self.selected_index = (self.selected_index + 1) % min(len(self.candidates), 9)
+                    chosen = self.candidates[self.selected_index]
+                    replace_inline_text(self.last_injected_len, chosen)
+                    self.last_injected_len = sum(2 if ord(c) > 0xFFFF else 1 for c in chosen)
+                    self.preedit_str = chosen
+                    if self.settings.get("typing_mode", 0) != 2:
+                        self.hud.update(self.buffer, self.candidates, self.selected_index)
+                    return True
+
+            # Candidate cycling navigation (Up Arrow -> previous candidate)
+            if vk_code == VK_UP:
+                if len(self.candidates) > 1:
+                    self.selected_index = (self.selected_index - 1) % min(len(self.candidates), 9)
+                    chosen = self.candidates[self.selected_index]
+                    replace_inline_text(self.last_injected_len, chosen)
+                    self.last_injected_len = sum(2 if ord(c) > 0xFFFF else 1 for c in chosen)
+                    self.preedit_str = chosen
+                    if self.settings.get("typing_mode", 0) != 2:
+                        self.hud.update(self.buffer, self.candidates, self.selected_index)
+                    return True
+
             # Number keys 1-9 for candidate selection if multiple candidates exist (and Shift is not held)
             if not is_shift and 0x31 <= vk_code <= 0x39:
                 idx = vk_code - 0x31
                 if idx < len(self.candidates) and len(self.candidates) > 1:
-                    chosen = self.candidates[idx]
-                    replace_inline_text(self.last_injected_len, chosen)
-                    self.last_injected_len = sum(2 if ord(c) > 0xFFFF else 1 for c in chosen)
                     self.commit_candidate(idx)
                     return True
                 else:
                     # Single candidate or index out of range: commit word and type Bengali numeral
-                    self.commit_candidate(0)
+                    self.commit_candidate(self.selected_index)
                     digit_char = chr(vk_code)
                     bn_digit = BENGALI_DIGITS.get(digit_char, digit_char)
                     send_unicode_string(bn_digit)
@@ -677,13 +1245,13 @@ class BongoWindowsService:
 
             # Digit 0 inside session: commit word and type Bengali numeral '০'
             if not is_shift and vk_code == 0x30:
-                self.commit_candidate(0)
+                self.commit_candidate(self.selected_index)
                 send_unicode_string("০")
                 return True
 
             # Period key inside session: commit word and type Bengali Dari (।)
             if not is_shift and vk_code == 0xBE:
-                self.commit_candidate(0)
+                self.commit_candidate(self.selected_index)
                 send_unicode_string("।")
                 return True
 
@@ -727,7 +1295,7 @@ class BongoWindowsService:
         # Any unhandled key while in session: commit candidate before letting key pass through
         # (prevents backspacing over punctuation or navigation events on subsequent keystrokes)
         if self.has_session():
-            self.commit_candidate(0)
+            self.commit_candidate(self.selected_index)
             return False
 
         return False
@@ -800,6 +1368,9 @@ class BongoWindowsService:
         sys.stdout.write(msg_welcome)
         sys.stdout.flush()
 
+        # Initialize Candidate HUD window on hook thread
+        self.hud._init_win32()
+
         try:
             msg = wintypes.MSG()
             while user32.GetMessageW(ctypes.byref(msg), 0, 0, 0) > 0:
@@ -808,6 +1379,7 @@ class BongoWindowsService:
         except Exception as e:
             log_msg(f"Error in Windows message loop: {e}")
         finally:
+            self.hud.destroy()
             if self.hook_id:
                 user32.UnhookWindowsHookEx(self.hook_id)
                 self.hook_id = None

@@ -1310,6 +1310,358 @@ kbd {
 }
 
 /* ========================================================
+   Option 3: Tactile Neumorphic (Soft UI) Preview (#playground)
+   100% Isolated & Easily Reversible
+   ======================================================== */
+
+#playground.neu-preview-active .mac-window {
+    background: #f7f2ea;
+    border: 1px solid rgba(255, 255, 255, 0.75);
+    border-radius: 24px;
+    box-shadow: 
+        14px 14px 34px rgba(180, 162, 140, 0.45),
+        -14px -14px 34px #ffffff,
+        inset 1px 1px 1px rgba(255, 255, 255, 0.9);
+    transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+[data-theme="dark"] #playground.neu-preview-active .mac-window {
+    background: #181715;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 
+        14px 14px 34px rgba(0, 0, 0, 0.85),
+        -12px -12px 28px rgba(255, 255, 255, 0.035),
+        inset 1px 1px 1px rgba(255, 255, 255, 0.05);
+}
+
+#playground.neu-preview-active .mac-titlebar {
+    background: transparent;
+    border-bottom: 1px solid rgba(180, 162, 140, 0.18);
+    padding: 0.6rem 1.2rem;
+    height: auto;
+    min-height: 46px;
+}
+
+[data-theme="dark"] #playground.neu-preview-active .mac-titlebar {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Recessed traffic lights */
+#playground.neu-preview-active .light {
+    box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.35), 1px 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+[data-theme="dark"] #playground.neu-preview-active .light {
+    box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.6), 1px 1px 2px rgba(255, 255, 255, 0.08);
+}
+
+/* Neumorphic Interactive Toggle Pill in Titlebar */
+.neu-toggle-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.74rem;
+    font-weight: 600;
+    font-family: inherit;
+    border-radius: 980px;
+    cursor: pointer;
+    margin-left: auto;
+    margin-right: 0.5rem;
+    transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    background: #f7f2ea;
+    color: var(--accent);
+    box-shadow: 3px 3px 8px rgba(180, 162, 140, 0.38), -3px -3px 8px #ffffff;
+    user-select: none;
+}
+
+.neu-toggle-sparkle {
+    font-size: 0.8rem;
+    color: var(--accent);
+    transition: transform 0.3s ease;
+}
+
+.neu-toggle-pill:hover {
+    box-shadow: 5px 5px 12px rgba(180, 162, 140, 0.48), -5px -5px 12px #ffffff;
+    transform: translateY(-1px);
+}
+
+.neu-toggle-pill:hover .neu-toggle-sparkle {
+    transform: rotate(30deg) scale(1.15);
+}
+
+.neu-toggle-pill:active,
+.neu-toggle-pill.inactive {
+    box-shadow: inset 2px 2px 5px rgba(180, 162, 140, 0.45), inset -2px -2px 5px #ffffff;
+    transform: translateY(0);
+}
+
+.neu-toggle-pill.inactive {
+    color: var(--text-tertiary);
+    background: #f1ebd8;
+}
+
+[data-theme="dark"] .neu-toggle-pill {
+    background: #1e1c19;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.75), -2px -2px 6px rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .neu-toggle-pill:hover {
+    box-shadow: 4px 4px 11px rgba(0, 0, 0, 0.85), -3px -3px 8px rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .neu-toggle-pill:active,
+[data-theme="dark"] .neu-toggle-pill.inactive {
+    background: #141312;
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.85), inset -2px -2px 5px rgba(255, 255, 255, 0.04);
+}
+
+/* Mode pill */
+#playground.neu-preview-active .mac-input-source-pill {
+    background: #f7f2ea;
+    border: 1px solid rgba(255, 255, 255, 0.75);
+    box-shadow: 3px 3px 7px rgba(180, 162, 140, 0.32), -3px -3px 7px #ffffff;
+    color: var(--accent);
+    padding: 0.25rem 0.65rem;
+    font-size: 0.76rem;
+}
+
+[data-theme="dark"] #playground.neu-preview-active .mac-input-source-pill {
+    background: #1e1c19;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 3px 3px 7px rgba(0, 0, 0, 0.7), -2px -2px 6px rgba(255, 255, 255, 0.04);
+}
+
+/* Sample Pills (Convex Tactile Buttons) */
+#playground.neu-preview-active .sample-pill {
+    background: #f7f2ea;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 980px;
+    box-shadow: 4px 4px 9px rgba(180, 162, 140, 0.35), -4px -4px 9px #ffffff;
+    color: var(--text-secondary);
+    font-weight: 500;
+    padding: 0.35rem 0.85rem;
+    transition: all 0.18s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+#playground.neu-preview-active .sample-pill:hover {
+    color: var(--accent);
+    box-shadow: 6px 6px 13px rgba(180, 162, 140, 0.45), -6px -6px 13px #ffffff;
+    transform: translateY(-1.5px);
+}
+
+#playground.neu-preview-active .sample-pill:active {
+    box-shadow: inset 3px 3px 6px rgba(180, 162, 140, 0.45), inset -3px -3px 6px #ffffff;
+    transform: translateY(0);
+}
+
+[data-theme="dark"] #playground.neu-preview-active .sample-pill {
+    background: #1d1b18;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 4px 4px 9px rgba(0, 0, 0, 0.7), -3px -3px 8px rgba(255, 255, 255, 0.035);
+}
+
+[data-theme="dark"] #playground.neu-preview-active .sample-pill:hover {
+    box-shadow: 5px 5px 12px rgba(0, 0, 0, 0.85), -4px -4px 10px rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] #playground.neu-preview-active .sample-pill:active {
+    box-shadow: inset 3px 3px 6px rgba(0, 0, 0, 0.8), inset -2px -2px 5px rgba(255, 255, 255, 0.04);
+}
+
+/* Typing Canvas Text Input (Sunken Concave Inset Cavity) */
+#playground.neu-preview-active .mac-text-input {
+    background: #f2ede4;
+    border: 1px solid rgba(180, 162, 140, 0.25);
+    border-radius: 14px;
+    box-shadow: inset 4px 4px 9px rgba(180, 162, 140, 0.4), inset -4px -4px 9px #ffffff;
+    padding: 0.95rem 2.75rem 0.95rem 1.15rem;
+    transition: all 0.2s ease;
+}
+
+#playground.neu-preview-active .mac-text-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 
+        inset 3px 3px 7px rgba(180, 162, 140, 0.35),
+        inset -3px -3px 7px #ffffff,
+        0 0 0 3px var(--accent-soft),
+        0 0 16px rgba(192, 57, 43, 0.18);
+}
+
+[data-theme="dark"] #playground.neu-preview-active .mac-text-input {
+    background: #131210;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    box-shadow: inset 4px 4px 10px rgba(0, 0, 0, 0.9), inset -3px -3px 8px rgba(255, 255, 255, 0.035);
+}
+
+[data-theme="dark"] #playground.neu-preview-active .mac-text-input:focus {
+    box-shadow: 
+        inset 3px 3px 8px rgba(0, 0, 0, 0.85),
+        inset -2px -2px 6px rgba(255, 255, 255, 0.04),
+        0 0 0 3px var(--accent-soft),
+        0 0 18px rgba(224, 83, 68, 0.22);
+}
+
+/* Clear Button */
+#playground.neu-preview-active .btn-clear {
+    background: #f7f2ea;
+    border: 1px solid rgba(255, 255, 255, 0.75);
+    box-shadow: 2px 2px 5px rgba(180, 162, 140, 0.4), -2px -2px 5px #ffffff;
+    transition: all 0.15s ease;
+}
+
+#playground.neu-preview-active .btn-clear:hover {
+    box-shadow: 3px 3px 7px rgba(180, 162, 140, 0.5), -3px -3px 7px #ffffff;
+    color: var(--accent);
+}
+
+#playground.neu-preview-active .btn-clear:active {
+    box-shadow: inset 2px 2px 4px rgba(180, 162, 140, 0.45), inset -2px -2px 4px #ffffff;
+}
+
+[data-theme="dark"] #playground.neu-preview-active .btn-clear {
+    background: #1e1c19;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.75), -2px -2px 5px rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] #playground.neu-preview-active .btn-clear:active {
+    box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.85), inset -1px -1px 3px rgba(255, 255, 255, 0.04);
+}
+
+/* Authentic macOS Translucent Candidate HUD (Neumorphic Slate) */
+#playground.neu-preview-active .mac-candidate-hud {
+    background: rgba(247, 242, 234, 0.94);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 16px;
+    box-shadow: 
+        10px 10px 24px rgba(180, 162, 140, 0.42),
+        -8px -8px 22px #ffffff,
+        inset 1px 1px 1px rgba(255, 255, 255, 0.9);
+    padding: 0.65rem;
+}
+
+[data-theme="dark"] #playground.neu-preview-active .mac-candidate-hud {
+    background: rgba(24, 22, 20, 0.94);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 
+        12px 12px 28px rgba(0, 0, 0, 0.88),
+        -8px -8px 22px rgba(255, 255, 255, 0.035),
+        inset 1px 1px 1px rgba(255, 255, 255, 0.05);
+}
+
+#playground.neu-preview-active .hud-header {
+    border-bottom: 1px solid rgba(180, 162, 140, 0.2);
+    padding-bottom: 0.4rem;
+}
+
+[data-theme="dark"] #playground.neu-preview-active .hud-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+#playground.neu-preview-active .hud-candidate-item {
+    border-radius: 8px;
+    padding: 0.4rem 0.65rem;
+    transition: all 0.15s ease;
+}
+
+#playground.neu-preview-active .hud-candidate-item:hover {
+    background: #f2ede4;
+    box-shadow: 2px 2px 6px rgba(180, 162, 140, 0.3), -2px -2px 6px #ffffff;
+}
+
+[data-theme="dark"] #playground.neu-preview-active .hud-candidate-item:hover {
+    background: #1e1c19;
+    box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.7), -2px -2px 6px rgba(255, 255, 255, 0.03);
+}
+
+#playground.neu-preview-active .hud-candidate-item.selected {
+    background: linear-gradient(135deg, #c0392b, #a93226);
+    color: #ffffff;
+    box-shadow: 
+        4px 4px 10px rgba(192, 57, 43, 0.4),
+        -2px -2px 6px rgba(255, 255, 255, 0.6),
+        inset 1px 1px 2px rgba(255, 255, 255, 0.35);
+}
+
+[data-theme="dark"] #playground.neu-preview-active .hud-candidate-item.selected {
+    background: linear-gradient(135deg, #e05344, #bf3f31);
+    color: #ffffff;
+    box-shadow: 
+        4px 4px 12px rgba(0, 0, 0, 0.6),
+        -2px -2px 6px rgba(255, 255, 255, 0.1),
+        inset 1px 1px 2px rgba(255, 255, 255, 0.3);
+}
+
+#playground.neu-preview-active .hud-candidate-item.selected .hud-num {
+    background: rgba(0, 0, 0, 0.25);
+    color: #ffffff;
+}
+
+/* Output Preview Bar (Concave Display Tray) */
+#playground.neu-preview-active .mac-output-bar {
+    background: #f2ede4;
+    border: 1px solid rgba(180, 162, 140, 0.22);
+    border-radius: 14px;
+    box-shadow: inset 4px 4px 9px rgba(180, 162, 140, 0.38), inset -4px -4px 9px #ffffff;
+    padding: 0.95rem 1.25rem;
+}
+
+[data-theme="dark"] #playground.neu-preview-active .mac-output-bar {
+    background: #131210;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    box-shadow: inset 4px 4px 10px rgba(0, 0, 0, 0.9), inset -3px -3px 8px rgba(255, 255, 255, 0.035);
+}
+
+/* Copy Button (Convex Tactile Pill) */
+#playground.neu-preview-active .btn-mac-copy {
+    background: #f7f2ea;
+    border: 1px solid rgba(255, 255, 255, 0.75);
+    border-radius: 980px;
+    box-shadow: 3px 3px 8px rgba(180, 162, 140, 0.38), -3px -3px 8px #ffffff;
+    color: var(--text-secondary);
+    transition: all 0.18s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+#playground.neu-preview-active .btn-mac-copy:hover {
+    color: var(--text-primary);
+    box-shadow: 5px 5px 10px rgba(180, 162, 140, 0.48), -5px -5px 10px #ffffff;
+    transform: translateY(-1px);
+}
+
+#playground.neu-preview-active .btn-mac-copy:active {
+    box-shadow: inset 2px 2px 5px rgba(180, 162, 140, 0.45), inset -2px -2px 5px #ffffff;
+    transform: translateY(0);
+}
+
+#playground.neu-preview-active .btn-mac-copy.copied {
+    background: #34c759;
+    color: #ffffff;
+    box-shadow: 3px 3px 8px rgba(52, 199, 89, 0.4), inset 1px 1px 2px rgba(255, 255, 255, 0.4);
+    border-color: #34c759;
+}
+
+[data-theme="dark"] #playground.neu-preview-active .btn-mac-copy {
+    background: #1e1c19;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.75), -2px -2px 6px rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] #playground.neu-preview-active .btn-mac-copy:active {
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.85), inset -1px -1px 4px rgba(255, 255, 255, 0.04);
+}
+
+@media (max-width: 640px) {
+    .neu-toggle-pill {
+        font-size: 0.68rem;
+        padding: 0.18rem 0.5rem;
+    }
+}
+
+/* ========================================================
    Common Sections
    ======================================================== */
 .section {

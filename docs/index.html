@@ -71,7 +71,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+Bengali:wght@400;500;600;700&family=Noto+Serif+Bengali:wght@500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=6.0">
+    <link rel="stylesheet" href="styles.css?v=6.1">
 </head>
 <body>
     <a href="#playground" class="skip-link">Skip to playground</a>
@@ -566,8 +566,8 @@
                     </div>
                 </div>
 
-                <!-- macOS Interactive Window Playground -->
-                <div class="mac-window-wrapper" id="playground">
+                <!-- macOS Interactive Window Playground (Soft UI / Neumorphism Preview) -->
+                <div class="mac-window-wrapper neu-preview-active" id="playground">
                     <div class="mac-window">
                         <!-- Window Titlebar -->
                         <div class="mac-titlebar">
@@ -577,6 +577,10 @@
                                 <span class="light green" title="Zoom"></span>
                             </div>
                             <div class="mac-window-label" data-i18n="playground.window_title">TextEdit: Untitled Document</div>
+                            <button type="button" class="neu-toggle-pill" id="neuToggleBtn" title="Toggle Soft UI (Neumorphism) vs Classic Flat" aria-pressed="true">
+                                <span class="neu-toggle-sparkle">✦</span>
+                                <span class="neu-toggle-text">Soft UI (Neumorphic)</span>
+                            </button>
                             <div class="mac-input-source-pill">
                                 <span class="pill-dot"></span>
                                 <span data-i18n="playground.mode">Bongo · Phonetic</span>
@@ -1203,8 +1207,8 @@
         </div>
     </footer>
 
-    <script src="translations.js?v=6.0"></script>
-    <script src="avro.js?v=6.0"></script>
-    <script src="app.js?v=6.0"></script>
+    <script src="translations.js?v=6.1"></script>
+    <script src="avro.js?v=6.1"></script>
+    <script src="app.js?v=6.1"></script>
 </body>
 </html>

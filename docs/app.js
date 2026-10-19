@@ -16,9 +16,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // 3. App Screenshots Tab Switcher
     initGallery();
 
-    // 4. Cheatsheet Search & Category Filter
-    initCheatsheet();
-
     // 5. Navbar Scroll Effect
     initNavbarScroll();
 
@@ -327,6 +324,7 @@ function initGallery() {
    ======================================================== */
 function initCheatsheet() {
     const searchInput = document.getElementById('cheatsheetSearch');
+    if (!searchInput) return;
     const filterBtns = document.querySelectorAll('.cat-btn');
     const tableRows = document.querySelectorAll('#cheatsheetTable tbody tr');
     const countEl = document.getElementById('cheatsheetCount');
@@ -433,7 +431,7 @@ function initCheatsheet() {
 function initNavbarScroll() {
     const navbar = document.getElementById('navbar');
     const navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
-    const sectionIds = ['playground', 'screenshots', 'features', 'install', 'cheatsheet', 'faq'];
+    const sectionIds = ['playground', 'screenshots', 'features', 'install', 'utilities', 'faq'];
     const sections = sectionIds
         .map(id => document.getElementById(id))
         .filter(sec => sec !== null);

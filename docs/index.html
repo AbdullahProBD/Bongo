@@ -89,10 +89,8 @@
                 <a href="#features" data-i18n="nav.features">Features</a>
                 <a href="#screenshots" data-i18n="nav.screenshots">Interface</a>
                 <a href="#install" data-i18n="nav.install">Install</a>
-                <a href="#cheatsheet" data-i18n="nav.cheatsheet">Cheatsheet</a>
                 <a href="#utilities" data-i18n="nav.utilities">Utilities</a>
                 <a href="#faq" data-i18n="nav.faq">FAQ</a>
-                <a href="#download-hub" class="nav-link-dl-mobile" data-i18n="nav.download_short">Download</a>
 
                 <div class="nav-mobile-actions">
                     <button class="btn-lang-mobile" id="mobileLangToggle" aria-label="বাংলা সংস্করণে পরিবর্তন করুন">
@@ -102,15 +100,6 @@
             </div>
 
             <div class="nav-actions">
-                <a href="#download-hub" class="btn-apple-pill nav-download-btn" data-i18n="nav.download_short">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 2px;">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                        <polyline points="7 10 12 15 17 10"></polyline>
-                        <line x1="12" y1="15" x2="12" y2="3"></line>
-                    </svg>
-                    <span>Download</span>
-                </a>
-
                 <button class="lang-toggle" id="langToggle" aria-label="বাংলা সংস্করণে পরিবর্তন করুন" title="বাংলা সংস্করণে পড়ুন">
                     <span class="lang-text" id="langText">বাংলা</span>
                 </button>
@@ -1063,137 +1052,6 @@
             </div>
         </section>
 
-        <!-- Phonetic Reference Cheatsheet -->
-        <section class="section section-alt" id="cheatsheet">
-            <div class="section-container">
-                <div class="section-lead">
-                    <span class="section-eyebrow" data-i18n="cheatsheet.eyebrow">Reference</span>
-                    <h2 class="section-headline" data-i18n="cheatsheet.title">Phonetic Key Map</h2>
-                    <p class="section-subtext" data-i18n="cheatsheet.desc">Search any Bengali sound or character to look up its phonetic keystroke.</p>
-                </div>
-
-                <div class="cheatsheet-card">
-                    <div class="filter-controls">
-                        <div class="search-input-box">
-                            <label for="cheatsheetSearch" class="visually-hidden">Filter characters</label>
-                            <svg class="search-box-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="11" cy="11" r="8"></circle>
-                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                            </svg>
-                            <input type="text" id="cheatsheetSearch" class="search-field" placeholder="Search letter or keystroke (e.g. kkh, sh, ক্ষ, ঋ)..." data-i18n-placeholder="cheatsheet.search_placeholder">
-                        </div>
-
-                        <div class="category-pill-group">
-                            <button class="cat-btn active" data-category="all" data-i18n="cat.all">All Characters</button>
-                            <button class="cat-btn" data-category="vowels" data-i18n="cat.vowels">Vowels</button>
-                            <button class="cat-btn" data-category="consonants" data-i18n="cat.consonants">Consonants</button>
-                            <button class="cat-btn" data-category="conjuncts" data-i18n="cat.conjuncts">Conjuncts</button>
-                            <button class="cat-btn" data-category="numbers" data-i18n="cat.numbers">Numbers</button>
-                        </div>
-                    </div>
-
-                    <div class="table-scroll-container">
-                        <table class="mac-table" id="cheatsheetTable">
-                            <thead>
-                                <tr>
-                                    <th data-i18n="th.category">Type</th>
-                                    <th data-i18n="th.bangla">Bangla Glyph</th>
-                                    <th data-i18n="th.keystroke">Keystroke</th>
-                                    <th data-i18n="th.example">Example Word</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr data-cat="vowels"><td>Vowel</td><td class="bn-glyph">অ</td><td class="key-glyph"><kbd>o</kbd></td><td>oneck (অনেক)</td></tr>
-                                <tr data-cat="vowels"><td>Vowel</td><td class="bn-glyph">আ</td><td class="key-glyph"><kbd>a</kbd></td><td>ami (আমি)</td></tr>
-                                <tr data-cat="vowels"><td>Vowel</td><td class="bn-glyph">ই</td><td class="key-glyph"><kbd>i</kbd></td><td>iti (ইতি)</td></tr>
-                                <tr data-cat="vowels"><td>Vowel</td><td class="bn-glyph">ঈ</td><td class="key-glyph"><kbd>I</kbd></td><td>Ishor (ঈশ্বর)</td></tr>
-                                <tr data-cat="vowels"><td>Vowel</td><td class="bn-glyph">উ</td><td class="key-glyph"><kbd>u</kbd></td><td>uth (উঠ)</td></tr>
-                                <tr data-cat="vowels"><td>Vowel</td><td class="bn-glyph">ঊ</td><td class="key-glyph"><kbd>U</kbd></td><td>Ushor (ঊষর)</td></tr>
-                                <tr data-cat="vowels"><td>Vowel</td><td class="bn-glyph">ঋ</td><td class="key-glyph"><kbd>rri</kbd></td><td>rrishi (ঋষি)</td></tr>
-                                <tr data-cat="vowels"><td>Vowel</td><td class="bn-glyph">এ</td><td class="key-glyph"><kbd>e</kbd></td><td>ektara (একতারা)</td></tr>
-                                <tr data-cat="vowels"><td>Vowel</td><td class="bn-glyph">ঐ</td><td class="key-glyph"><kbd>OI</kbd></td><td>OIkyoboddho (ঐক্যবদ্ধ)</td></tr>
-                                <tr data-cat="vowels"><td>Vowel</td><td class="bn-glyph">ও</td><td class="key-glyph"><kbd>O</kbd></td><td>Ol (ওল)</td></tr>
-                                <tr data-cat="vowels"><td>Vowel</td><td class="bn-glyph">ঔ</td><td class="key-glyph"><kbd>OU</kbd></td><td>OUshodh (ঔষধ)</td></tr>
-
-                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">ক</td><td class="key-glyph"><kbd>k</kbd></td><td>kothay (কোথায়)</td></tr>
-                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">খ</td><td class="key-glyph"><kbd>kh</kbd></td><td>khobor (খবর)</td></tr>
-                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">গ</td><td class="key-glyph"><kbd>g</kbd></td><td>gan (গান)</td></tr>
-                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">ঘ</td><td class="key-glyph"><kbd>gh</kbd></td><td>ghor (ঘর)</td></tr>
-                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">ঙ</td><td class="key-glyph"><kbd>Ng</kbd></td><td>roNg (রং)</td></tr>
-                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">চ</td><td class="key-glyph"><kbd>c</kbd> / <kbd>ch</kbd></td><td>chad (চাঁদ)</td></tr>
-                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">ছ</td><td class="key-glyph"><kbd>Ch</kbd></td><td>Chobi (ছবি)</td></tr>
-                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">জ</td><td class="key-glyph"><kbd>j</kbd></td><td>jol (জল)</td></tr>
-                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">ঝ</td><td class="key-glyph"><kbd>jh</kbd></td><td>jhor (ঝড়)</td></tr>
-                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">ঞ</td><td class="key-glyph"><kbd>NG</kbd></td><td>miya (মিঞা)</td></tr>
-                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">ট</td><td class="key-glyph"><kbd>T</kbd></td><td>Taka (টাকা)</td></tr>
-                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">ঠ</td><td class="key-glyph"><kbd>Th</kbd></td><td>Thik (ঠিক)</td></tr>
-                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">ড</td><td class="key-glyph"><kbd>D</kbd></td><td>Daak (ডাক)</td></tr>
-                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">ঢ</td><td class="key-glyph"><kbd>Dh</kbd></td><td>Dhak (ঢাক)</td></tr>
-                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">ণ</td><td class="key-glyph"><kbd>N</kbd></td><td>gun (গুণ)</td></tr>
-                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">ত</td><td class="key-glyph"><kbd>t</kbd></td><td>tumi (তুমি)</td></tr>
-                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">থ</td><td class="key-glyph"><kbd>th</kbd></td><td>thako (থাকো)</td></tr>
-                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">দ</td><td class="key-glyph"><kbd>d</kbd></td><td>din (দিন)</td></tr>
-                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">ধ</td><td class="key-glyph"><kbd>dh</kbd></td><td>dhon (ধন)</td></tr>
-                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">ন</td><td class="key-glyph"><kbd>n</kbd></td><td>naam (নাম)</td></tr>
-                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">প</td><td class="key-glyph"><kbd>p</kbd></td><td>pani (পানি)</td></tr>
-                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">ফ</td><td class="key-glyph"><kbd>f</kbd> / <kbd>ph</kbd></td><td>ful (ফুল)</td></tr>
-                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">ব</td><td class="key-glyph"><kbd>b</kbd></td><td>boi (বই)</td></tr>
-                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">ভ</td><td class="key-glyph"><kbd>bh</kbd> / <kbd>v</kbd></td><td>bhalo (ভালো)</td></tr>
-                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">ম</td><td class="key-glyph"><kbd>m</kbd></td><td>maa (মা)</td></tr>
-                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">য</td><td class="key-glyph"><kbd>z</kbd></td><td>zodi (যদি)</td></tr>
-                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">র</td><td class="key-glyph"><kbd>r</kbd></td><td>raat (রাত)</td></tr>
-                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">ল</td><td class="key-glyph"><kbd>l</kbd></td><td>laal (লাল)</td></tr>
-                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">শ</td><td class="key-glyph"><kbd>S</kbd> / <kbd>sh</kbd></td><td>shanti (শান্তি)</td></tr>
-                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">ষ</td><td class="key-glyph"><kbd>Sh</kbd></td><td>kaShTo (কষ্ট)</td></tr>
-                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">স</td><td class="key-glyph"><kbd>s</kbd></td><td>shob (সব)</td></tr>
-                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">হ</td><td class="key-glyph"><kbd>h</kbd></td><td>haat (হাত)</td></tr>
-                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">ড়</td><td class="key-glyph"><kbd>R</kbd></td><td>boRo (বড়)</td></tr>
-                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">ঢ়</td><td class="key-glyph"><kbd>Rh</kbd></td><td>aaRha (আষাঢ়)</td></tr>
-                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">য়</td><td class="key-glyph"><kbd>y</kbd></td><td>bhay (ভয়)</td></tr>
-                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">ৎ</td><td class="key-glyph"><kbd>`t</kbd></td><td>utshob (উৎসব)</td></tr>
-                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">ং</td><td class="key-glyph"><kbd>ng</kbd></td><td>shonglap (সংলাপ)</td></tr>
-                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">ঃ</td><td class="key-glyph"><kbd>:</kbd></td><td>du:kho (দুঃখ)</td></tr>
-                                <tr data-cat="consonants"><td>Consonant</td><td class="bn-glyph">ঁ</td><td class="key-glyph"><kbd>^</kbd></td><td>cha^d (চাঁদ)</td></tr>
-
-                                <tr data-cat="conjuncts"><td>Conjunct</td><td class="bn-glyph">ক্ষ</td><td class="key-glyph"><kbd>kkh</kbd></td><td>kkhoma (ক্ষমা)</td></tr>
-                                <tr data-cat="conjuncts"><td>Conjunct</td><td class="bn-glyph">জ্ঞ</td><td class="key-glyph"><kbd>jnj</kbd> / <kbd>gy</kbd></td><td>gyan (জ্ঞান)</td></tr>
-                                <tr data-cat="conjuncts"><td>Conjunct</td><td class="bn-glyph">ক্ত</td><td class="key-glyph"><kbd>kt</kbd></td><td>rokto (রক্ত)</td></tr>
-                                <tr data-cat="conjuncts"><td>Conjunct</td><td class="bn-glyph">ন্দ</td><td class="key-glyph"><kbd>nd</kbd></td><td>anondo (আনন্দ)</td></tr>
-                                <tr data-cat="conjuncts"><td>Conjunct</td><td class="bn-glyph">ঙ্গ</td><td class="key-glyph"><kbd>ngg</kbd></td><td>bongo (বঙ্গ)</td></tr>
-                                <tr data-cat="conjuncts"><td>Conjunct</td><td class="bn-glyph">ষ্ণ</td><td class="key-glyph"><kbd>ShN</kbd></td><td>krishno (কৃষ্ণ)</td></tr>
-
-                                <tr data-cat="numbers"><td>Number</td><td class="bn-glyph">১ ২ ৩ ৪ ৫</td><td class="key-glyph"><kbd>1 2 3 4 5</kbd></td><td>Bengali Numerals</td></tr>
-                                <tr data-cat="numbers"><td>Number</td><td class="bn-glyph">৬ ৭ ৮ ৯ ০</td><td class="key-glyph"><kbd>6 7 8 9 0</kbd></td><td>Bengali Numerals</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- Compact Cheatsheet Footer with Expand/Collapse & Live Count -->
-                    <div class="cheatsheet-card-footer">
-                        <div class="cheatsheet-counter-pill">
-                            <span class="counter-dot"></span>
-                            <span id="cheatsheetCount">Showing all 61 characters</span>
-                        </div>
-                        <button type="button" class="cheatsheet-toggle-btn" id="toggleCheatsheetHeight" aria-expanded="false">
-                            <svg class="toggle-icon-expand" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="15 3 21 3 21 9"></polyline>
-                                <polyline points="9 21 3 21 3 15"></polyline>
-                                <line x1="21" y1="3" x2="14" y2="10"></line>
-                                <line x1="3" y1="21" x2="10" y2="14"></line>
-                            </svg>
-                            <svg class="toggle-icon-collapse" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
-                                <polyline points="4 14 10 14 10 20"></polyline>
-                                <polyline points="20 10 14 10 14 4"></polyline>
-                                <line x1="14" y1="10" x2="21" y2="3"></line>
-                                <line x1="3" y1="21" x2="10" y2="14"></line>
-                            </svg>
-                            <span class="toggle-text" data-i18n="cheatsheet.expand">View Full Table</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </section>
-
         <!-- BUILT-IN UTILITIES: Unicode ↔ Bijoy Converter -->
         <section class="section" id="utilities">
             <div class="section-container">
@@ -1427,7 +1285,6 @@
                         <span class="link-col-title" data-i18n="footer.col_product">Product</span>
                         <a href="#playground" data-i18n="footer.interactive_demo">Interactive Demo</a>
                         <a href="#features" data-i18n="nav.features">Features</a>
-                        <a href="#cheatsheet" data-i18n="footer.phonetic_map">Cheatsheet</a>
                         <a href="#utilities" data-i18n="nav.utilities">Utilities</a>
                     </div>
                     <div class="footer-link-col">

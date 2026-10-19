@@ -3,6 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Immediate Theme Initialization (Prevents theme flash on initial load) -->
+    <script>
+        (function() {
+            try {
+                var savedTheme = localStorage.getItem('bongo-theme');
+                if (savedTheme === 'dark' || savedTheme === 'light') {
+                    document.documentElement.setAttribute('data-theme', savedTheme);
+                } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                } else {
+                    document.documentElement.setAttribute('data-theme', 'light');
+                }
+            } catch (e) {}
+        })();
+    </script>
     <title>Bongo · বঙ্গ: Native Bangla Keyboard for macOS, Linux, Windows & Android</title>
     <meta name="description" content="Bongo (বঙ্গ) is a modern, fast native Bengali phonetic keyboard built for Apple Silicon macOS, modern Linux, Windows 10/11, and Android. Fast, lightweight, zero-telemetry private on-device typing.">
     <meta name="keywords" content="Bongo, getbongo, getbongo.app, bangla keyboard mac, bangla keyboard linux, bangla keyboard windows, bangla keyboard android, avro keyboard mac, avro linux, avro android, apple silicon bangla, ibus bengali, arm64 bangla ime, mehedi shakeel">

@@ -40,18 +40,26 @@ function initTheme() {
     if (!toggleBtn) return;
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
     
-    // Check saved preference
+    // Check saved preference or resolve from system
     const savedTheme = localStorage.getItem('bongo-theme');
-    if (savedTheme) {
+    if (savedTheme === 'dark' || savedTheme === 'light') {
         document.documentElement.setAttribute('data-theme', savedTheme);
+    } else {
+        document.documentElement.setAttribute('data-theme', prefersDark.matches ? 'dark' : 'light');
     }
 
+    // Auto-update if user has not set an explicit override
+    try {
+        prefersDark.addEventListener('change', (e) => {
+            if (!localStorage.getItem('bongo-theme')) {
+                document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            }
+        });
+    } catch (err) {}
+
     toggleBtn.addEventListener('click', () => {
-        const currentTheme = document.documentElement.getAttribute('data-theme');
-        let newTheme = 'dark';
-        if (currentTheme === 'dark' || (!currentTheme && prefersDark.matches)) {
-            newTheme = 'light';
-        }
+        const currentTheme = document.documentElement.getAttribute('data-theme') || (prefersDark.matches ? 'dark' : 'light');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
         
         document.documentElement.setAttribute('data-theme', newTheme);
         localStorage.setItem('bongo-theme', newTheme);

@@ -92,7 +92,7 @@ if defined CANDLE_EXE (
         echo Error: candle failed with error !ERRORLEVEL!.
         exit /b !ERRORLEVEL!
     )
-    light -ext WixUIExtension -out "%RELEASE_DIR%\Bongo-1.0.0-x64.msi" "%BUILD_DIR%\bongo.wixobj"
+    light -ext WixUIExtension -sval -out "%RELEASE_DIR%\Bongo-1.0.0-x64.msi" "%BUILD_DIR%\bongo.wixobj"
     if !ERRORLEVEL! neq 0 (
         echo Error: light failed with error !ERRORLEVEL!.
         exit /b !ERRORLEVEL!

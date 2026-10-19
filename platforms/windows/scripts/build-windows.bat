@@ -73,6 +73,18 @@ if not defined WIX_EXE if exist "%ProgramFiles%\WiX Toolset v4\bin\wix.exe" set 
 
 set "CANDLE_EXE="
 where candle >nul 2>&1 && set "CANDLE_EXE=candle"
+if not defined CANDLE_EXE if exist "%ProgramFiles(x86)%\WiX Toolset v3.11\bin\candle.exe" (
+    set "PATH=%ProgramFiles(x86)%\WiX Toolset v3.11\bin;!PATH!"
+    set "CANDLE_EXE=%ProgramFiles(x86)%\WiX Toolset v3.11\bin\candle.exe"
+)
+if not defined CANDLE_EXE if exist "%ProgramFiles%\WiX Toolset v3.11\bin\candle.exe" (
+    set "PATH=%ProgramFiles%\WiX Toolset v3.11\bin;!PATH!"
+    set "CANDLE_EXE=%ProgramFiles%\WiX Toolset v3.11\bin\candle.exe"
+)
+if not defined CANDLE_EXE if exist "%ProgramFiles(x86)%\WiX Toolset v3.14\bin\candle.exe" (
+    set "PATH=%ProgramFiles(x86)%\WiX Toolset v3.14\bin;!PATH!"
+    set "CANDLE_EXE=%ProgramFiles(x86)%\WiX Toolset v3.14\bin\candle.exe"
+)
 
 if defined CANDLE_EXE (
     candle -arch x64 -out "%BUILD_DIR%\bongo.wixobj" "%WINDOWS_ROOT%\installer\bongo.wxs"

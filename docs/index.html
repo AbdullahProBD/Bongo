@@ -89,7 +89,6 @@
                 <a href="#features" data-i18n="nav.features">Features</a>
                 <a href="#screenshots" data-i18n="nav.screenshots">Interface</a>
                 <a href="#install" data-i18n="nav.install">Install</a>
-                <a href="#utilities" data-i18n="nav.utilities">Utilities</a>
                 <a href="#faq" data-i18n="nav.faq">FAQ</a>
 
                 <div class="nav-mobile-actions">
@@ -1052,122 +1051,19 @@
             </div>
         </section>
 
-        <!-- BUILT-IN UTILITIES: Unicode ↔ Bijoy Converter -->
-        <section class="section" id="utilities">
-            <div class="section-container">
-                <div class="section-lead">
-                    <span class="section-eyebrow" data-i18n="utilities.eyebrow">Built-in Utilities</span>
-                    <h2 class="section-headline" data-i18n="utilities.title">Unicode ↔ Bijoy (ANSI) Converter</h2>
-                    <p class="section-subtext" data-i18n="utilities.subtitle">Bidirectional, high-fidelity Bengali text conversion with 100% ligature accuracy. Zero dependencies, completely offline and instant.</p>
-                </div>
-
-                <div class="utilities-wrapper">
-                    <!-- Converter Toolbar -->
-                    <div class="converter-controls-bar">
-                        <div class="converter-mode-switcher" role="tablist">
-                            <button type="button" class="conv-mode-btn active" id="convModeU2B" data-mode="u2b" role="tab" aria-selected="true">
-                                <span data-i18n="utilities.tab_u2b">Unicode → Bijoy (ANSI)</span>
-                            </button>
-                            <button type="button" class="conv-mode-btn" id="convModeB2U" data-mode="b2u" role="tab" aria-selected="false">
-                                <span data-i18n="utilities.tab_b2u">Bijoy (ANSI) → Unicode</span>
-                            </button>
-                        </div>
-
-                        <button type="button" class="btn-swap-direction" id="btnSwapDirection" title="Swap conversion direction" aria-label="Swap conversion direction">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="17 1 21 5 17 9"></polyline>
-                                <path d="M3 11V9a4 4 0 0 1 4-4h14"></path>
-                                <polyline points="7 23 3 19 7 15"></polyline>
-                                <path d="M21 13v2a4 4 0 0 1-4 4H3"></path>
-                            </svg>
-                            <span data-i18n="utilities.swap">Swap Direction</span>
-                        </button>
-                    </div>
-
-                    <!-- Dual Card Converter Grid -->
-                    <div class="converter-grid">
-                        <!-- Source Input Card -->
-                        <div class="converter-card">
-                            <div class="converter-card-header">
-                                <div class="converter-card-title">
-                                    <span id="convInputLabel" data-i18n="utilities.input_label">Source Text</span>
-                                    <span class="format-badge" id="convInputBadge">Unicode</span>
-                                </div>
-                                <div class="converter-meta-stats">
-                                    <span id="convInputCharCount">0 chars</span>
-                                    <span>·</span>
-                                    <span id="convInputWordCount">0 words</span>
-                                </div>
-                            </div>
-
-                            <textarea id="convInputText" class="converter-textarea" placeholder="Type or paste Unicode Bangla text here (e.g. আমি বাংলায় গান গাই)..." data-i18n-placeholder="utilities.input_ph_u" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off"></textarea>
-
-                            <div class="converter-card-footer">
-                                <div class="converter-samples">
-                                    <span class="converter-samples-label" data-i18n="utilities.samples_label">Quick samples:</span>
-                                    <button type="button" class="conv-sample-pill" data-sample="আমি বাংলায় গান গাই">গান গাই</button>
-                                    <button type="button" class="conv-sample-pill" data-sample="আমার সোনার বাংলা, আমি তোমায় ভালোবাসি">সোনার বাংলা</button>
-                                    <button type="button" class="conv-sample-pill" data-sample="শুভ নববর্ষ! বাংলা আমার গর্ব">শুভ নববর্ষ</button>
-                                </div>
-                                <div class="converter-card-actions">
-                                    <button type="button" class="btn-conv-action btn-conv-secondary" id="btnClearConvInput">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                            <line x1="18" y1="6" x2="6" y2="18"></line>
-                                            <line x1="6" y1="6" x2="18" y2="18"></line>
-                                        </svg>
-                                        <span data-i18n="utilities.clear">Clear</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Converted Output Card -->
-                        <div class="converter-card">
-                            <div class="converter-card-header">
-                                <div class="converter-card-title">
-                                    <span id="convOutputLabel" data-i18n="utilities.output_label">Converted Output</span>
-                                    <span class="format-badge" id="convOutputBadge">Bijoy (ANSI)</span>
-                                </div>
-                                <div class="converter-meta-stats">
-                                    <span id="convOutputCharCount">0 chars</span>
-                                    <span>·</span>
-                                    <span id="convOutputWordCount">0 words</span>
-                                </div>
-                            </div>
-
-                            <textarea id="convOutputText" class="converter-textarea bijoy-font" placeholder="Converted text will appear here automatically..." data-i18n-placeholder="utilities.output_ph" readonly spellcheck="false"></textarea>
-
-                            <div class="converter-card-footer">
-                                <div></div>
-                                <div class="converter-card-actions">
-                                    <button type="button" class="btn-conv-action btn-conv-primary" id="btnCopyConvOutput">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                                        </svg>
-                                        <span id="convCopyBtnText" data-i18n="utilities.copy">Copy Output</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
         <!-- macOS Settings-Style FAQ -->
         <section class="section" id="faq">
             <div class="section-container">
                 <div class="section-lead">
-                    <span class="section-eyebrow">Answers</span>
-                    <h2 class="section-headline">Frequently Asked Questions</h2>
-                    <p class="section-subtext">Clear information regarding security, compatibility, and day-to-day use.</p>
+                    <span class="section-eyebrow" data-i18n="faq.eyebrow">Answers</span>
+                    <h2 class="section-headline" data-i18n="faq.title">Frequently Asked Questions</h2>
+                    <p class="section-subtext" data-i18n="faq.desc">Clear information regarding multi-platform support, security, compatibility, and day-to-day use.</p>
                 </div>
 
                 <div class="faq-group">
                     <details class="faq-row" open>
                         <summary class="faq-summary">
-                            <span data-i18n="faq.q1">Is Bongo compatible with all Apple Silicon Macs (M1 through M4+)?</span>
+                            <span data-i18n="faq.q1">Which operating systems and devices does Bongo support?</span>
                             <span class="summary-caret" aria-hidden="true">
                                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                     <polyline points="6 9 12 15 18 9"></polyline>
@@ -1175,13 +1071,13 @@
                             </span>
                         </summary>
                         <div class="faq-body">
-                            <p data-i18n="faq.a1">Yes, 100%. Bongo is compiled natively for Apple Silicon (<code>arm64</code>). It runs directly on every MacBook Air, MacBook Pro, Mac mini, iMac, Mac Studio, and Mac Pro powered by M1, M2, M3, M4, or future M-series processors running macOS 13 (Ventura), macOS 14 (Sonoma), or macOS 15 (Sequoia).</p>
+                            <p data-i18n="faq.a1">Bongo is natively available across all four major platforms: <strong>macOS</strong> (Apple Silicon M1–M4 and Intel x86_64 via native InputMethodKit & Universal 2 DMG), <strong>Windows</strong> (Windows 10 & 11 with live floating Candidate HUD, .exe and .msi installers), <strong>Linux</strong> (Ubuntu, Debian, Mint, Fedora, Arch via native IBus engine), and <strong>Android</strong> (Android 8.0 through 15+ standalone signed APK with Ridmik layout & voice typing).</p>
                         </div>
                     </details>
 
                     <details class="faq-row">
                         <summary class="faq-summary">
-                            <span data-i18n="faq.q2">How is Bongo different from Apple's built-in Bengali keyboard?</span>
+                            <span data-i18n="faq.q2">How does phonetic typing work in Bongo?</span>
                             <span class="summary-caret" aria-hidden="true">
                                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                     <polyline points="6 9 12 15 18 9"></polyline>
@@ -1189,13 +1085,13 @@
                             </span>
                         </summary>
                         <div class="faq-body">
-                            <p data-i18n="faq.a2">Apple's built-in keyboard uses traditional Bengali layout mapping which requires memorizing special character positions. Bongo provides intuitive <strong>Avro Phonetic typing</strong>: write Bengali sounds phonetically using standard English letters (e.g. typing <code>ami</code> produces <code>আমি</code>, <code>dhonnobad</code> produces <code>ধন্যবাদ</code>), with a 150,000+ word dictionary and instant autocorrect.</p>
+                            <p data-i18n="faq.a2">Bongo uses intuitive <strong>Avro Phonetic typing</strong>: write Bengali sounds phonetically using standard English letters (e.g. typing <code>ami</code> produces <code>আমি</code>, <code>bangla</code> produces <code>বাংলা</code>, <code>dhonnobad</code> produces <code>ধন্যবাদ</code>). Powered by an embedded Rust phonetic engine with a 150,000+ word dictionary, compound word fixes, and instant autocorrect.</p>
                         </div>
                     </details>
 
                     <details class="faq-row">
                         <summary class="faq-summary">
-                            <span data-i18n="faq.q3">Does Bongo track what I type or require accessibility permissions?</span>
+                            <span data-i18n="faq.q3">How does Bongo work on Windows, and does it show suggestion candidates?</span>
                             <span class="summary-caret" aria-hidden="true">
                                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                     <polyline points="6 9 12 15 18 9"></polyline>
@@ -1203,13 +1099,13 @@
                             </span>
                         </summary>
                         <div class="faq-body">
-                            <p data-i18n="faq.a3"><strong>Absolutely not.</strong> Bongo is built on Apple's official native <code>InputMethodKit</code> framework. Unlike unofficial keyboard tools, Bongo does <strong>not</strong> require Accessibility permissions, does <strong>not</strong> log keystrokes, and has <strong>zero network telemetry</strong>. Your typing and personalized word selections remain strictly on your local device.</p>
+                            <p data-i18n="faq.a3">Yes! On Windows, Bongo runs as a low-level background service featuring a live floating <strong>Candidate HUD</strong> window right below your typing cursor in any application (Word, Chrome, Notepad, IDEs). You can cycle suggestions with <kbd>Down Arrow</kbd> or <kbd>Tab</kbd>, return with <kbd>Up Arrow</kbd>, select directly with <kbd>1</kbd>–<kbd>9</kbd>, or click candidates with your mouse without losing application focus. Press <kbd>F12</kbd> or <kbd>Ctrl + Space</kbd> to toggle Bangla mode anytime.</p>
                         </div>
                     </details>
 
                     <details class="faq-row">
                         <summary class="faq-summary">
-                            <span data-i18n="faq.q4">How do I switch quickly between English and Bongo?</span>
+                            <span data-i18n="faq.q4">What features does Bongo offer on Android?</span>
                             <span class="summary-caret" aria-hidden="true">
                                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                     <polyline points="6 9 12 15 18 9"></polyline>
@@ -1217,13 +1113,13 @@
                             </span>
                         </summary>
                         <div class="faq-body">
-                            <p data-i18n="faq.a4">Simply tap the <strong>Globe key (<kbd>fn</kbd> / Globe)</strong> on your modern Mac keyboard, or press <kbd>Control + Space</kbd>. You can also click the input switcher icon in the top macOS menu bar anytime.</p>
+                            <p data-i18n="faq.a4">Bongo for Android is an on-device keyboard featuring a familiar layout inspired by Ridmik. It features instant layout switching between English ABC, Avro Phonetic, and Probhat using the Spacebar or Globe key, integrated voice typing with native speech recognition, a built-in emoji and symbol tab picker, number row, haptic feedback, and runs 100% offline on your device.</p>
                         </div>
                     </details>
 
                     <details class="faq-row">
                         <summary class="faq-summary">
-                            <span data-i18n="faq.q5">Can I change the font style or size of candidate suggestions?</span>
+                            <span data-i18n="faq.q5">How do I switch quickly between English and Bangla across different platforms?</span>
                             <span class="summary-caret" aria-hidden="true">
                                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                     <polyline points="6 9 12 15 18 9"></polyline>
@@ -1231,13 +1127,13 @@
                             </span>
                         </summary>
                         <div class="faq-body">
-                            <p data-i18n="faq.a5">Yes! Open <strong>Bongo</strong> from your Applications folder (or choose "Settings..." from the Bongo menu bar item), navigate to the <strong>Fonts</strong> tab, and pick any installed Bengali font on your Mac (such as Kohinoor Bangla, Noto Sans Bengali, Ekush, etc.) with custom sizing and real-time live preview.</p>
+                            <p data-i18n="faq.a5">Switching is effortless on every platform: <strong>macOS</strong>: tap the <strong>Globe (<kbd>fn</kbd>)</strong> key or press <kbd>Control + Space</kbd>; <strong>Windows</strong>: press <kbd>F12</kbd> or <kbd>Control + Space</kbd>; <strong>Linux</strong>: press <kbd>Super + Space</kbd> or <kbd>Control + Space</kbd>; <strong>Android</strong>: tap the Globe (🌐) key or hold/swipe the Spacebar.</p>
                         </div>
                     </details>
 
                     <details class="faq-row">
                         <summary class="faq-summary">
-                            <span data-i18n="faq.q6">Is Bongo completely free and open source?</span>
+                            <span data-i18n="faq.q6">Does Bongo track what I type or require internet access?</span>
                             <span class="summary-caret" aria-hidden="true">
                                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                     <polyline points="6 9 12 15 18 9"></polyline>
@@ -1245,13 +1141,13 @@
                             </span>
                         </summary>
                         <div class="faq-body">
-                            <p data-i18n="faq.a6">Yes. Bongo is 100% free with no subscriptions, in-app purchases, or ads. The entire codebase is open source under the MPL-2.0 license and available on <a href="https://github.com/mehedishakeel/Bongo" target="_blank" rel="noopener">GitHub</a>.</p>
+                            <p data-i18n="faq.a6"><strong>Never.</strong> Bongo is strictly offline and privacy-first across all four platforms (macOS, Windows, Linux, and Android). It has zero network permissions, zero cloud servers, zero keystroke logging, and zero telemetry. All transliteration, dictionary lookup, and candidate suggestions happen 100% locally on your machine or phone.</p>
                         </div>
                     </details>
 
                     <details class="faq-row">
                         <summary class="faq-summary">
-                            <span data-i18n="faq.q7">Is Bongo available for Linux?</span>
+                            <span data-i18n="faq.q7">Can I change font styles or customize candidate preview settings?</span>
                             <span class="summary-caret" aria-hidden="true">
                                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                     <polyline points="6 9 12 15 18 9"></polyline>
@@ -1259,7 +1155,21 @@
                             </span>
                         </summary>
                         <div class="faq-body">
-                            <p data-i18n="faq.a7">Yes! Bongo provides native Linux support via IBus (<code>ibus-bongo</code>) and a GTK4 Settings application. It supports Ubuntu, Debian, Fedora, Arch, and all modern desktop environments (GNOME, KDE Plasma, XFCE). You can download the <code>.deb</code> package or install from source.</p>
+                            <p data-i18n="faq.a7">Yes! On macOS, Windows, and Linux, Bongo includes a native Settings application where you can customize candidate font family (such as Noto Sans Bengali, Kalpurush, SolaimanLipi), adjust font size, change default switch shortcuts, and customize UI themes.</p>
+                        </div>
+                    </details>
+
+                    <details class="faq-row">
+                        <summary class="faq-summary">
+                            <span data-i18n="faq.q8">Is Bongo completely free and open source?</span>
+                            <span class="summary-caret" aria-hidden="true">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </span>
+                        </summary>
+                        <div class="faq-body">
+                            <p data-i18n="faq.a8">Yes. Bongo is 100% free with no ads, tracking, subscriptions, or paywalls. The complete project is open source under the Mozilla Public License 2.0 (MPL-2.0) on <a href="https://github.com/mehedishakeel/Bongo" target="_blank" rel="noopener">GitHub</a>.</p>
                         </div>
                     </details>
                 </div>
@@ -1276,7 +1186,7 @@
                         <img src="assets/bongo-logo.png?v=2" alt="Bongo Logo" width="22" height="22">
                         <span>Bongo · বঙ্গ</span>
                     </div>
-                    <p class="footer-desc-line" data-i18n="footer.desc">Native Apple Silicon Bengali Keyboard for macOS.<br>Fast, private, and beautifully integrated.</p>
+                    <p class="footer-desc-line" data-i18n="footer.desc">Native Bengali Keyboard for macOS, Windows, Linux, and Android.<br>Fast, private, and beautifully integrated.</p>
                     <p class="footer-author-line" data-i18n="footer.author">Crafted & maintained by <a href="https://mehedishakeel.com" target="_blank" rel="noopener"><strong>Mehedi Shakeel</strong></a>.</p>
                 </div>
 
@@ -1285,7 +1195,6 @@
                         <span class="link-col-title" data-i18n="footer.col_product">Product</span>
                         <a href="#playground" data-i18n="footer.interactive_demo">Interactive Demo</a>
                         <a href="#features" data-i18n="nav.features">Features</a>
-                        <a href="#utilities" data-i18n="nav.utilities">Utilities</a>
                     </div>
                     <div class="footer-link-col">
                         <span class="link-col-title" data-i18n="footer.col_support">Support</span>
@@ -1305,7 +1214,7 @@
             <div class="footer-bottom-row">
                 <span data-i18n="footer.copyright">© 2026 Mehedi Shakeel. All rights reserved.</span>
                 <div class="footer-system-badges">
-                    <span class="sys-badge">Apple Silicon (arm64)</span>
+                    <span class="sys-badge">macOS · Windows · Linux · Android</span>
                     <span class="sys-badge">100% Offline</span>
                 </div>
             </div>
@@ -1314,7 +1223,6 @@
 
     <script src="translations.js?v=6.0"></script>
     <script src="avro.js?v=6.0"></script>
-    <script src="converter.js?v=6.0"></script>
     <script src="app.js?v=6.0"></script>
 </body>
 </html>

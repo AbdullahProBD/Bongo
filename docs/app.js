@@ -30,9 +30,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 9. Installation OS Tab Switcher (macOS / Linux)
     initInstallTabs();
-
-    // 10. Built-in Utilities: Unicode <-> Bijoy Converter
-    initConverter();
 });
 
 /* ========================================================
@@ -431,7 +428,7 @@ function initCheatsheet() {
 function initNavbarScroll() {
     const navbar = document.getElementById('navbar');
     const navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
-    const sectionIds = ['playground', 'screenshots', 'features', 'install', 'utilities', 'faq'];
+    const sectionIds = ['playground', 'screenshots', 'features', 'install', 'faq'];
     const sections = sectionIds
         .map(id => document.getElementById(id))
         .filter(sec => sec !== null);

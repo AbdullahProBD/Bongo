@@ -87,12 +87,24 @@ if not defined CANDLE_EXE if exist "%ProgramFiles(x86)%\WiX Toolset v3.14\bin\ca
 )
 
 if defined CANDLE_EXE (
-    candle -arch x64 -out "%BUILD_DIR%\bongo.wixobj" "%WINDOWS_ROOT%\installer\bongo.wxs"
+    "%CANDLE_EXE%" -arch x64 -out "%BUILD_DIR%\bongo.wixobj" "%WINDOWS_ROOT%\installer\bongo.wxs"
+    if !ERRORLEVEL! neq 0 (
+        echo Error: candle failed with error !ERRORLEVEL!.
+        exit /b !ERRORLEVEL!
+    )
     light -ext WixUIExtension -out "%RELEASE_DIR%\Bongo-1.0.0-x64.msi" "%BUILD_DIR%\bongo.wixobj"
+    if !ERRORLEVEL! neq 0 (
+        echo Error: light failed with error !ERRORLEVEL!.
+        exit /b !ERRORLEVEL!
+    )
     echo Built WiX MSI installer in %RELEASE_DIR%
 )
 if not defined CANDLE_EXE if defined WIX_EXE (
     "%WIX_EXE%" build -arch x64 -out "%RELEASE_DIR%\Bongo-1.0.0-x64.msi" "%WINDOWS_ROOT%\installer\bongo.wxs"
+    if !ERRORLEVEL! neq 0 (
+        echo Error: wix build failed with error !ERRORLEVEL!.
+        exit /b !ERRORLEVEL!
+    )
     echo Built WiX MSI installer in %RELEASE_DIR%
 )
 if not defined CANDLE_EXE if not defined WIX_EXE echo Note: WiX toolset not found. Skipping MSI installer creation.

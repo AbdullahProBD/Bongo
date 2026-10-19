@@ -1,40 +1,52 @@
-﻿<!-- WiX Toolset Configuration for Bongo Windows MSI Package -->
-<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
-  <Package Name="Bongo" Language="1033" Version="1.0.0.0" Manufacturer="Bongo Team" UpgradeCode="4C1B8386-8E8E-4545-927A-949AE938D86C" Scope="perUser"><SummaryInformation Description="Bongo - Native Bangla Phonetic Input Method" />
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- WiX Toolset Configuration for Bongo Windows 64-bit MSI Package -->
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="*" Name="Bongo" Language="1033" Version="1.0.0.0" Manufacturer="Bongo Team" UpgradeCode="4C1B8386-8E8E-4545-927A-949AE938D86C">
+    <Package InstallerVersion="500" Compressed="yes" InstallScope="perMachine" Description="Bongo - Native Bangla Phonetic Input Method" />
 
     <MajorUpgrade DowngradeErrorMessage="A newer version of Bongo is already installed." />
-    <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
+    <MediaTemplate EmbedCab="yes" />
 
     <Icon Id="BongoIcon" SourceFile="..\data\bongo.ico" />
     <Property Id="ARPPRODUCTICON" Value="BongoIcon" />
     <Property Id="ARPHELPLINK" Value="https://getbongo.app" />
     <Property Id="ARPURLINFOABOUT" Value="https://getbongo.app" />
 
-    
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFiles64Folder">
+        <Directory Id="INSTALLFOLDER" Name="Bongo">
+          <Directory Id="DataFolder" Name="data" />
+        </Directory>
+      </Directory>
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="ApplicationProgramsFolder" Name="Bongo" />
+      </Directory>
+      <Directory Id="DesktopFolder" Name="Desktop" />
+    </Directory>
 
     <DirectoryRef Id="INSTALLFOLDER">
-      <Component Id="BongoExe" Guid="A9868772-2B8A-4FE4-9A4E-4328E06A2665">
+      <Component Id="BongoExe" Guid="A9868772-2B8A-4FE4-9A4E-4328E06A2665" Win64="yes">
         <File Id="bongo.exe" Source="..\build\bongo.exe" KeyPath="yes" />
       </Component>
-      <Component Id="BongoSettingsExe" Guid="21C18D16-E24B-4D88-AC11-64582E51D30E">
+      <Component Id="BongoSettingsExe" Guid="21C18D16-E24B-4D88-AC11-64582E51D30E" Win64="yes">
         <File Id="bongo_settings.exe" Source="..\build\bongo-settings.exe" KeyPath="yes" />
       </Component>
-      <Component Id="BongoEngineDll" Guid="062EF44B-CD32-4743-A782-A746B316C41D">
+      <Component Id="BongoEngineDll" Guid="062EF44B-CD32-4743-A782-A746B316C41D" Win64="yes">
         <File Id="bongo_engine.dll" Source="..\build\bongo_engine.dll" KeyPath="yes" />
       </Component>
-      <Component Id="LicenseFile" Guid="C4D2E555-5207-4DC2-B835-A80A84D581E0">
+      <Component Id="LicenseFile" Guid="C4D2E555-5207-4DC2-B835-A80A84D581E0" Win64="yes">
         <File Id="LICENSE" Source="..\..\..\LICENSE" KeyPath="yes" />
       </Component>
     </DirectoryRef>
 
     <DirectoryRef Id="DataFolder">
-      <Component Id="BongoIconFile" Guid="2255743D-4FCE-4C78-8547-06282E3371BA">
+      <Component Id="BongoIconFile" Guid="2255743D-4FCE-4C78-8547-06282E3371BA" Win64="yes">
         <File Id="bongo.ico" Source="..\data\bongo.ico" KeyPath="yes" />
       </Component>
-      <Component Id="BongoPngFile" Guid="98C64B9A-510A-46D1-9870-E2E174DE67B1">
+      <Component Id="BongoPngFile" Guid="98C64B9A-510A-46D1-9870-E2E174DE67B1" Win64="yes">
         <File Id="bongo.png" Source="..\data\bongo.png" KeyPath="yes" />
       </Component>
-      <Component Id="BongoPng32File" Guid="3F86B9A8-7472-4B29-873B-01CD6283C7E9">
+      <Component Id="BongoPng32File" Guid="3F86B9A8-7472-4B29-873B-01CD6283C7E9" Win64="yes">
         <File Id="bongo_32.png" Source="..\data\bongo_32.png" KeyPath="yes" />
       </Component>
     </DirectoryRef>
@@ -45,16 +57,16 @@
         <Shortcut Id="SettingsStartMenuShortcut" Name="Bongo Settings" Description="Configure Bongo Preferences and Layout" Target="[INSTALLFOLDER]bongo-settings.exe" WorkingDirectory="INSTALLFOLDER" Icon="BongoIcon" />
         <Shortcut Id="UninstallProduct" Name="Uninstall Bongo" Description="Uninstalls Bongo" Target="[SystemFolder]msiexec.exe" Arguments="/x [ProductCode]" />
         <RemoveFolder Id="CleanUpShortCut" On="uninstall" />
-        <RegistryValue Root="HKCU" Key="Software\Bongo" Name="installed" Type="integer" Value="1" KeyPath="yes" />
+        <RegistryValue Root="HKLM" Key="Software\Bongo" Name="installed" Type="integer" Value="1" KeyPath="yes" />
       </Component>
     </DirectoryRef>
 
-    <StandardDirectory Id="DesktopFolder">
+    <DirectoryRef Id="DesktopFolder">
       <Component Id="DesktopShortcut" Guid="84920FA1-112B-426E-B509-CD9028B4511E">
         <Shortcut Id="ApplicationDesktopShortcut" Name="Bongo" Description="Native Bangla Phonetic Input Method" Target="[INSTALLFOLDER]bongo-settings.exe" WorkingDirectory="INSTALLFOLDER" Icon="BongoIcon" />
-        <RegistryValue Root="HKCU" Key="Software\Bongo" Name="desktop_icon" Type="integer" Value="1" KeyPath="yes" />
+        <RegistryValue Root="HKLM" Key="Software\Bongo" Name="desktop_icon" Type="integer" Value="1" KeyPath="yes" />
       </Component>
-    </StandardDirectory>
+    </DirectoryRef>
 
     <Feature Id="MainFeature" Title="Bongo" Level="1">
       <ComponentRef Id="BongoExe" />
@@ -67,17 +79,5 @@
       <ComponentRef Id="ApplicationShortcut" />
       <ComponentRef Id="DesktopShortcut" />
     </Feature>
-  
-      <StandardDirectory Id="LocalAppDataFolder">
-        <Directory Id="ProgramsFolder" Name="Programs">
-          <Directory Id="INSTALLFOLDER" Name="Bongo">
-            <Directory Id="DataFolder" Name="data" />
-          </Directory>
-        </Directory>
-      </StandardDirectory>
-      <StandardDirectory Id="ProgramMenuFolder">
-        <Directory Id="ApplicationProgramsFolder" Name="Bongo" />
-      </StandardDirectory>
-      <StandardDirectory Id="DesktopFolder" />
-    </Package>
+  </Product>
 </Wix>

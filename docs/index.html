@@ -707,26 +707,20 @@
                     <button class="gallery-tab-btn active" data-target="tab-welcome" role="tab" aria-selected="true">
                         <span data-i18n="tab.welcome">Getting Started</span>
                     </button>
+                    <button class="gallery-tab-btn" data-target="tab-layout" role="tab" aria-selected="false">
+                        <span data-i18n="tab.layout">Bongo Layout</span>
+                    </button>
                     <button class="gallery-tab-btn" data-target="tab-settings" role="tab" aria-selected="false">
                         <span data-i18n="tab.settings">Typing Settings</span>
                     </button>
                     <button class="gallery-tab-btn" data-target="tab-fonts" role="tab" aria-selected="false">
                         <span data-i18n="tab.fonts">Font Preview</span>
                     </button>
-                    <button class="gallery-tab-btn" data-target="tab-hud" role="tab" aria-selected="false">
-                        <span data-i18n="tab.hud">HUD Candidate Bar</span>
-                    </button>
                 </div>
 
                 <div class="tab-showcase-panel">
                     <div class="gallery-item active" id="tab-welcome" role="tabpanel">
                         <div class="mac-preview-frame">
-                            <div class="preview-titlebar">
-                                <span class="light red"></span>
-                                <span class="light yellow"></span>
-                                <span class="light green"></span>
-                                <span class="frame-label">Bongo: Getting Started</span>
-                            </div>
                             <img src="assets/bongo-getting-started.png" alt="Bongo Getting Started Window" class="preview-img" loading="lazy">
                         </div>
                         <div class="preview-caption">
@@ -735,14 +729,18 @@
                         </div>
                     </div>
 
+                    <div class="gallery-item" id="tab-layout" role="tabpanel">
+                        <div class="mac-preview-frame">
+                            <img src="assets/bongo-layout.png" alt="Bongo Layout Key Map Window" class="preview-img" loading="lazy">
+                        </div>
+                        <div class="preview-caption">
+                            <h3 data-i18n="caption.layout_title">Visual Phonetic Key Map</h3>
+                            <p data-i18n="caption.layout_desc">Comprehensive phonetic layout map with instant search filter for consonants, vowels, and compounds right inside the app.</p>
+                        </div>
+                    </div>
+
                     <div class="gallery-item" id="tab-settings" role="tabpanel">
                         <div class="mac-preview-frame">
-                            <div class="preview-titlebar">
-                                <span class="light red"></span>
-                                <span class="light yellow"></span>
-                                <span class="light green"></span>
-                                <span class="frame-label">Bongo: Settings</span>
-                            </div>
                             <img src="assets/bongo-settings.png" alt="Bongo Settings Window" class="preview-img" loading="lazy">
                         </div>
                         <div class="preview-caption">
@@ -753,27 +751,11 @@
 
                     <div class="gallery-item" id="tab-fonts" role="tabpanel">
                         <div class="mac-preview-frame">
-                            <div class="preview-titlebar">
-                                <span class="light red"></span>
-                                <span class="light yellow"></span>
-                                <span class="light green"></span>
-                                <span class="frame-label">Bongo: Fonts & Typography</span>
-                            </div>
                             <img src="assets/bongo-fonts.png" alt="Bongo Font Customization and Live Preview" class="preview-img" loading="lazy">
                         </div>
                         <div class="preview-caption">
                             <h3 data-i18n="caption.fonts_title">Customizable Bengali Typography</h3>
                             <p data-i18n="caption.fonts_desc">Select any Bengali font installed on your Mac (Kohinoor Bangla, Noto Sans Bengali, Ekush, July, etc.) with real-time candidate size adjustment.</p>
-                        </div>
-                    </div>
-
-                    <div class="gallery-item" id="tab-hud" role="tabpanel">
-                        <div class="mac-preview-frame hud-box">
-                            <img src="assets/bongo-hud-candidate.png" alt="Bongo HUD Candidate Bar on macOS" class="preview-hud-img" loading="lazy">
-                        </div>
-                        <div class="preview-caption">
-                            <h3 data-i18n="caption.hud_title">Tactile Candidate HUD</h3>
-                            <p data-i18n="caption.hud_desc">Floating translucent candidate window with fast numbered shortcuts [1], [2], [3], smooth arrow navigation, and high-contrast pill selection.</p>
                         </div>
                     </div>
                 </div>

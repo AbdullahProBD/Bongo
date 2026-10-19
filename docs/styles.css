@@ -940,6 +940,27 @@ kbd {
     transform: translateY(0);
 }
 
+/* Reduced Red Button Shadows in Dark Mode */
+[data-theme="dark"] .btn-dl-primary,
+[data-theme="dark"] .btn-apple-primary {
+    background: linear-gradient(135deg, #cc3b2d 0%, #a82e22 100%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.7), 0 2px 6px rgba(224, 83, 68, 0.16), inset 1px 1px 1px rgba(255, 255, 255, 0.18);
+}
+
+[data-theme="dark"] .btn-dl-primary:hover,
+[data-theme="dark"] .btn-apple-primary:hover {
+    background: linear-gradient(135deg, #d94233 0%, #b83326 100%);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.85), 0 2px 8px rgba(224, 83, 68, 0.22), inset 1px 1px 1px rgba(255, 255, 255, 0.22);
+    transform: translateY(-1.5px);
+}
+
+[data-theme="dark"] .btn-dl-primary:active,
+[data-theme="dark"] .btn-apple-primary:active {
+    box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.85), inset -1px -1px 3px rgba(255, 255, 255, 0.05);
+    transform: translateY(0);
+}
+
 .cta-meta {
     font-size: 0.76rem;
     opacity: 0.85;
@@ -1056,19 +1077,26 @@ kbd {
     margin: 0;
 }
 
-.mac-kbd {
-    display: inline-block;
-    padding: 0.15rem 0.45rem;
-    background: var(--card-subtle);
-    border: 1px solid var(--border-strong);
-    border-radius: 5px;
+.mac-kbd, kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.2rem 0.55rem;
+    background: var(--neu-surface);
+    border: var(--neu-border);
+    border-radius: 6px;
     font-family: var(--font-mono);
     font-size: 0.8rem;
     font-weight: 600;
     color: var(--text-primary);
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.06);
+    box-shadow: 2px 2px 5px rgba(180, 162, 140, 0.4), -2px -2px 5px #ffffff, inset 1px 1px 1px rgba(255, 255, 255, 0.9);
     vertical-align: baseline;
-    margin: 0 0.15rem;
+    margin: 0 0.2rem;
+}
+
+[data-theme="dark"] .mac-kbd,
+[data-theme="dark"] kbd {
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.75), -2px -2px 4px rgba(255, 255, 255, 0.04), inset 1px 1px 1px rgba(255, 255, 255, 0.06);
 }
 
 /* ========================================================
@@ -1383,11 +1411,10 @@ kbd {
 }
 
 /* ========================================================
-   Option 3: Tactile Neumorphic (Soft UI) Preview (#playground)
-   100% Isolated & Easily Reversible
+   Tactile Neumorphic (Soft UI) macOS Window (#playground)
    ======================================================== */
 
-#playground.neu-preview-active .mac-window {
+#playground .mac-window {
     background: #f7f2ea;
     border: 1px solid rgba(255, 255, 255, 0.75);
     border-radius: 24px;
@@ -1398,7 +1425,7 @@ kbd {
     transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-[data-theme="dark"] #playground.neu-preview-active .mac-window {
+[data-theme="dark"] #playground .mac-window {
     background: #181715;
     border: 1px solid rgba(255, 255, 255, 0.05);
     box-shadow: 
@@ -1407,7 +1434,7 @@ kbd {
         inset 1px 1px 1px rgba(255, 255, 255, 0.05);
 }
 
-#playground.neu-preview-active .mac-titlebar {
+#playground .mac-titlebar {
     background: transparent;
     border-bottom: 1px solid rgba(180, 162, 140, 0.18);
     padding: 0.6rem 1.2rem;
@@ -1415,84 +1442,21 @@ kbd {
     min-height: 46px;
 }
 
-[data-theme="dark"] #playground.neu-preview-active .mac-titlebar {
+[data-theme="dark"] #playground .mac-titlebar {
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 /* Recessed traffic lights */
-#playground.neu-preview-active .light {
+#playground .light {
     box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.35), 1px 1px 2px rgba(255, 255, 255, 0.8);
 }
 
-[data-theme="dark"] #playground.neu-preview-active .light {
+[data-theme="dark"] #playground .light {
     box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.6), 1px 1px 2px rgba(255, 255, 255, 0.08);
 }
 
-/* Neumorphic Interactive Toggle Pill in Titlebar */
-.neu-toggle-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.25rem 0.75rem;
-    font-size: 0.74rem;
-    font-weight: 600;
-    font-family: inherit;
-    border-radius: 980px;
-    cursor: pointer;
-    margin-left: auto;
-    margin-right: 0.5rem;
-    transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
-    border: 1px solid rgba(255, 255, 255, 0.8);
-    background: #f7f2ea;
-    color: var(--accent);
-    box-shadow: 3px 3px 8px rgba(180, 162, 140, 0.38), -3px -3px 8px #ffffff;
-    user-select: none;
-}
-
-.neu-toggle-sparkle {
-    font-size: 0.8rem;
-    color: var(--accent);
-    transition: transform 0.3s ease;
-}
-
-.neu-toggle-pill:hover {
-    box-shadow: 5px 5px 12px rgba(180, 162, 140, 0.48), -5px -5px 12px #ffffff;
-    transform: translateY(-1px);
-}
-
-.neu-toggle-pill:hover .neu-toggle-sparkle {
-    transform: rotate(30deg) scale(1.15);
-}
-
-.neu-toggle-pill:active,
-.neu-toggle-pill.inactive {
-    box-shadow: inset 2px 2px 5px rgba(180, 162, 140, 0.45), inset -2px -2px 5px #ffffff;
-    transform: translateY(0);
-}
-
-.neu-toggle-pill.inactive {
-    color: var(--text-tertiary);
-    background: #f1ebd8;
-}
-
-[data-theme="dark"] .neu-toggle-pill {
-    background: #1e1c19;
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.75), -2px -2px 6px rgba(255, 255, 255, 0.04);
-}
-
-[data-theme="dark"] .neu-toggle-pill:hover {
-    box-shadow: 4px 4px 11px rgba(0, 0, 0, 0.85), -3px -3px 8px rgba(255, 255, 255, 0.05);
-}
-
-[data-theme="dark"] .neu-toggle-pill:active,
-[data-theme="dark"] .neu-toggle-pill.inactive {
-    background: #141312;
-    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.85), inset -2px -2px 5px rgba(255, 255, 255, 0.04);
-}
-
 /* Mode pill */
-#playground.neu-preview-active .mac-input-source-pill {
+#playground .mac-input-source-pill {
     background: #f7f2ea;
     border: 1px solid rgba(255, 255, 255, 0.75);
     box-shadow: 3px 3px 7px rgba(180, 162, 140, 0.32), -3px -3px 7px #ffffff;
@@ -1501,14 +1465,14 @@ kbd {
     font-size: 0.76rem;
 }
 
-[data-theme="dark"] #playground.neu-preview-active .mac-input-source-pill {
+[data-theme="dark"] #playground .mac-input-source-pill {
     background: #1e1c19;
     border: 1px solid rgba(255, 255, 255, 0.06);
     box-shadow: 3px 3px 7px rgba(0, 0, 0, 0.7), -2px -2px 6px rgba(255, 255, 255, 0.04);
 }
 
 /* Sample Pills (Convex Tactile Buttons) */
-#playground.neu-preview-active .sample-pill {
+#playground .sample-pill {
     background: #f7f2ea;
     border: 1px solid rgba(255, 255, 255, 0.8);
     border-radius: 980px;
@@ -1519,33 +1483,33 @@ kbd {
     transition: all 0.18s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-#playground.neu-preview-active .sample-pill:hover {
+#playground .sample-pill:hover {
     color: var(--accent);
     box-shadow: 6px 6px 13px rgba(180, 162, 140, 0.45), -6px -6px 13px #ffffff;
     transform: translateY(-1.5px);
 }
 
-#playground.neu-preview-active .sample-pill:active {
+#playground .sample-pill:active {
     box-shadow: inset 3px 3px 6px rgba(180, 162, 140, 0.45), inset -3px -3px 6px #ffffff;
     transform: translateY(0);
 }
 
-[data-theme="dark"] #playground.neu-preview-active .sample-pill {
+[data-theme="dark"] #playground .sample-pill {
     background: #1d1b18;
     border: 1px solid rgba(255, 255, 255, 0.05);
     box-shadow: 4px 4px 9px rgba(0, 0, 0, 0.7), -3px -3px 8px rgba(255, 255, 255, 0.035);
 }
 
-[data-theme="dark"] #playground.neu-preview-active .sample-pill:hover {
+[data-theme="dark"] #playground .sample-pill:hover {
     box-shadow: 5px 5px 12px rgba(0, 0, 0, 0.85), -4px -4px 10px rgba(255, 255, 255, 0.05);
 }
 
-[data-theme="dark"] #playground.neu-preview-active .sample-pill:active {
+[data-theme="dark"] #playground .sample-pill:active {
     box-shadow: inset 3px 3px 6px rgba(0, 0, 0, 0.8), inset -2px -2px 5px rgba(255, 255, 255, 0.04);
 }
 
 /* Typing Canvas Text Input (Sunken Concave Inset Cavity) */
-#playground.neu-preview-active .mac-text-input {
+#playground .mac-text-input {
     background: #f2ede4;
     border: 1px solid rgba(180, 162, 140, 0.25);
     border-radius: 14px;
@@ -1554,7 +1518,7 @@ kbd {
     transition: all 0.2s ease;
 }
 
-#playground.neu-preview-active .mac-text-input:focus {
+#playground .mac-text-input:focus {
     outline: none;
     border-color: var(--accent);
     box-shadow: 
@@ -1564,13 +1528,13 @@ kbd {
         0 0 16px rgba(192, 57, 43, 0.18);
 }
 
-[data-theme="dark"] #playground.neu-preview-active .mac-text-input {
+[data-theme="dark"] #playground .mac-text-input {
     background: #131210;
     border: 1px solid rgba(255, 255, 255, 0.04);
     box-shadow: inset 4px 4px 10px rgba(0, 0, 0, 0.9), inset -3px -3px 8px rgba(255, 255, 255, 0.035);
 }
 
-[data-theme="dark"] #playground.neu-preview-active .mac-text-input:focus {
+[data-theme="dark"] #playground .mac-text-input:focus {
     box-shadow: 
         inset 3px 3px 8px rgba(0, 0, 0, 0.85),
         inset -2px -2px 6px rgba(255, 255, 255, 0.04),
@@ -1579,34 +1543,34 @@ kbd {
 }
 
 /* Clear Button */
-#playground.neu-preview-active .btn-clear {
+#playground .btn-clear {
     background: #f7f2ea;
     border: 1px solid rgba(255, 255, 255, 0.75);
     box-shadow: 2px 2px 5px rgba(180, 162, 140, 0.4), -2px -2px 5px #ffffff;
     transition: all 0.15s ease;
 }
 
-#playground.neu-preview-active .btn-clear:hover {
+#playground .btn-clear:hover {
     box-shadow: 3px 3px 7px rgba(180, 162, 140, 0.5), -3px -3px 7px #ffffff;
     color: var(--accent);
 }
 
-#playground.neu-preview-active .btn-clear:active {
+#playground .btn-clear:active {
     box-shadow: inset 2px 2px 4px rgba(180, 162, 140, 0.45), inset -2px -2px 4px #ffffff;
 }
 
-[data-theme="dark"] #playground.neu-preview-active .btn-clear {
+[data-theme="dark"] #playground .btn-clear {
     background: #1e1c19;
     border: 1px solid rgba(255, 255, 255, 0.06);
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.75), -2px -2px 5px rgba(255, 255, 255, 0.04);
 }
 
-[data-theme="dark"] #playground.neu-preview-active .btn-clear:active {
+[data-theme="dark"] #playground .btn-clear:active {
     box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.85), inset -1px -1px 3px rgba(255, 255, 255, 0.04);
 }
 
 /* Authentic macOS Translucent Candidate HUD (Neumorphic Slate) */
-#playground.neu-preview-active .mac-candidate-hud {
+#playground .mac-candidate-hud {
     background: rgba(247, 242, 234, 0.94);
     border: 1px solid rgba(255, 255, 255, 0.8);
     border-radius: 16px;
@@ -1617,7 +1581,7 @@ kbd {
     padding: 0.65rem;
 }
 
-[data-theme="dark"] #playground.neu-preview-active .mac-candidate-hud {
+[data-theme="dark"] #playground .mac-candidate-hud {
     background: rgba(24, 22, 20, 0.94);
     border: 1px solid rgba(255, 255, 255, 0.06);
     box-shadow: 
@@ -1626,32 +1590,32 @@ kbd {
         inset 1px 1px 1px rgba(255, 255, 255, 0.05);
 }
 
-#playground.neu-preview-active .hud-header {
+#playground .hud-header {
     border-bottom: 1px solid rgba(180, 162, 140, 0.2);
     padding-bottom: 0.4rem;
 }
 
-[data-theme="dark"] #playground.neu-preview-active .hud-header {
+[data-theme="dark"] #playground .hud-header {
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-#playground.neu-preview-active .hud-candidate-item {
+#playground .hud-candidate-item {
     border-radius: 8px;
     padding: 0.4rem 0.65rem;
     transition: all 0.15s ease;
 }
 
-#playground.neu-preview-active .hud-candidate-item:hover {
+#playground .hud-candidate-item:hover {
     background: #f2ede4;
     box-shadow: 2px 2px 6px rgba(180, 162, 140, 0.3), -2px -2px 6px #ffffff;
 }
 
-[data-theme="dark"] #playground.neu-preview-active .hud-candidate-item:hover {
+[data-theme="dark"] #playground .hud-candidate-item:hover {
     background: #1e1c19;
     box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.7), -2px -2px 6px rgba(255, 255, 255, 0.03);
 }
 
-#playground.neu-preview-active .hud-candidate-item.selected {
+#playground .hud-candidate-item.selected {
     background: linear-gradient(135deg, #c0392b, #a93226);
     color: #ffffff;
     box-shadow: 
@@ -1660,7 +1624,7 @@ kbd {
         inset 1px 1px 2px rgba(255, 255, 255, 0.35);
 }
 
-[data-theme="dark"] #playground.neu-preview-active .hud-candidate-item.selected {
+[data-theme="dark"] #playground .hud-candidate-item.selected {
     background: linear-gradient(135deg, #e05344, #bf3f31);
     color: #ffffff;
     box-shadow: 
@@ -1669,13 +1633,13 @@ kbd {
         inset 1px 1px 2px rgba(255, 255, 255, 0.3);
 }
 
-#playground.neu-preview-active .hud-candidate-item.selected .hud-num {
+#playground .hud-candidate-item.selected .hud-num {
     background: rgba(0, 0, 0, 0.25);
     color: #ffffff;
 }
 
 /* Output Preview Bar (Concave Display Tray) */
-#playground.neu-preview-active .mac-output-bar {
+#playground .mac-output-bar {
     background: #f2ede4;
     border: 1px solid rgba(180, 162, 140, 0.22);
     border-radius: 14px;
@@ -1683,14 +1647,14 @@ kbd {
     padding: 0.95rem 1.25rem;
 }
 
-[data-theme="dark"] #playground.neu-preview-active .mac-output-bar {
+[data-theme="dark"] #playground .mac-output-bar {
     background: #131210;
     border: 1px solid rgba(255, 255, 255, 0.04);
     box-shadow: inset 4px 4px 10px rgba(0, 0, 0, 0.9), inset -3px -3px 8px rgba(255, 255, 255, 0.035);
 }
 
 /* Copy Button (Convex Tactile Pill) */
-#playground.neu-preview-active .btn-mac-copy {
+#playground .btn-mac-copy {
     background: #f7f2ea;
     border: 1px solid rgba(255, 255, 255, 0.75);
     border-radius: 980px;
@@ -1699,39 +1663,32 @@ kbd {
     transition: all 0.18s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-#playground.neu-preview-active .btn-mac-copy:hover {
+#playground .btn-mac-copy:hover {
     color: var(--text-primary);
     box-shadow: 5px 5px 10px rgba(180, 162, 140, 0.48), -5px -5px 10px #ffffff;
     transform: translateY(-1px);
 }
 
-#playground.neu-preview-active .btn-mac-copy:active {
+#playground .btn-mac-copy:active {
     box-shadow: inset 2px 2px 5px rgba(180, 162, 140, 0.45), inset -2px -2px 5px #ffffff;
     transform: translateY(0);
 }
 
-#playground.neu-preview-active .btn-mac-copy.copied {
+#playground .btn-mac-copy.copied {
     background: #34c759;
     color: #ffffff;
     box-shadow: 3px 3px 8px rgba(52, 199, 89, 0.4), inset 1px 1px 2px rgba(255, 255, 255, 0.4);
     border-color: #34c759;
 }
 
-[data-theme="dark"] #playground.neu-preview-active .btn-mac-copy {
+[data-theme="dark"] #playground .btn-mac-copy {
     background: #1e1c19;
     border: 1px solid rgba(255, 255, 255, 0.06);
     box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.75), -2px -2px 6px rgba(255, 255, 255, 0.04);
 }
 
-[data-theme="dark"] #playground.neu-preview-active .btn-mac-copy:active {
+[data-theme="dark"] #playground .btn-mac-copy:active {
     box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.85), inset -1px -1px 4px rgba(255, 255, 255, 0.04);
-}
-
-@media (max-width: 640px) {
-    .neu-toggle-pill {
-        font-size: 0.68rem;
-        padding: 0.18rem 0.5rem;
-    }
 }
 
 /* ========================================================
@@ -2303,10 +2260,16 @@ kbd {
     justify-content: space-between;
     gap: 2rem;
     padding: 1.75rem 2.25rem;
-    background: var(--card);
-    border: 1px solid var(--border-hairline);
-    border-radius: 20px;
-    box-shadow: var(--shadow-card);
+    background: var(--neu-surface);
+    border: var(--neu-border);
+    border-radius: 22px;
+    box-shadow: var(--neu-shadow-md);
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+}
+
+.setup-footer-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--neu-shadow-hover);
 }
 
 .setup-footer-left {
@@ -2317,18 +2280,20 @@ kbd {
 .setup-tip-header {
     display: inline-flex;
     align-items: center;
-    gap: 0.6rem;
-    margin-bottom: 0.45rem;
+    gap: 0.65rem;
+    margin-bottom: 0.55rem;
 }
 
 .setup-tip-icon {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 28px;
-    height: 28px;
-    border-radius: 8px;
-    background: rgba(192, 57, 43, 0.1);
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: var(--neu-surface);
+    border: var(--neu-border);
+    box-shadow: var(--neu-shadow-xs);
     color: var(--accent);
 }
 

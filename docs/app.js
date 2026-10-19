@@ -289,34 +289,6 @@ function initPlayground() {
         document.body.removeChild(ta);
     }
 
-    // Neumorphic (Soft UI) preview toggle button
-    const neuToggleBtn = document.getElementById('neuToggleBtn');
-    const playgroundWrapper = document.getElementById('playground');
-    function updateNeuToggleText() {
-        if (!neuToggleBtn || !playgroundWrapper) return;
-        const isActive = playgroundWrapper.classList.contains('neu-preview-active');
-        const isBn = (document.documentElement.lang === 'bn' || window.currentLang === 'bn');
-        const textSpan = neuToggleBtn.querySelector('.neu-toggle-text');
-        if (textSpan) {
-            if (isActive) {
-                textSpan.textContent = isBn ? 'সফট ইউআই (নিওমরফিক)' : 'Soft UI (Neumorphic)';
-            } else {
-                textSpan.textContent = isBn ? 'ক্লাসিক ফ্ল্যাট' : 'Classic Flat';
-            }
-        }
-    }
-
-    if (neuToggleBtn && playgroundWrapper) {
-        neuToggleBtn.addEventListener('click', () => {
-            const isActive = playgroundWrapper.classList.toggle('neu-preview-active');
-            neuToggleBtn.classList.toggle('inactive', !isActive);
-            neuToggleBtn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
-            updateNeuToggleText();
-        });
-
-        window.addEventListener('bongo-lang-change', updateNeuToggleText);
-    }
-
     // Initial render
     update();
 }

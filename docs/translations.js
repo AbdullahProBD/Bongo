@@ -180,8 +180,7 @@ window.BONGO_TRANSLATIONS = {
         "step.android_3_desc": "Tap <strong>Select Bongo Keyboard</strong> to set it as your active keyboard. Open WhatsApp, Messenger, or Chrome and start typing phonetically in Bangla!",
         "step.auto_registered": "Auto-Registered",
         "step.switch_source": "Bangla (Bongo)",
-        "install.shortcut_title": "Quick Switch Shortcut",
-        "install.shortcut_desc": "Tap the <strong>Globe</strong> (<kbd class=\"mac-kbd\">fn</kbd>) key or press <kbd class=\"mac-kbd\">Control + Space</kbd> (or <kbd>Super + Space</kbd> on Linux, <kbd>F12</kbd> on Windows, or the Space/Globe key on Android) to seamlessly switch between English and Bongo without lifting your hands.",
+
         "banner.title": "Ready to write in Bangla on your Mac or Linux PC?",
         "banner.desc": "Download the latest release today. Free, open source, lightweight, and pure native performance across Apple Silicon, Intel, amd64, and arm64.",
         "banner.cta_mac_arm": "macOS (Apple Silicon)",
@@ -425,8 +424,7 @@ window.BONGO_TRANSLATIONS = {
         "step.android_3_desc": "<strong>Select Bongo Keyboard</strong> চাপুন এবং ডিফল্ট কিবোর্ড হিসেবে নির্বাচন করুন। এবার WhatsApp, Messenger বা ব্রাউজারে স্বাচ্ছন্দ্যে বাংলা টাইপ করুন!",
         "step.auto_registered": "স্বয়ংক্রিয় নিবন্ধিত",
         "step.switch_source": "বাংলা (বঙ্গ)",
-        "install.shortcut_title": "দ্রুত কিবোর্ড পরিবর্তনের শর্টকাট",
-        "install.shortcut_desc": "হাত না তুলেই ইংরেজি ও বঙ্গের মাঝে সুইচ করতে <kbd class=\"mac-kbd\">Globe / fn</kbd> অথবা <kbd class=\"mac-kbd\">Control + Space</kbd> (লিনাক্সে <kbd>Super + Space</kbd>, উইন্ডোজে <kbd>F12</kbd>, অ্যান্ড্রয়েডে স্পেস বা Globe কি) চাপুন।",
+
         "banner.title": "ম্যাক বা লিনাক্সে স্বাচ্ছন্দ্যে বাংলা লিখতে প্রস্তুত?",
         "banner.desc": "আজই ডাউনলোড করুন সর্বশেষ রিলিজ। সম্পূর্ণ ফ্রি, ওপেন সোর্স, অত্যন্ত হালকা ও বিশুদ্ধ নেটিভ গতি অ্যাপল সিলিকন, ইন্টেল, amd64 এবং arm64 জুড়ে।",
         "banner.cta_mac_arm": "ম্যাকওএস (অ্যাপল সিলিকন)",

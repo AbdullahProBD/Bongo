@@ -181,18 +181,6 @@ Press <kbd>Space</kbd> to commit the highlighted word, or press number keys <kbd
   <em>Tactile Candidate HUD with fast numbered shortcuts (1–9) and keyboard navigation</em>
 </p>
 
-<p align="center">
-  <img src="docs/assets/bongo-linux-settings.png" width="720" alt="Bongo Linux GTK4 Settings Window">
-  <br>
-  <em>Bongo Linux GTK4 Settings Window with native dark styling and typography configuration</em>
-</p>
-
-<p align="center">
-  <img src="docs/assets/bongo-windows-settings.png" width="720" alt="Bongo Windows Settings Window">
-  <br>
-  <em>Bongo Windows Settings Window with native dark styling, layout cheatsheet, and typing playground</em>
-</p>
-
 ---
 
 ## For Developers

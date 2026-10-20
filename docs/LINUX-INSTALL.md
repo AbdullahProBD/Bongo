@@ -16,16 +16,16 @@ Bongo provides native Avro phonetic Bengali typing on modern Linux desktop envir
 
 ## Option 1: Install from Debian / Ubuntu Package (.deb)
 
-Download `bongo_1.0.0_amd64.deb` from the [Releases](https://github.com/mehedishakeel/Bongo/releases/latest) page, then install via terminal:
+Download `bongo_1.0.1_amd64.deb` (or `bongo_1.0.1_arm64.deb`) from the [Releases](https://github.com/mehedishakeel/Bongo/releases/latest) page, then install via terminal:
 
 ```bash
-sudo apt install ./bongo_1.0.0_amd64.deb
+sudo apt install ./bongo_1.0.1_amd64.deb
 ```
 
 Or on Fedora:
 
 ```bash
-sudo dnf install ./bongo-1.0.0-1.x86_64.rpm
+sudo dnf install ./bongo-1.0.1-1.x86_64.rpm
 ```
 
 ---

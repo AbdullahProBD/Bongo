@@ -15,15 +15,15 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/mehedishakeel/Bongo/releases/latest/download/Bongo-1.0-macos-arm64.dmg">
+  <a href="https://github.com/mehedishakeel/Bongo/releases/latest/download/Bongo-1.0.1-macos-arm64.dmg">
     <img src="https://img.shields.io/badge/macOS-Apple_Silicon_DMG-4f46e5?style=for-the-badge&logo=apple&logoColor=white" alt="Download macOS Apple Silicon DMG">
   </a>
   &nbsp;
-  <a href="https://github.com/mehedishakeel/Bongo/releases/latest/download/Bongo-1.0-macos-intel-x86_64.dmg">
+  <a href="https://github.com/mehedishakeel/Bongo/releases/latest/download/Bongo-1.0.1-macos-intel-x86_64.dmg">
     <img src="https://img.shields.io/badge/macOS-Intel_x86__64_DMG-3730a3?style=for-the-badge&logo=apple&logoColor=white" alt="Download macOS Intel DMG">
   </a>
   &nbsp;
-  <a href="https://github.com/mehedishakeel/Bongo/releases/latest/download/Bongo-1.0-macos-universal.dmg">
+  <a href="https://github.com/mehedishakeel/Bongo/releases/latest/download/Bongo-1.0.1-macos-universal.dmg">
     <img src="https://img.shields.io/badge/macOS-Universal_DMG-1e1b4b?style=for-the-badge&logo=apple&logoColor=white" alt="Download macOS Universal DMG">
   </a>
   <br>
@@ -47,7 +47,7 @@
     <img src="https://img.shields.io/badge/Windows-Portable_ZIP-0284c7?style=for-the-badge&logo=windows&logoColor=white" alt="Download Windows Portable ZIP">
   </a>
   <br>
-  <a href="https://github.com/mehedishakeel/Bongo/releases/latest/download/Bongo-1.0.0-android.apk">
+  <a href="https://github.com/mehedishakeel/Bongo/releases/latest/download/Bongo-1.0.1-android.apk">
     <img src="https://img.shields.io/badge/Android-APK_Download-22c55e?style=for-the-badge&logo=android&logoColor=white" alt="Download Android APK">
   </a>
 </p>
@@ -70,7 +70,7 @@ brew install --cask mehedishakeel/bongo/bongo
 ```
 
 #### Option 2: Via Direct DMG Download
-1. **Download**: Get `Bongo-1.0-macos-arm64.dmg` (for Apple Silicon) or `Bongo-1.0-macos-intel-x86_64.dmg` (for Intel) from [Releases](https://github.com/mehedishakeel/Bongo/releases/latest). A Universal 2 DMG (`Bongo-1.0-macos-universal.dmg`) is also available.
+1. **Download**: Get `Bongo-1.0.1-macos-arm64.dmg` (for Apple Silicon) or `Bongo-1.0.1-macos-intel-x86_64.dmg` (for Intel) from [Releases](https://github.com/mehedishakeel/Bongo/releases/latest). A Universal 2 DMG (`Bongo-1.0.1-macos-universal.dmg`) is also available.
 2. **Install**: Open the DMG and drag **Bongo.app** into your **Applications** folder.
 3. **Activate**:
    - Open **Bongo** from Applications once (it registers the keyboard service with macOS).
@@ -109,7 +109,7 @@ See [docs/WINDOWS-INSTALL.md](docs/WINDOWS-INSTALL.md) or [platforms/windows/REA
 
 ### Android (Smartphones & Tablets)
 
-1. **Download**: Get `Bongo-1.0.0-android.apk` from [Releases](https://github.com/mehedishakeel/Bongo/releases/latest).
+1. **Download**: Get `Bongo-1.0.1-android.apk` from [Releases](https://github.com/mehedishakeel/Bongo/releases/latest).
 2. **Install**: Tap the downloaded APK to install. Allow "Install unknown apps" in Android settings if prompted.
 3. **Activate**:
    - Open **Bongo Settings** from your app drawer.

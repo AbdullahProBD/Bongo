@@ -1,11 +1,11 @@
 cask "bongo" do
   arch arm: "arm64", intel: "intel-x86_64"
 
-  version "1.0.0"
-  sha256 arm:   "b42b42d54a8eeee1903b30881305edde008d2ee03cd677a91ebacffb88149073",
-         intel: "90088cd39eacdfe72f6d33b5d2bda1b3375307c843806e4a5882e8e789779566"
+  version "1.0.1"
+  sha256 arm:   "29d343ceec23bf1f355d8ab9418238156fb11c2ebc2fcb51688db8d7df892514",
+         intel: "0fa7551e74b140511510a3080fab592210ce61ec7cd64c5ed7850e70cc8e9fe6"
 
-  url "https://github.com/mehedishakeel/Bongo/releases/download/v1.0.0/Bongo-1.0-macos-#{arch}.dmg"
+  url "https://github.com/mehedishakeel/Bongo/releases/download/v#{version}/Bongo-#{version}-macos-#{arch}.dmg"
   name "Bongo"
   desc "Native Bangla Phonetic Keyboard for macOS"
   homepage "https://getbongo.app/"

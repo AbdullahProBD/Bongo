@@ -187,7 +187,12 @@ if [[ -z "${DESTDIR}" && "${PREFIX}" != "/usr" ]]; then
 else
     install -m 644 "${LINUX_ROOT}/data/app.getbongo.Bongo.desktop" "${DESTDIR}${PREFIX}/share/applications/app.getbongo.Bongo.desktop"
 fi
-cp -f "${DESTDIR}${PREFIX}/share/applications/app.getbongo.Bongo.desktop" "${DESTDIR}${PREFIX}/share/applications/bongo.desktop" 2>/dev/null || true
+
+# Remove legacy duplicate launcher (installed by older versions) that caused
+# Bongo to appear twice in application menus
+if [[ -z "${DESTDIR}" ]]; then
+    rm -f "${PREFIX}/share/applications/bongo.desktop" 2>/dev/null || true
+fi
 
 # 6. Install AppStream metadata
 install -d "${DESTDIR}${PREFIX}/share/metainfo"

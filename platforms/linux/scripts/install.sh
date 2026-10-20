@@ -55,13 +55,17 @@ if [[ "${IS_LOCAL}" != "true" ]]; then
     if command -v apt-get >/dev/null 2>&1 || command -v dpkg >/dev/null 2>&1; then
         echo "--> Detected Debian / Ubuntu based system (${DEB_ARCH})"
         TMP_DEB="/tmp/bongo_${DEB_ARCH}.deb"
-        DEB_URL="https://github.com/mehedishakeel/Bongo/releases/latest/download/bongo_1.0.0_${DEB_ARCH}.deb"
+        DEB_URL="https://github.com/mehedishakeel/Bongo/releases/latest/download/bongo_1.0.1_${DEB_ARCH}.deb"
+        FALLBACK_URL="https://github.com/mehedishakeel/Bongo/releases/latest/download/bongo_1.0.0_${DEB_ARCH}.deb"
 
         echo "--> Downloading ${DEB_URL}..."
-        curl -sSL -f -o "${TMP_DEB}" "${DEB_URL}" || {
-            echo "Error: Failed to download release package from GitHub." >&2
-            exit 1
-        }
+        if ! curl -sSL -f -o "${TMP_DEB}" "${DEB_URL}"; then
+            echo "--> Trying ${FALLBACK_URL}..."
+            curl -sSL -f -o "${TMP_DEB}" "${FALLBACK_URL}" || {
+                echo "Error: Failed to download release package from GitHub." >&2
+                exit 1
+            }
+        fi
 
         echo "--> Installing Bongo and resolving dependencies..."
         if command -v apt-get >/dev/null 2>&1; then

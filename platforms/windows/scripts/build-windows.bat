@@ -109,9 +109,28 @@ if not defined CANDLE_EXE if defined WIX_EXE (
 )
 if not defined CANDLE_EXE if not defined WIX_EXE echo Note: WiX toolset not found. Skipping MSI installer creation.
 
+echo Building Portable ZIP package...
+set "PORTABLE_DIR=%BUILD_DIR%\Bongo-Portable"
+if exist "%PORTABLE_DIR%" rmdir /s /q "%PORTABLE_DIR%"
+mkdir "%PORTABLE_DIR%"
+mkdir "%PORTABLE_DIR%\data"
+
+if exist "%BUILD_DIR%\bongo.exe" copy /y "%BUILD_DIR%\bongo.exe" "%PORTABLE_DIR%\"
+if exist "%BUILD_DIR%\bongo-settings.exe" copy /y "%BUILD_DIR%\bongo-settings.exe" "%PORTABLE_DIR%\"
+if exist "%BUILD_DIR%\bongo_engine.dll" copy /y "%BUILD_DIR%\bongo_engine.dll" "%PORTABLE_DIR%\"
+if exist "%WINDOWS_ROOT%\data\bongo.ico" copy /y "%WINDOWS_ROOT%\data\bongo.ico" "%PORTABLE_DIR%\data\"
+if exist "%WINDOWS_ROOT%\data\bongo.png" copy /y "%WINDOWS_ROOT%\data\bongo.png" "%PORTABLE_DIR%\data\"
+if exist "%WINDOWS_ROOT%\data\bongo_32.png" copy /y "%WINDOWS_ROOT%\data\bongo_32.png" "%PORTABLE_DIR%\data\"
+if exist "%PROJECT_ROOT%\LICENSE" copy /y "%PROJECT_ROOT%\LICENSE" "%PORTABLE_DIR%\"
+if exist "%PROJECT_ROOT%\THIRD_PARTY_NOTICES.md" copy /y "%PROJECT_ROOT%\THIRD_PARTY_NOTICES.md" "%PORTABLE_DIR%\"
+
+powershell -Command "Compress-Archive -Path '%PORTABLE_DIR%\*' -DestinationPath '%RELEASE_DIR%\Bongo-1.0.0-windows-portable.zip' -Force"
+echo Built Portable ZIP package: %RELEASE_DIR%\Bongo-1.0.0-windows-portable.zip
+
 echo Generating SHA256 checksums...
 powershell -Command "if (Test-Path '%RELEASE_DIR%\*.exe') { Get-ChildItem '%RELEASE_DIR%\*.exe' | ForEach-Object { (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower() + '  ' + $_.Name | Set-Content ($_.FullName + '.sha256') } }"
 powershell -Command "if (Test-Path '%RELEASE_DIR%\*.msi') { Get-ChildItem '%RELEASE_DIR%\*.msi' | ForEach-Object { (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower() + '  ' + $_.Name | Set-Content ($_.FullName + '.sha256') } }"
+powershell -Command "if (Test-Path '%RELEASE_DIR%\*.zip') { Get-ChildItem '%RELEASE_DIR%\*.zip' | ForEach-Object { (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower() + '  ' + $_.Name | Set-Content ($_.FullName + '.sha256') } }"
 
 echo ============================================================================
 echo Windows build finished successfully!

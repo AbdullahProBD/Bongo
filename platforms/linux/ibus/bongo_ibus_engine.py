@@ -281,18 +281,22 @@ def extract_char_and_codepoint(keyval):
     """
     Safely extract (char_str, codepoint) from an IBus keyval.
     Handles IBus.keyval_to_unicode returning either a Python str or int in PyGObject.
+    Filters out non-printable / control codes (< 0x20 or 0x7F) like BackSpace (0x08).
     """
     if IBus is not None:
         try:
             res = IBus.keyval_to_unicode(keyval)
             if isinstance(res, str):
                 if res and res != '\x00':
-                    return res, ord(res)
+                    cp = ord(res)
+                    if cp >= 0x20 and cp != 0x7f:
+                        return res, cp
             elif isinstance(res, int) and res > 0:
-                try:
-                    return chr(res), res
-                except (ValueError, OverflowError):
-                    pass
+                if res >= 0x20 and res != 0x7f:
+                    try:
+                        return chr(res), res
+                    except (ValueError, OverflowError):
+                        pass
         except Exception:
             pass
 
@@ -497,10 +501,13 @@ class BongoEngine(BaseEngine):
         # Process standard printable character
         char_str, codepoint = extract_char_and_codepoint(keyval)
         if char_str and codepoint > 0:
-            # Ignore non-printable / control characters (e.g. the BackSpace keyval
-            # maps to U+0008 when there is no active composition session) and let
-            # the application handle them natively
+            # Ignore non-printable / control characters (e.g. BackSpace 0x08, Delete 0x7F)
+            # when there is no active composition session so the application handles them natively
             if codepoint < 0x20 or codepoint == 0x7f:
+                return False
+
+            # If not in session and character is whitespace (e.g. Space 0x20), pass through to the host app
+            if not self.has_session() and char_str in " \t\r\n":
                 return False
 
             handled = self.feed_character(char_str, codepoint, effective_state)

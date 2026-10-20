@@ -83,14 +83,37 @@ if ($wix) {
     }
 }
 
-# 3. Generate SHA256 Checksums
-Write-Host "[3/3] Generating SHA256 checksums..."
+# 3. Build Portable ZIP Package
+Write-Host "[3/4] Creating Portable ZIP package..."
+$portableDir = "$buildDir\Bongo-Portable"
+if (Test-Path $portableDir) { Remove-Item -Recurse -Force $portableDir }
+New-Item -ItemType Directory -Path "$portableDir\data" -Force | Out-Null
+
+if (Test-Path "$buildDir\bongo.exe") { Copy-Item "$buildDir\bongo.exe" "$portableDir\" }
+if (Test-Path "$buildDir\bongo-settings.exe") { Copy-Item "$buildDir\bongo-settings.exe" "$portableDir\" }
+if (Test-Path "$buildDir\bongo_engine.dll") { Copy-Item "$buildDir\bongo_engine.dll" "$portableDir\" }
+if (Test-Path "$windowsRoot\data") { Copy-Item "$windowsRoot\data\*" "$portableDir\data\" }
+if (Test-Path "$projectRoot\LICENSE") { Copy-Item "$projectRoot\LICENSE" "$portableDir\" }
+if (Test-Path "$projectRoot\THIRD_PARTY_NOTICES.md") { Copy-Item "$projectRoot\THIRD_PARTY_NOTICES.md" "$portableDir\" }
+
+$zipPath = "$releaseDir\Bongo-1.0.0-windows-portable.zip"
+if (Test-Path $zipPath) { Remove-Item -Force $zipPath }
+Compress-Archive -Path "$portableDir\*" -DestinationPath $zipPath -Force
+Write-Host "Portable ZIP created: $zipPath"
+
+# 4. Generate SHA256 Checksums
+Write-Host "[4/4] Generating SHA256 checksums..."
 Get-ChildItem -Path $releaseDir -Filter "*.exe" | ForEach-Object {
     $hash = (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower()
     Set-Content -Path ($_.FullName + ".sha256") -Value "$hash  $($_.Name)"
     Write-Host "  $($_.Name) -> $hash"
 }
 Get-ChildItem -Path $releaseDir -Filter "*.msi" | ForEach-Object {
+    $hash = (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower()
+    Set-Content -Path ($_.FullName + ".sha256") -Value "$hash  $($_.Name)"
+    Write-Host "  $($_.Name) -> $hash"
+}
+Get-ChildItem -Path $releaseDir -Filter "*.zip" | ForEach-Object {
     $hash = (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower()
     Set-Content -Path ($_.FullName + ".sha256") -Value "$hash  $($_.Name)"
     Write-Host "  $($_.Name) -> $hash"

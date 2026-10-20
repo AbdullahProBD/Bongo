@@ -36,6 +36,9 @@ jobs:
           if (-not (Test-Path "platforms/windows/release/Bongo-1.0.0-x64.msi")) {
             throw "Bongo-1.0.0-x64.msi was not created!"
           }
+          if (-not (Test-Path "platforms/windows/release/Bongo-1.0.0-windows-portable.zip")) {
+            throw "Bongo-1.0.0-windows-portable.zip was not created!"
+          }
           Get-ChildItem platforms/windows/release
 
       - name: Upload Windows Artifacts to Actions
@@ -45,6 +48,7 @@ jobs:
           path: |
             platforms/windows/release/*.exe
             platforms/windows/release/*.msi
+            platforms/windows/release/*.zip
             platforms/windows/release/*.sha256
 
       - name: Attach Windows Packages to v1.0 Release
@@ -54,4 +58,5 @@ jobs:
           files: |
             platforms/windows/release/*.exe
             platforms/windows/release/*.msi
+            platforms/windows/release/*.zip
             platforms/windows/release/*.sha256

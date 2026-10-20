@@ -119,6 +119,7 @@ jobs:
           path: |
             platforms/windows/release/*.exe
             platforms/windows/release/*.msi
+            platforms/windows/release/*.zip
             platforms/windows/release/*.sha256
 
   publish:
@@ -144,6 +145,7 @@ jobs:
             release-artifacts/*.deb
             release-artifacts/*.exe
             release-artifacts/*.msi
+            release-artifacts/*.zip
             release-artifacts/*.sha256
           generate_release_notes: true
           draft: ${{ github.event.inputs.draft == 'true' }}

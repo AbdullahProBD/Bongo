@@ -52,6 +52,9 @@ cat <<'EOF' > "${BUILD_ROOT}/DEBIAN/postinst"
 #!/bin/sh
 set -e
 if [ "$1" = "configure" ]; then
+    # Remove legacy duplicate launcher (from older versions) that caused
+    # Bongo to appear twice in application menus
+    rm -f /usr/share/applications/bongo.desktop 2>/dev/null || true
     if command -v update-desktop-database >/dev/null 2>&1; then
         update-desktop-database /usr/share/applications || true
     fi

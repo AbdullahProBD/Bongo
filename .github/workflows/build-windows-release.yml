@@ -30,15 +30,12 @@ jobs:
       - name: Verify Installer Artifacts
         shell: pwsh
         run: |
-          if (-not (Test-Path "platforms/windows/release/Bongo-Setup-1.0.0.exe")) {
-            throw "Bongo-Setup-1.0.0.exe was not created!"
-          }
-          if (-not (Test-Path "platforms/windows/release/Bongo-1.0.0-x64.msi")) {
-            throw "Bongo-1.0.0-x64.msi was not created!"
-          }
-          if (-not (Test-Path "platforms/windows/release/Bongo-1.0.0-windows-portable.zip")) {
-            throw "Bongo-1.0.0-windows-portable.zip was not created!"
-          }
+          $exe = Get-ChildItem "platforms/windows/release/*.exe"
+          $msi = Get-ChildItem "platforms/windows/release/*.msi"
+          $zip = Get-ChildItem "platforms/windows/release/*portable*.zip"
+          if (-not $exe) { throw "Setup EXE was not created!" }
+          if (-not $msi) { throw "MSI installer was not created!" }
+          if (-not $zip) { throw "Portable ZIP was not created!" }
           Get-ChildItem platforms/windows/release
 
       - name: Upload Windows Artifacts to Actions

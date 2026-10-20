@@ -29,6 +29,11 @@
   </provides>
   <content_rating type="oars-1.1"/>
   <releases>
+    <release version="1.0.1" date="2026-10-20">
+      <description>
+        <p>Hotfix release resolving duplicate application launcher in GNOME menus and Backspace control key handling in IBus.</p>
+      </description>
+    </release>
     <release version="1.0.0" date="2026-10-10">
       <description>
         <p>Initial release of Bongo for Linux with IBus input method and GTK4 settings.</p>

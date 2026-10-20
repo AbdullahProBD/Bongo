@@ -27,20 +27,24 @@
     <img src="https://img.shields.io/badge/macOS-Universal_DMG-1e1b4b?style=for-the-badge&logo=apple&logoColor=white" alt="Download macOS Universal DMG">
   </a>
   <br>
-  <a href="https://github.com/mehedishakeel/Bongo/releases/latest/download/bongo_1.0.0_amd64.deb">
+  <a href="https://github.com/mehedishakeel/Bongo/releases/latest/download/bongo_1.0.1_amd64.deb">
     <img src="https://img.shields.io/badge/Linux-amd64_DEB-e11d48?style=for-the-badge&logo=linux&logoColor=white" alt="Download Linux amd64 DEB">
   </a>
   &nbsp;
-  <a href="https://github.com/mehedishakeel/Bongo/releases/latest/download/bongo_1.0.0_arm64.deb">
+  <a href="https://github.com/mehedishakeel/Bongo/releases/latest/download/bongo_1.0.1_arm64.deb">
     <img src="https://img.shields.io/badge/Linux-arm64_DEB-be123c?style=for-the-badge&logo=linux&logoColor=white" alt="Download Linux arm64 DEB">
   </a>
   <br>
-  <a href="https://github.com/mehedishakeel/Bongo/releases/latest/download/Bongo-Setup-1.0.0.exe">
+  <a href="https://github.com/mehedishakeel/Bongo/releases/latest/download/Bongo-Setup-1.0.1.exe">
     <img src="https://img.shields.io/badge/Windows-Setup_EXE-0284c7?style=for-the-badge&logo=windows&logoColor=white" alt="Download Windows Setup EXE">
   </a>
   &nbsp;
-  <a href="https://github.com/mehedishakeel/Bongo/releases/latest/download/Bongo-1.0.0-x64.msi">
+  <a href="https://github.com/mehedishakeel/Bongo/releases/latest/download/Bongo-1.0.1-x64.msi">
     <img src="https://img.shields.io/badge/Windows-MSI_Installer-0369a1?style=for-the-badge&logo=windows&logoColor=white" alt="Download Windows MSI Package">
+  </a>
+  &nbsp;
+  <a href="https://github.com/mehedishakeel/Bongo/releases/latest/download/Bongo-1.0.1-windows-portable.zip">
+    <img src="https://img.shields.io/badge/Windows-Portable_ZIP-0284c7?style=for-the-badge&logo=windows&logoColor=white" alt="Download Windows Portable ZIP">
   </a>
   <br>
   <a href="https://github.com/mehedishakeel/Bongo/releases/latest/download/Bongo-1.0.0-android.apk">
@@ -77,10 +81,10 @@ See [docs/MACOS-INSTALL.md](docs/MACOS-INSTALL.md) or [platforms/macos/README.md
 
 ### Linux (Ubuntu, Debian, Fedora, Arch)
 
-1. **Download**: Get `bongo_1.0.0_amd64.deb` (standard 64-bit PC) or `bongo_1.0.0_arm64.deb` (ARM64) from [Releases](https://github.com/mehedishakeel/Bongo/releases/latest).
+1. **Download**: Get `bongo_1.0.1_amd64.deb` (standard 64-bit PC) or `bongo_1.0.1_arm64.deb` (ARM64) from [Releases](https://github.com/mehedishakeel/Bongo/releases/latest).
 2. **Install**:
    ```bash
-   sudo apt install ./bongo_1.0.0_amd64.deb
+   sudo apt install ./bongo_1.0.1_amd64.deb
    ```
    Or install in one command:
    ```bash
@@ -95,11 +99,11 @@ See [docs/LINUX-INSTALL.md](docs/LINUX-INSTALL.md) or [platforms/linux/README.md
 
 ### Windows (Windows 10 & 11)
 
-1. **Download**: Get `Bongo-Setup-1.0.0.exe` (or `Bongo-1.0.0-x64.msi`) from [Releases](https://github.com/mehedishakeel/Bongo/releases/latest).
-2. **Install**: Run the installer to set up Bongo and optional auto-start.
-3. **Activate**:
-   - Press <kbd>F12</kbd> anywhere (browsers, Word, Notepad, IDEs) to switch between Bangla and English mode.
-   - Access settings, fonts, and layout cheat sheets anytime from the system tray icon or Start Menu.
+- **Installer (Recommended)**: Download `Bongo-Setup-1.0.1.exe` (or `Bongo-1.0.1-x64.msi` for enterprise deployment) from [Releases](https://github.com/mehedishakeel/Bongo/releases/latest) and run setup.
+- **Portable ZIP**: Download `Bongo-1.0.1-windows-portable.zip`, extract anywhere, and run `bongo.exe`. No installation or administrator permissions required!
+- **Activate**:
+  - Press <kbd>F12</kbd> anywhere (browsers, Word, Notepad, IDEs) to toggle between Bangla and English mode.
+  - Access settings, fonts, and layout cheat sheets anytime from the system tray icon or Start Menu.
 
 See [docs/WINDOWS-INSTALL.md](docs/WINDOWS-INSTALL.md) or [platforms/windows/README.md](platforms/windows/README.md) for details.
 
@@ -148,25 +152,43 @@ Press <kbd>Space</kbd> to commit the highlighted word, or press number keys <kbd
 ## Screenshots
 
 <p align="center">
-  <img src="docs/assets/bongo-hud-candidate.png" width="340" alt="Bongo Modern macOS HUD Candidate Panel">
+  <img src="docs/assets/bongo-getting-started.png" width="720" alt="Bongo Getting Started and Setup Guide">
   <br>
-  <em>Tactile Candidate HUD with fast numbered shortcuts</em>
+  <em>Frictionless Onboarding: One-click setup guide, layout cheat sheet, and live typing verification</em>
 </p>
 
 <p align="center">
-  <img src="docs/assets/bongo-settings.png" width="700" alt="Bongo macOS Settings Window">
+  <img src="docs/assets/bongo-layout.png" width="720" alt="Bongo Visual Phonetic Layout Key Map">
   <br>
-  <em>Bongo macOS Settings Window with 3 typing modes & font customization</em>
+  <em>Visual Phonetic Key Map: Complete consonant, vowel, and compound ligature mapping with instant search</em>
 </p>
 
 <p align="center">
-  <img src="docs/assets/bongo-linux-settings.png" width="700" alt="Bongo Linux GTK4 Settings Window">
+  <img src="docs/assets/bongo-settings.png" width="720" alt="Bongo macOS Settings Window">
+  <br>
+  <em>Typing Modes & Preferences: Flexible phonetic modes, auto-correction, and system integration</em>
+</p>
+
+<p align="center">
+  <img src="docs/assets/bongo-fonts.png" width="720" alt="Bongo Customizable Bengali Typography">
+  <br>
+  <em>Typography Customizer: Real-time font family selection and candidate size preview</em>
+</p>
+
+<p align="center">
+  <img src="docs/assets/bongo-hud-candidate.png" width="340" alt="Bongo Modern Candidate HUD">
+  <br>
+  <em>Tactile Candidate HUD with fast numbered shortcuts (1–9) and keyboard navigation</em>
+</p>
+
+<p align="center">
+  <img src="docs/assets/bongo-linux-settings.png" width="720" alt="Bongo Linux GTK4 Settings Window">
   <br>
   <em>Bongo Linux GTK4 Settings Window with native dark styling and typography configuration</em>
 </p>
 
 <p align="center">
-  <img src="docs/assets/bongo-windows-settings.png" width="700" alt="Bongo Windows Settings Window">
+  <img src="docs/assets/bongo-windows-settings.png" width="720" alt="Bongo Windows Settings Window">
   <br>
   <em>Bongo Windows Settings Window with native dark styling, layout cheatsheet, and typing playground</em>
 </p>

@@ -54,10 +54,10 @@ sudo pacman -S rust cargo ibus python-gobject gtk4
 
 ### Option 1: Install from Debian / Ubuntu Package (.deb)
 
-Download `bongo_1.0.0_arm64.deb` from the [Releases](https://github.com/mehedishakeel/Bongo/releases/latest) page:
+Download `bongo_1.0.1_amd64.deb` (or `bongo_1.0.1_arm64.deb`) from the [Releases](https://github.com/mehedishakeel/Bongo/releases/latest) page:
 
 ```bash
-sudo apt install ./bongo_1.0.0_arm64.deb
+sudo apt install ./bongo_1.0.1_amd64.deb
 ```
 
 ### Option 2: Build & Install from Source

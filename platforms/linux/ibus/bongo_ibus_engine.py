@@ -497,8 +497,10 @@ class BongoEngine(BaseEngine):
         # Process standard printable character
         char_str, codepoint = extract_char_and_codepoint(keyval)
         if char_str and codepoint > 0:
-            # If not in session and character is whitespace, pass through
-            if not self.has_session() and char_str in " \t\r\n":
+            # Ignore non-printable / control characters (e.g. the BackSpace keyval
+            # maps to U+0008 when there is no active composition session) and let
+            # the application handle them natively
+            if codepoint < 0x20 or codepoint == 0x7f:
                 return False
 
             handled = self.feed_character(char_str, codepoint, effective_state)

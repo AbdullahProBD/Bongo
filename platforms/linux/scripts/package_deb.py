@@ -1,111 +1,99 @@
 #!/usr/bin/env python3
 """
-Lightweight Debian package (.deb) builder for cross-platform environments (macOS, Linux).
-Packages a staged directory into a standard Debian archive without requiring dpkg-deb.
+Clean, GNU-compliant Debian package builder.
+Used as a cross-platform fallback when dpkg-deb is not installed (e.g. on macOS or non-Debian CI).
+Produces standard .deb (ar) archives with pure GNU tar format and zero Apple PAX metadata.
 """
 
 import os
 import sys
-import time
 import tarfile
 import subprocess
 import shutil
-from pathlib import Path
 
-def tar_reset(tarinfo):
-    """Normalize file metadata to root:root and deterministic mode."""
+def clean_filter(tarinfo):
     tarinfo.uid = 0
     tarinfo.gid = 0
     tarinfo.uname = "root"
     tarinfo.gname = "root"
     tarinfo.pax_headers = {}
-    # Ensure standard directory permissions
-    if tarinfo.isdir():
-        tarinfo.mode = 0o755
+    basename = os.path.basename(tarinfo.name)
+    if basename.startswith("._") or basename in (".DS_Store", "__MACOSX"):
+        return None
     return tarinfo
 
-def compress_zstd_or_gz(input_path, output_ext):
-    """Compress a tar file using zstd (if available) or gzip."""
-    if output_ext == "zst" and shutil.which("zstd"):
-        cmd = ["zstd", "-q", "-19", "-f", str(input_path), "-o", f"{input_path}.zst"]
-        subprocess.check_call(cmd)
-        return f"{input_path}.zst", "zst"
+def build_deb(build_root, output_deb):
+    os.makedirs(os.path.dirname(os.path.abspath(output_deb)), exist_ok=True)
+    tmp_dir = os.path.join(os.path.dirname(output_deb), ".deb_tmp")
+    if os.path.exists(tmp_dir):
+        shutil.rmtree(tmp_dir)
+    os.makedirs(tmp_dir, exist_ok=True)
+
+    debian_dir = os.path.join(build_root, "DEBIAN")
+    control_tar = os.path.join(tmp_dir, "control.tar")
+    data_tar = os.path.join(tmp_dir, "data.tar")
+
+    # 1. Create control.tar
+    with tarfile.open(control_tar, "w", format=tarfile.GNU_FORMAT) as tar:
+        for item in sorted(os.listdir(debian_dir)):
+            item_path = os.path.join(debian_dir, item)
+            tar.add(item_path, arcname=f"./{item}", filter=clean_filter)
+
+    # 2. Create data.tar
+    with tarfile.open(data_tar, "w", format=tarfile.GNU_FORMAT) as tar:
+        for item in sorted(os.listdir(build_root)):
+            if item == "DEBIAN":
+                continue
+            item_path = os.path.join(build_root, item)
+            tar.add(item_path, arcname=f"./{item}", filter=clean_filter)
+
+    # 3. Compress with zstd if available, otherwise gzip
+    use_zstd = shutil.which("zstd") is not None
+    if use_zstd:
+        control_comp = os.path.join(tmp_dir, "control.tar.zst")
+        data_comp = os.path.join(tmp_dir, "data.tar.zst")
+        subprocess.run(["zstd", "-19", "-f", control_tar, "-o", control_comp], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(["zstd", "-19", "-f", data_tar, "-o", data_comp], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        control_name = "control.tar.zst"
+        data_name = "data.tar.zst"
     else:
-        # Fall back to gzip
-        cmd = ["gzip", "-9", "-f", str(input_path)]
-        subprocess.check_call(cmd)
-        return f"{input_path}.gz", "gz"
+        import gzip
+        control_comp = os.path.join(tmp_dir, "control.tar.gz")
+        data_comp = os.path.join(tmp_dir, "data.tar.gz")
+        with open(control_tar, "rb") as f_in, gzip.open(control_comp, "wb", compresslevel=9) as f_out:
+            shutil.copyfileobj(f_in, f_out)
+        with open(data_tar, "rb") as f_in, gzip.open(data_comp, "wb", compresslevel=9) as f_out:
+            shutil.copyfileobj(f_in, f_out)
+        control_name = "control.tar.gz"
+        data_name = "data.tar.gz"
 
-def write_ar_entry(out, name, data, mtime=None, mode=0o100644):
-    """Write an entry in BSD/Debian ar format."""
-    if mtime is None:
-        mtime = int(time.time())
-    header = (
-        f"{name:<16}"
-        f"{mtime:<12}"
-        f"{'0':<6}"
-        f"{'0':<6}"
-        f"{oct(mode)[2:]:>8}"
-        f"{len(data):<10}"
-        "`\n"
-    ).encode("ascii")
-    if len(header) != 60:
-        raise ValueError(f"Header length invalid: {len(header)}")
-    out.write(header)
-    out.write(data)
-    if len(data) % 2 != 0:
-        out.write(b"\n")
+    debian_binary = os.path.join(tmp_dir, "debian-binary")
+    with open(debian_binary, "wb") as f:
+        f.write(b"2.0\n")
 
-def package_deb(root_dir, deb_output_path):
-    root_path = Path(root_dir).resolve()
-    deb_path = Path(deb_output_path).resolve()
-    deb_path.parent.mkdir(parents=True, exist_ok=True)
-    temp_dir = root_path.parent / f"_deb_tmp_{int(time.time())}"
-    temp_dir.mkdir(parents=True, exist_ok=True)
+    # 4. Write standard ar archive
+    files = [
+        ("debian-binary", debian_binary),
+        (control_name, control_comp),
+        (data_name, data_comp),
+    ]
 
-    try:
-        # 1. debian-binary
-        debian_binary = b"2.0\n"
+    with open(output_deb, "wb") as deb:
+        deb.write(b"!<arch>\n")
+        for name, file_path in files:
+            size = os.path.getsize(file_path)
+            mtime = int(os.path.getmtime(file_path))
+            header = f"{name:<16}{mtime:<12}{0:<6}{0:<6}{100644:<8}{size:<10}\x60\n".encode("ascii")
+            deb.write(header)
+            with open(file_path, "rb") as f:
+                deb.write(f.read())
+            if size % 2 == 1:
+                deb.write(b"\n")
 
-        # 2. control.tar
-        control_dir = root_path / "DEBIAN"
-        control_tar = temp_dir / "control.tar"
-        with tarfile.open(control_tar, "w", format=tarfile.GNU_FORMAT) as tar:
-            tar.add(control_dir, arcname=".", filter=tar_reset, recursive=False)
-            for item in sorted(control_dir.iterdir()):
-                tar.add(item, arcname=f"./{item.name}", filter=tar_reset)
-
-        control_comp, control_ext = compress_zstd_or_gz(control_tar, "zst")
-        with open(control_comp, "rb") as f:
-            control_data = f.read()
-
-        # 3. data.tar
-        data_tar = temp_dir / "data.tar"
-        with tarfile.open(data_tar, "w", format=tarfile.GNU_FORMAT) as tar:
-            tar.add(root_path, arcname=".", filter=tar_reset, recursive=False)
-            for item in sorted(root_path.iterdir()):
-                if item.name == "DEBIAN":
-                    continue
-                tar.add(item, arcname=f"./{item.name}", filter=tar_reset)
-
-        data_comp, data_ext = compress_zstd_or_gz(data_tar, "zst")
-        with open(data_comp, "rb") as f:
-            data_data = f.read()
-
-        # 4. Assemble .deb
-        now = int(time.time())
-        with open(deb_path, "wb") as deb_file:
-            deb_file.write(b"!<arch>\n")
-            write_ar_entry(deb_file, "debian-binary", debian_binary, mtime=now)
-            write_ar_entry(deb_file, f"control.tar.{control_ext}", control_data, mtime=now)
-            write_ar_entry(deb_file, f"data.tar.{data_ext}", data_data, mtime=now)
-
-        print(f"Successfully created: {deb_path} ({deb_path.stat().st_size} bytes)")
-    finally:
-        shutil.rmtree(temp_dir, ignore_errors=True)
+    shutil.rmtree(tmp_dir)
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
-        print("Usage: package_deb.py <staged_build_root> <output_deb_file>")
+        print("Usage: package_deb.py <build_root> <output_deb>", file=sys.stderr)
         sys.exit(1)
-    package_deb(sys.argv[1], sys.argv[2])
+    build_deb(sys.argv[1], sys.argv[2])
